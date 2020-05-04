@@ -4,7 +4,7 @@
             <input id="chat-message" type="text" v-model="chatMessageToSend">
             <button @click="sendChatMessage">Küldés</button>
         </div>
-        <div v-for="chatMessage in chatMessages" :key="chatMessage.name">
+        <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
             {{chatMessage.name}}:{{chatMessage.message}}
         </div>
     </div>
@@ -21,6 +21,9 @@
         chatMessages = [];
         private chatMessageToSend = "";
 
+        //todo remove count and hardcoded name
+        private count = 1;
+
         constructor() {
             super();
             this.chatMessages! = this.$store.state.chatMessages;
@@ -34,6 +37,8 @@
 
         public sendChatMessage(): void {
             const msgModel: MessageModel = {
+                id: this.count + 1,
+                //todo replace hardcoded name
                 name: "Pecske",
                 message: this.chatMessageToSend,
             }

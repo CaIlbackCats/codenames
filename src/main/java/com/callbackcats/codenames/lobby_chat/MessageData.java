@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MessageData {
+    private Integer id;
     private String name;
     private String message;
 }
