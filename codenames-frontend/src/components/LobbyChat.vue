@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12 col-md-6">
             <input id="chat-message" type="text" v-model="chatMessageToSend">
             <button @click="sendChatMessage">Küldés</button>
             <div class="message-window">
@@ -8,7 +7,6 @@
                     {{chatMessage.name}}:{{chatMessage.message}}
                 </div>
             </div>
-        </div>
     </div>
 </template>
 

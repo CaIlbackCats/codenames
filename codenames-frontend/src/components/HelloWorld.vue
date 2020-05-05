@@ -1,5 +1,4 @@
 <template>
-    <LobbyChat></LobbyChat>
 </template>
 
 <script lang="ts">
