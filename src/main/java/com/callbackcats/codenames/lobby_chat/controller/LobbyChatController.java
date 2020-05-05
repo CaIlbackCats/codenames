@@ -1,5 +1,6 @@
-package com.callbackcats.codenames.lobby_chat;
+package com.callbackcats.codenames.lobby_chat.controller;
 
+import com.callbackcats.codenames.lobby_chat.dto.MessageData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
