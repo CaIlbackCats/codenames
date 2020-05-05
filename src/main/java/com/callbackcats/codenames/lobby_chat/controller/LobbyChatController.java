@@ -21,7 +21,6 @@ public class LobbyChatController {
     @MessageMapping("/public")
     @SendTo("/topic/chat")
     public MessageData handleMessage(@Payload MessageData messageData) {
-        log.info(messageData.getMessage());
         return messageData;
     }
 

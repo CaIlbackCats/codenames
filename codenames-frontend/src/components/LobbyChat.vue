@@ -1,5 +1,5 @@
 <template>
-    <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12 col-md-6 text-left">
             <input id="chat-message" type="text" v-model="chatMessageToSend">
             <button @click="sendChatMessage">Küldés</button>
             <div class="message-window">
@@ -17,15 +17,12 @@
     @Component
     export default class LobbyChat extends Vue {
 
-        //  private chatMessages: Array<MessageModel> = this.$store.state.chatMessages;
         private chatMessages: Array<MessageModel> = [];
         private chatMessageToSend = "";
 
 
         constructor() {
             super();
-            //   this.chatMessages! = this.$store.state.chatMessages;
-            // this.chatMessages! = this.$store.state.chatMessages;
             this.chatMessages = this.$store.getters.messages
             this.connect();
         };
@@ -57,9 +54,9 @@
 <style scoped>
 
     .message-window {
-        width: 25vh;
+        width: 25vW;
         height: 25vh;
-        overflow: auto;
+        overflow-y: scroll;
     }
 
 </style>
