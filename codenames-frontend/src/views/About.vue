@@ -1,6 +1,5 @@
 <template>
     <div class="about">
-        <LobbyPath></LobbyPath>
     </div>
 </template>
 <script lang="ts">
