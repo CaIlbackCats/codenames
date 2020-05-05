@@ -1,7 +1,7 @@
 <template>
     <div>
         <input type="text" readonly :value="path">
-        <button type="button" @click="copyPath">Szoba cím másolása</button>
+        <button type="button" v-clipboard="path" @click="copyPath">Szoba cím másolása</button>
     </div>
 </template>
 

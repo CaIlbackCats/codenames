@@ -3,9 +3,11 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store"
 import 'bootstrap/dist/css/bootstrap.css';
+import VueClipboard from "vue-clipboard2";
 //import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 Vue.config.productionTip = false;
+Vue.use(VueClipboard);
 
 const BASE_URL = "http:localhost:8080/api/chat";
 
