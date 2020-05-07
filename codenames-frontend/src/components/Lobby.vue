@@ -17,8 +17,6 @@
             super();
         };
 
-
-
         mounted() {
             // if (this.$store.lobby !== undefined) {
             //     dispatch('joinLobby')
