@@ -19,8 +19,9 @@ public class LobbyChatController {
     }
 
     @MessageMapping("/public")
-    @SendTo("/topic/chat")
+   // @SendTo("/topic/chat")
     public MessageData handleMessage(@Payload MessageData messageData) {
+        simpMessagingTemplate.convertAndSend("/topic/chat/" + messageData.getLobbyName(), messageData);
         return messageData;
     }
 

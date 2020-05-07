@@ -2,7 +2,7 @@
     <div>
         <input class="input" type="text" readonly :value="path"/>
         <button type="button" @click="copyPath">Szoba cím másolása</button>
-        <lobby-chat></lobby-chat>
+        <lobby-chat :current-player="currentPlayer" :current-lobby="this.$route.path"></lobby-chat>
         <LobbyOption :lobby-name="path"></LobbyOption>
     </div>
 </template>
@@ -18,6 +18,7 @@
     export default class Lobby extends Vue {
 
         private path = "http://localhost:4200";
+        private currentPlayer = "Pecske";
 
         constructor() {
             super();

@@ -1,6 +1,6 @@
-package com.callbackcats.codenames.dto;
+package com.callbackcats.codenames.lobby.dto;
 
-import com.callbackcats.codenames.domain.Lobby;
+import com.callbackcats.codenames.lobby.domain.Lobby;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

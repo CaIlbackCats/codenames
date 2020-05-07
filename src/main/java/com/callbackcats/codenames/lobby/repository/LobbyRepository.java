@@ -1,6 +1,6 @@
-package com.callbackcats.codenames.repository;
+package com.callbackcats.codenames.lobby.repository;
 
-import com.callbackcats.codenames.domain.Lobby;
+import com.callbackcats.codenames.lobby.domain.Lobby;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

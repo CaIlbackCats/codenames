@@ -1,11 +1,12 @@
-package com.callbackcats.codenames.domain;
+package com.callbackcats.codenames.lobby.domain;
 
+import com.callbackcats.codenames.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,5 +20,8 @@ public class Lobby {
     private String id = UUID.randomUUID().toString();
 
     private String name;
+
+    @OneToMany(mappedBy = "lobby")
+    private List<Player> playerList;
 
 }

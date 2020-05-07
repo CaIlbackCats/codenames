@@ -21,9 +21,9 @@ export default class ChatModule extends VuexModule {
     };
 
     @Action
-    public connect() {
+    public connect(lobbyName : string) {
         stompClient.connect({}, (frame) => {
-            stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE, message => {
+            stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE+lobbyName, message => {
                 if (message.body) {
                     const messageResult: MessageModel = JSON.parse(message.body);
                     this.context.commit('addItem', messageResult)

@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.player.domain;
 
+import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,10 @@ public class Player {
 
     @Enumerated(EnumType.STRING)
     private SideType side;
+
+    @ManyToOne
+    @JoinColumn(name = "lobby_id")
+    private Lobby lobby;
 
     public Player(String name) {
         this.name = name;

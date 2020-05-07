@@ -11,11 +11,16 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Prop, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/messageModel";
 
     @Component
     export default class LobbyChat extends Vue {
+
+        @Prop()
+        currentPlayer!: string;
+        @Prop()
+        currentLobby!: string;
 
         //   private chatMessages: Array<MessageModel> = [];
         private chatMessageToSend = "";
@@ -24,11 +29,15 @@
         constructor() {
             super();
             //  this.chatMessages = this.$store.getters.messages
-            this.connect();
         };
 
+        mounted(){
+            this.connect();
+        }
+
         public connect(): void {
-            this.$store.dispatch("connect");
+            console.log(this.currentLobby)
+            this.$store.dispatch("connect", this.currentLobby);
         }
 
 
@@ -37,8 +46,9 @@
             const id: number = this.generateId();
             const msgModel: MessageModel = {
                 id: id,
-                name: "Pecske",
+                name: this.currentPlayer,
                 message: this.chatMessageToSend,
+                lobbyName: this.currentLobby,
             }
             this.$store.dispatch("sendMsg", msgModel);
         }

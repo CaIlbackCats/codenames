@@ -154,7 +154,7 @@ public class PlayerService {
 
     //todo when lobby entity implemented modify this to getplayers by given lobby
     private List<Player> getPlayersByLobbyName(String lobbyName) {
-        return playerRepository.getAllPlayers();
+        return playerRepository.getPlayersByLobbyName(lobbyName);
     }
 
     private void setSpymasterToSidelessPlayer(List<Player> players) {
