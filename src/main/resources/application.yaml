@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/codenames?serverTimezone=UTC&characterEncoding=utf8
     username: root
-    password:
+    password: ChatApp2019!
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialization-mode: always
   jpa:

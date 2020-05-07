@@ -2,6 +2,7 @@
     <div class="about">
     </div>
 </template>
+
 <script lang="ts">
     import LobbyPath from "@/components/LobbyPath.vue";
 

@@ -13,7 +13,6 @@ const stompClient = Stomp.over(socket);
 @Module
 export default class ChatModule extends VuexModule {
 
-
     public chatMessages: Array<MessageModel> = [];
 
     @Mutation
