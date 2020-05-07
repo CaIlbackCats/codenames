@@ -16,12 +16,14 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
+    import router from "@/router";
 
     @Component
     export default class WelcomeHeader extends Vue {
 
         public createLobby() {
             this.$store.dispatch("createLobby");
+            router.push({name: "Lobby", params: {lobbyId: "valami"}});
         }
     }
 </script>

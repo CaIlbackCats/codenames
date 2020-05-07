@@ -10,10 +10,12 @@ const ENDPOINT_TO_SEND = process.env.VUE_APP_SEND_ENDPOINT;
 const socket = new SockJS(BASE_URL);
 const stompClient = Stomp.over(socket);
 
+
 @Module
 export default class ChatModule extends VuexModule {
 
-    public chatMessages: Array<MessageModel> = [];
+    private chatMessages: Array<MessageModel> = [];
+
 
     @Mutation
     private addItem(message: MessageModel): void {
@@ -21,9 +23,9 @@ export default class ChatModule extends VuexModule {
     };
 
     @Action
-    public connect(lobbyName : string) {
+    public connect(lobbyName: string) {
         stompClient.connect({}, (frame) => {
-            stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE+lobbyName, message => {
+            stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE + lobbyName, message => {
                 if (message.body) {
                     const messageResult: MessageModel = JSON.parse(message.body);
                     this.context.commit('addItem', messageResult)

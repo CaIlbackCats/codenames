@@ -13,6 +13,12 @@
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/messageModel";
+    import SockJS from "sockjs-client";
+    import Stomp, {Client} from "webstomp-client";
+
+    const BASE_URL = process.env.VUE_APP_BASE_URL
+    const ENDPOINT_TO_SUBSCRIBE = process.env.VUE_APP_LISTEN_ENDPOINT;
+    const ENDPOINT_TO_SEND = process.env.VUE_APP_SEND_ENDPOINT;
 
     @Component
     export default class LobbyChat extends Vue {
@@ -22,7 +28,9 @@
         @Prop()
         currentLobby!: string;
 
-        //   private chatMessages: Array<MessageModel> = [];
+        private stompClient!: Client;
+
+        private chatMessages: Array<MessageModel> = [];
         private chatMessageToSend = "";
 
 
@@ -31,13 +39,31 @@
             //  this.chatMessages = this.$store.getters.messages
         };
 
-        mounted(){
+        mounted() {
             this.connect();
         }
 
         public connect(): void {
-            console.log(this.currentLobby)
-            this.$store.dispatch("connect", this.currentLobby);
+            //  this.$store.dispatch("connect", this.currentLobby);
+            const socket = new SockJS(BASE_URL);
+            this.stompClient = Stomp.over(socket);
+            this.stompClient.connect({}, frame => {
+                this.subscribe();
+            })
+
+        }
+
+        private subscribe() {
+            this.stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE + this.currentLobby, message => {
+                if (message.body) {
+                    const messageResult: MessageModel = JSON.parse(message.body);
+                    this.chatMessages.push(messageResult);
+                }
+            });
+        }
+
+        private send(message: MessageModel) {
+            this.stompClient.send(ENDPOINT_TO_SEND, JSON.stringify(message), {});
         }
 
 
@@ -50,16 +76,17 @@
                 message: this.chatMessageToSend,
                 lobbyName: this.currentLobby,
             }
-            this.$store.dispatch("sendMsg", msgModel);
+            //   this.$store.dispatch("sendMsg", msgModel);
+            this.send(msgModel);
         }
 
         private generateId(): number {
             return Math.random() * 1000;
         }
 
-        get chatMessages(): Array<MessageModel> {
-            return this.$store.getters.messages;
-        }
+        //    get chatMessages(): Array<MessageModel> {
+        //         return this.$store.getters.messages;
+        //     }
 
     }
 </script>

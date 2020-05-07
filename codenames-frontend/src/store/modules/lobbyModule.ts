@@ -24,17 +24,14 @@ export default class LobbyModule extends VuexModule {
 
     @Action({commit: "CREATE_LOBBY", rawError: true})
     public async createLobby(): Promise<string> {
-        const response = await axios.get(BASE_URL + "/lobby").then((response) => {
-            this.context.commit('CREATE_LOBBY', response.data)
-            console.log(response);
-        });
-        return "";
+        const response = await axios.get(BASE_URL + "/lobby")
+        return response.data;
     }
 
     @Mutation
-    private CREATE_LOBBY(lobbyModel: LobbyModel):void{
+    private CREATE_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel;
-        router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
+          router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
     }
 
     @Action({commit: 'setLobby'})
