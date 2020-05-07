@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import LobbyPath from "@/components/LobbyPath.vue";
+import LobbyPath from "@/components/Lobby.vue";
 
 Vue.use(VueRouter);
 
@@ -12,7 +12,7 @@ const routes: Array<RouteConfig> = [
     component: Home
   },
   {
-    path: "/lobby",
+    path: "/lobby/:lobbyId",
     name: "Lobby",
     component: LobbyPath
   },

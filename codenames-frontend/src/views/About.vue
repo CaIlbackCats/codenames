@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-    import LobbyPath from "@/components/LobbyPath.vue";
+    import LobbyPath from "@/components/Lobby.vue";
 
     import {Component, Vue} from "vue-property-decorator";
 
