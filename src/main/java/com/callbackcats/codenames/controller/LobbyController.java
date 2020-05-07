@@ -2,6 +2,7 @@ package com.callbackcats.codenames.controller;
 
 import com.callbackcats.codenames.domain.Lobby;
 import com.callbackcats.codenames.dto.LobbyDetails;
+import com.callbackcats.codenames.repository.LobbyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class LobbyController {
 
+    private LobbyRepository lobbyRepository;
+
+    public LobbyController(LobbyRepository lobbyRepository) {
+        this.lobbyRepository = lobbyRepository;
+    }
+
     @GetMapping
     public ResponseEntity<LobbyDetails> getNewLobby() {
         Lobby lobby = new Lobby();
+        this.lobbyRepository.save(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
         log.info("New lobby generation requested");
         return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
