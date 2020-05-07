@@ -1,6 +1,7 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import {PlayerModel} from "@/models/playerModel";
 import axios from "axios";
+import {PlayerCreationModel} from "@/models/playerCreationModel";
 
 const AXIOS_CONFIG = {headers: {'Content-Type': 'application/json',}};
 const PLAYERS_ENDPOINT = process.env.VUE_APP_BASE_URL + "/players";
@@ -21,8 +22,8 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({commit: "ADD_NEW_PLAYER", rawError: true})
-    public async addNewPlayer(name: string): Promise<PlayerModel> {
-        const response = await axios.post<PlayerModel>(PLAYERS_ENDPOINT, name, AXIOS_CONFIG);
+    public async addNewPlayer(player: PlayerCreationModel): Promise<PlayerModel> {
+        const response = await axios.post<PlayerModel>(PLAYERS_ENDPOINT, player, AXIOS_CONFIG);
         return response.data;
     }
 
@@ -40,7 +41,7 @@ export default class PlayerModule extends VuexModule {
 
     @Action({commit: "REFRESH_LIST", rawError: true})
     public async fetchPlayers(lobbyName: string): Promise<Array<PlayerModel>> {
-        const response = await axios.get<Array<PlayerModel>>(PLAYERS_ENDPOINT, AXIOS_CONFIG);
+        const response = await axios.get<Array<PlayerModel>>(PLAYERS_ENDPOINT + "?lobbyName=" + lobbyName, AXIOS_CONFIG);
         return response.data
     }
 

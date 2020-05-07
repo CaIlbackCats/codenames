@@ -47,7 +47,7 @@
             //  this.$store.dispatch("connect", this.currentLobby);
             const socket = new SockJS(BASE_URL);
             this.stompClient = Stomp.over(socket);
-            this.stompClient.connect({}, frame => {
+            this.stompClient.connect({"name": this.currentPlayer}, frame => {
                 this.subscribe();
             })
 

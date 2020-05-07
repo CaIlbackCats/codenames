@@ -23,7 +23,7 @@
 
         public createLobby() {
             this.$store.dispatch("createLobby");
-            router.push({name: "Lobby", params: {lobbyId: "valami"}});
+           // router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
         }
     }
 </script>

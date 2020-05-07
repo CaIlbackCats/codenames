@@ -1,8 +1,11 @@
 package com.callbackcats.codenames.player.service;
 
+import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
+import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
 import org.springframework.stereotype.Service;
@@ -18,14 +21,19 @@ public class PlayerService {
 
     private static final int MAX_SPYMASTER = 2;
     private final PlayerRepository playerRepository;
+    private final LobbyRepository lobbyRepository;
 
 
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(PlayerRepository playerRepository, LobbyRepository lobbyRepository) {
         this.playerRepository = playerRepository;
+        this.lobbyRepository = lobbyRepository;
     }
 
-    public PlayerData savePlayer(String name) {
-        Player player = new Player(name);
+    public PlayerData savePlayer(PlayerCreationData playerCreationData) {
+        Player player = new Player(playerCreationData);
+        Lobby lobby = lobbyRepository.findLobbyByName(playerCreationData.getLobbyName());
+
+        player.setLobby(lobby);
         playerRepository.save(player);
         return new PlayerData(player);
     }

@@ -2,9 +2,11 @@ package com.callbackcats.codenames.lobby_chat.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
+@Setter
 public class MessageData {
     private Integer id;
     private String name;

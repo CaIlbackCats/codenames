@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.player.controller;
 
+import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import com.callbackcats.codenames.player.service.PlayerService;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ public class PlayerController {
     }
 
     @PostMapping
-    public ResponseEntity<PlayerData> addPlayer(@RequestBody String name) {
-        PlayerData addedPlayer = playerService.savePlayer(name);
+    public ResponseEntity<PlayerData> addPlayer(@RequestBody PlayerCreationData playerCreationData) {
+        PlayerData addedPlayer = playerService.savePlayer(playerCreationData);
 
         return new ResponseEntity<>(addedPlayer, HttpStatus.CREATED);
     }
@@ -38,7 +39,7 @@ public class PlayerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PlayerData>> getAllPlayersByLobby(String lobbyName) {
+    public ResponseEntity<List<PlayerData>> getAllPlayersByLobby(@RequestParam("lobbyName") String lobbyName) {
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
         return new ResponseEntity<>(players, HttpStatus.OK);
     }

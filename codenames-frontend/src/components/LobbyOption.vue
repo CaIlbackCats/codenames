@@ -1,6 +1,6 @@
 <template>
     <div>
-<!--        <input type="text" v-model="playerName">-->
+        <!--        <input type="text" v-model="playerName">-->
         <!--        <button @click="addPlayer">Ember Hozzáadás</button>-->
         <button @click="randomizeRoles">Véletlenszerű szerep kiosztás</button>
         <button @click="randomizeSide">Véletlenszerű csapat kiosztás</button>
@@ -21,23 +21,18 @@
         @Prop()
         private readonly lobbyName!: string;
 
-        private playerName = "";
-
         constructor() {
             super();
-            this.$store.dispatch("fetchPlayers")
-        }
-
-        public addPlayer(): void {
-            this.$store.dispatch("addNewPlayer", this.playerName);
+            console.log("teszt: "+this.lobbyName);
+            this.$store.dispatch("fetchPlayers", this.lobbyName);
         }
 
         public randomizeRoles(): void {
-            this.$store.dispatch("setPlayerRole", this.lobbyName)
+            this.$store.dispatch("setPlayerRole", this.lobbyName);
         }
 
         public randomizeSide(): void {
-            this.$store.dispatch("setPlayerSide", this.lobbyName)
+            this.$store.dispatch("setPlayerSide", this.lobbyName);
         }
 
         get players(): Array<PlayerModel> {

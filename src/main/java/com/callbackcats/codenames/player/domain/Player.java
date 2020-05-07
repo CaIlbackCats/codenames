@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.player.domain;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,8 +39,9 @@ public class Player {
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
-    public Player(String name) {
-        this.name = name;
+    public Player(PlayerCreationData playerCreationData) {
+      //  this.lobbyOwner = playerCreationData.getLobbyOwner();
+        this.name = playerCreationData.getName();
         this.role = RoleType.NOT_SELECTED;
         this.side = SideType.NOT_SELECTED;
     }
