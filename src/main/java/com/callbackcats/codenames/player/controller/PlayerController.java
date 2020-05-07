@@ -38,7 +38,7 @@ public class PlayerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PlayerData>> getAllPlayers(String lobbyName) {
+    public ResponseEntity<List<PlayerData>> getAllPlayersByLobby(String lobbyName) {
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
         return new ResponseEntity<>(players, HttpStatus.OK);
     }

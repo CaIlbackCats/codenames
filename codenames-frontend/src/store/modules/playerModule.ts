@@ -28,14 +28,20 @@ export default class PlayerModule extends VuexModule {
 
     @Action({commit: "REFRESH_LIST", rawError: true})
     public async setPlayerRole(lobbyName: string): Promise<Array<PlayerModel>> {
-        const response = await axios.put(PLAYERS_ENDPOINT + "/role", lobbyName, AXIOS_CONFIG);
+        const response = await axios.put<Array<PlayerModel>>(PLAYERS_ENDPOINT + "/role", lobbyName, AXIOS_CONFIG);
         return response.data;
     }
 
     @Action({commit: "REFRESH_LIST", rawError: true})
     public async setPlayerSide(lobbyName: string): Promise<Array<PlayerModel>> {
-        const response = await axios.put(PLAYERS_ENDPOINT + "/side", lobbyName, AXIOS_CONFIG);
+        const response = await axios.put<Array<PlayerModel>>(PLAYERS_ENDPOINT + "/side", lobbyName, AXIOS_CONFIG);
         return response.data;
+    }
+
+    @Action({commit: "REFRESH_LIST", rawError: true})
+    public async fetchPlayers(lobbyName: string): Promise<Array<PlayerModel>> {
+        const response = await axios.get<Array<PlayerModel>>(PLAYERS_ENDPOINT, AXIOS_CONFIG);
+        return response.data
     }
 
     get getPlayers() {

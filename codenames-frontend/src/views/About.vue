@@ -1,6 +1,5 @@
 <template>
     <div class="about">
-        <LobbyOption></LobbyOption>
     </div>
 </template>
 
@@ -11,7 +10,7 @@
     import LobbyOption from "@/components/LobbyOption.vue";
 
     @Component({
-        components: {LobbyOption, LobbyPath}
+        components: {}
     })
     export default class About extends Vue {
     }
