@@ -1,6 +1,8 @@
+
 export interface PlayerModel {
+    id:number,
     lobbyOwner: boolean,
     name: string,
-    //kém, kémfőnök
     role: string,
+    side: string,
 }
