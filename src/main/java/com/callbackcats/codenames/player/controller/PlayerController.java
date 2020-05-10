@@ -2,6 +2,7 @@ package com.callbackcats.codenames.player.controller;
 
 import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
+import com.callbackcats.codenames.player.dto.PlayerRemovalData;
 import com.callbackcats.codenames.player.service.PlayerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class PlayerController {
     }
 
     @MessageMapping("/refresh")
-    public List<PlayerData> getAllPlayersByLobby2(@Payload String lobbyName) {
+    public List<PlayerData> getAllPlayersByLobby(@Payload String lobbyName) {
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, players);
         return players;
@@ -34,7 +35,7 @@ public class PlayerController {
 
     @MessageMapping("/create")
     public List<PlayerData> registerNewPlayer(@Payload PlayerCreationData playerCreationData) {
-        playerService.savePlayer(playerCreationData);
+        PlayerData playerData = playerService.savePlayer(playerCreationData);
         String lobbyName = playerCreationData.getLobbyName();
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, players);
@@ -51,6 +52,22 @@ public class PlayerController {
     @MessageMapping("/side")
     public List<PlayerData> setPlayerSide(@Payload String lobbyName) {
         List<PlayerData> modifiedPlayers = playerService.randomizeTeamSetup(lobbyName);
+        simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
+        return modifiedPlayers;
+    }
+
+    @MessageMapping("/removeByVote")
+    public List<PlayerData> removePlayerByVote(@Payload PlayerRemovalData playerRemovalData) {
+        String lobbyName = playerService.removePlayerByVote(playerRemovalData);
+        List<PlayerData> modifiedPlayers = playerService.getPlayerDataListByLobbyName(lobbyName);
+        simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
+        return modifiedPlayers;
+    }
+
+    @MessageMapping("/removeByOwner")
+    public List<PlayerData> removePlayerByOwner(@Payload PlayerRemovalData playerRemovalData) {
+        String lobbyName = playerService.removePlayerByOwner(playerRemovalData);
+        List<PlayerData> modifiedPlayers = playerService.getPlayerDataListByLobbyName("");
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
         return modifiedPlayers;
     }
