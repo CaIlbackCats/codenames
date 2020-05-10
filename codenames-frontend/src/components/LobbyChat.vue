@@ -16,7 +16,6 @@
     import {Client} from "webstomp-client";
     import {RoomModel} from "@/models/roomModel";
 
-    const ENDPOINT_TO_SEND = process.env.VUE_APP_SEND_ENDPOINT;
 
     @Component
     export default class LobbyChat extends Vue {
@@ -44,7 +43,7 @@
         }
 
         private send(message: MessageModel) {
-            this.stompClient.send(ENDPOINT_TO_SEND, JSON.stringify(message), {});
+            this.stompClient.send(process.env.VUE_APP_SEND_ENDPOINT, JSON.stringify(message), {});
         }
 
 

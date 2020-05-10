@@ -1,7 +1,9 @@
-import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
+import {Action, Module, Mutation, MutationAction, VuexModule} from "vuex-module-decorators";
 import {PlayerModel} from "@/models/playerModel";
 import axios from "axios";
 import {PlayerCreationModel} from "@/models/playerCreationModel";
+import {Message} from "webstomp-client";
+import {RoomModel} from "@/models/roomModel";
 
 const AXIOS_CONFIG = {headers: {'Content-Type': 'application/json',}};
 const PLAYERS_ENDPOINT = process.env.VUE_APP_BASE_URL + "/players";
@@ -19,6 +21,21 @@ export default class PlayerModule extends VuexModule {
     @Mutation
     private REFRESH_LIST(players: Array<PlayerModel>): void {
         this.players = players;
+    }
+
+    @Mutation
+    private REFRESH_LIST2(player: Message): void {
+        this.players = JSON.parse(player.body);
+    }
+
+    @Action({rawError:true})
+    private subscribeToOptions(roomModel: RoomModel) {
+        const client = roomModel.stompClient;
+        client.subscribe(process.env.VUE_APP_OPTIONS + roomModel.name, message => {
+            if (message.body) {
+                this.context.commit("REFRESH_LIST2", message);
+            }
+        });
     }
 
     @Action({commit: "ADD_NEW_PLAYER", rawError: true})

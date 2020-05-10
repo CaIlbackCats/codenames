@@ -11,7 +11,9 @@
             <lobby-chat :current-player="currentPlayer"
                         :current-lobby="this.$route.params.lobbyId"
                         :stomp-client="stompClient"></lobby-chat>
-            <LobbyOption :lobby-name="this.$route.params.lobbyId"></LobbyOption>
+            <LobbyOption :lobby-name="this.$route.params.lobbyId"
+                         :stomp="stompClient"
+            ></LobbyOption>
         </div>
     </div>
 </template>
@@ -72,7 +74,8 @@
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayer,
             }
-            this.$store.dispatch("addNewPlayer", newPlayer);
+            // this.$store.dispatch("addNewPlayer", newPlayer);
+            this.stompClient.send(process.env.VUE_APP_OPTIONS_CREATE, JSON.stringify(newPlayer));
         }
 
     }

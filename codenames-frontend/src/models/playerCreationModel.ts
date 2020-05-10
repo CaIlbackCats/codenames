@@ -1,4 +1,4 @@
 export interface PlayerCreationModel {
-    lobbyName:string,
+    lobbyName: string,
     name: string,
 }
