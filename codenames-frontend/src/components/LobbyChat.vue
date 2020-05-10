@@ -13,11 +13,9 @@
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/messageModel";
-    import SockJS from "sockjs-client";
-    import Stomp, {Client} from "webstomp-client";
+    import {Client} from "webstomp-client";
+    import {RoomModel} from "@/models/roomModel";
 
-    const BASE_URL = process.env.VUE_APP_BASE_URL
-    const ENDPOINT_TO_SUBSCRIBE = process.env.VUE_APP_LISTEN_ENDPOINT;
     const ENDPOINT_TO_SEND = process.env.VUE_APP_SEND_ENDPOINT;
 
     @Component
@@ -27,7 +25,7 @@
         currentPlayer!: string;
         @Prop()
         currentLobby!: string;
-
+        @Prop()
         private stompClient!: Client;
 
         private chatMessageToSend = "";
@@ -38,29 +36,11 @@
         };
 
         mounted() {
-            this.connect();
-        }
-
-        public connect(): void {
-            const socket = new SockJS(BASE_URL);
-            this.stompClient = Stomp.over(socket);
-
-            //kikapcsolja a loggolást
-            this.stompClient.debug = () => {
-                null
-            };
-            this.stompClient.connect({"name": this.currentPlayer}, frame => {
-                this.subscribe();
-            })
-
-        }
-
-        private subscribe() {
-            this.stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE + this.currentLobby, message => {
-                if (message.body) {
-                    this.$store.dispatch("addMessage", message);
-                }
-            });
+            const room: RoomModel = {
+                name: this.currentLobby,
+                stompClient: this.stompClient,
+            }
+            this.$store.dispatch("chatModule/subscribeToChat", room);
         }
 
         private send(message: MessageModel) {
@@ -78,7 +58,7 @@
         }
 
         get chatMessages() {
-            return this.$store.getters.messages;
+            return this.$store.getters["chatModule/messages"];
         }
     }
 </script>

@@ -1,6 +1,8 @@
 import {PlayerModel} from "@/models/playerModel";
+import {Client} from "webstomp-client";
 
 export interface RoomModel {
-    id:number,
-    players: Array<PlayerModel>;
+    stompClient: Client,
+    name: string,
+
 }

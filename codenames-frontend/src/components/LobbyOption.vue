@@ -13,6 +13,7 @@
 
     import {Component, Prop, Vue} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
+    import {Client} from "webstomp-client";
 
 
     @Component
@@ -20,6 +21,9 @@
 
         @Prop()
         private readonly lobbyName!: string;
+
+        @Prop()
+        private stomp!: Client;
 
         constructor() {
             super();
