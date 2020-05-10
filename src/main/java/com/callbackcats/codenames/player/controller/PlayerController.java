@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-//@RestController
-//@RequestMapping("/api/players")
 @Controller
 public class PlayerController {
 
@@ -26,14 +24,6 @@ public class PlayerController {
         this.playerService = playerService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
-
-//    @MessageMapping("/create")
-//    public List<PlayerData> addPlayer(@Payload PlayerCreationData playerCreationData) {
-//        playerService.savePlayer(playerCreationData);
-//        List<PlayerData> playerList = playerService.getPlayerDataListByLobbyName(playerCreationData.getLobbyName());
-//        simpMessagingTemplate.convertAndSend("/topic/options/" + playerCreationData.getLobbyName(), playerList);
-//        return playerList;
-//    }
 
     @MessageMapping("/refresh")
     public List<PlayerData> getAllPlayersByLobby2(@Payload String lobbyName) {
@@ -64,30 +54,4 @@ public class PlayerController {
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
         return modifiedPlayers;
     }
-
-/*    @PostMapping
-    public ResponseEntity<PlayerData> addPlayer(@RequestBody PlayerCreationData playerCreationData) {
-        PlayerData addedPlayer = playerService.savePlayer(playerCreationData);
-
-        return new ResponseEntity<>(addedPlayer, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/role")
-    public ResponseEntity<List<PlayerData>> setPlayerRole(@RequestBody String lobbyName) {
-        List<PlayerData> modifiedPlayers = playerService.setPlayerRole(lobbyName);
-        return new ResponseEntity<>(modifiedPlayers, HttpStatus.OK);
-    }
-
-    @PutMapping("/side")
-    public ResponseEntity<List<PlayerData>> setPlayerSide(@RequestBody String lobbyName) {
-        List<PlayerData> modifiedPlayers = playerService.randomizeTeamSetup(lobbyName);
-        return new ResponseEntity<>(modifiedPlayers, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<PlayerData>> getAllPlayersByLobby(@RequestParam("lobbyName") String lobbyName) {
-        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
-        return new ResponseEntity<>(players, HttpStatus.OK);
-    }*/
-
 }

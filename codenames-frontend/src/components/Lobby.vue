@@ -74,7 +74,6 @@
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayer,
             }
-            // this.$store.dispatch("addNewPlayer", newPlayer);
             this.stompClient.send(process.env.VUE_APP_OPTIONS_CREATE, JSON.stringify(newPlayer));
         }
 

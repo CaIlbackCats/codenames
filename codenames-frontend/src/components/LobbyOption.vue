@@ -29,7 +29,6 @@
 
         constructor() {
             super();
-            //   this.$store.dispatch("fetchPlayers", this.lobbyName);
         }
 
         mounted() {
@@ -42,12 +41,10 @@
         }
 
         public randomizeRoles(): void {
-          //   this.$store.dispatch("setPlayerRole", this.lobbyName);
             this.stomp.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, this.lobbyName);
         }
 
         public randomizeSide(): void {
-           //  this.$store.dispatch("setPlayerSide", this.lobbyName);
             this.stomp.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, this.lobbyName);
         }
 
