@@ -23,7 +23,6 @@
 
         constructor() {
             super();
-            console.log("teszt: "+this.lobbyName);
             this.$store.dispatch("fetchPlayers", this.lobbyName);
         }
 

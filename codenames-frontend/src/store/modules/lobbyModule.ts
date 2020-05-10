@@ -3,7 +3,7 @@ import {LobbyModel} from "@/models/lobbyModel";
 import router from "@/router";
 import axios from 'axios';
 
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = process.env.VUE_APP_BASE_URL;
 
 @Module
 export default class LobbyModule extends VuexModule {

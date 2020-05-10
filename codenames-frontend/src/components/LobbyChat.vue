@@ -30,13 +30,11 @@
 
         private stompClient!: Client;
 
-        private chatMessages: Array<MessageModel> = [];
         private chatMessageToSend = "";
 
 
         constructor() {
             super();
-            //  this.chatMessages = this.$store.getters.messages
         };
 
         mounted() {
@@ -44,9 +42,13 @@
         }
 
         public connect(): void {
-            //  this.$store.dispatch("connect", this.currentLobby);
             const socket = new SockJS(BASE_URL);
             this.stompClient = Stomp.over(socket);
+
+            //kikapcsolja a loggolást
+            this.stompClient.debug = () => {
+                null
+            };
             this.stompClient.connect({"name": this.currentPlayer}, frame => {
                 this.subscribe();
             })
@@ -56,8 +58,7 @@
         private subscribe() {
             this.stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE + this.currentLobby, message => {
                 if (message.body) {
-                    const messageResult: MessageModel = JSON.parse(message.body);
-                    this.chatMessages.push(messageResult);
+                    this.$store.dispatch("addMessage", message);
                 }
             });
         }
@@ -68,26 +69,17 @@
 
 
         public sendChatMessage(): void {
-            //todo remove randomId and hardcoded name
-            const id: number = this.generateId();
             const msgModel: MessageModel = {
-                id: id,
                 name: this.currentPlayer,
                 message: this.chatMessageToSend,
                 lobbyName: this.currentLobby,
             }
-            //   this.$store.dispatch("sendMsg", msgModel);
             this.send(msgModel);
         }
 
-        private generateId(): number {
-            return Math.random() * 1000;
+        get chatMessages() {
+            return this.$store.getters.messages;
         }
-
-        //    get chatMessages(): Array<MessageModel> {
-        //         return this.$store.getters.messages;
-        //     }
-
     }
 </script>
 

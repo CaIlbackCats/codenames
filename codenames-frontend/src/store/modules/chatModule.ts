@@ -1,15 +1,7 @@
 import {Action, Module, Mutation, MutationAction, VuexModule} from "vuex-module-decorators";
 import {MessageModel} from "@/models/messageModel";
 import SockJS from "sockjs-client";
-import Stomp from "webstomp-client";
-
-//const BASE_URL = "http://localhost:8080/api";
-const BASE_URL = process.env.VUE_APP_BASE_URL
-const ENDPOINT_TO_SUBSCRIBE = process.env.VUE_APP_LISTEN_ENDPOINT;
-const ENDPOINT_TO_SEND = process.env.VUE_APP_SEND_ENDPOINT;
-const socket = new SockJS(BASE_URL);
-const stompClient = Stomp.over(socket);
-
+import Stomp, {Message} from "webstomp-client";
 
 @Module
 export default class ChatModule extends VuexModule {
@@ -18,26 +10,15 @@ export default class ChatModule extends VuexModule {
 
 
     @Mutation
-    private addItem(message: MessageModel): void {
+    private ADD_MESSAGE(message: MessageModel): void {
         this.chatMessages.push(message);
     };
 
-    @Action
-    public connect(lobbyName: string) {
-        stompClient.connect({}, (frame) => {
-            stompClient.subscribe(ENDPOINT_TO_SUBSCRIBE + lobbyName, message => {
-                if (message.body) {
-                    const messageResult: MessageModel = JSON.parse(message.body);
-                    this.context.commit('addItem', messageResult)
-                }
-            });
-        });
+    @Action({commit: "ADD_MESSAGE", rawError: true})
+    public addMessage(message: Message) {
+        const messageResult: MessageModel = JSON.parse(message.body);
+        return messageResult;
     };
-
-    @Action
-    public sendMsg(chatMessage: MessageModel): void {
-        stompClient.send(ENDPOINT_TO_SEND, JSON.stringify(chatMessage), {});
-    }
 
     get messages() {
         return this.chatMessages;
