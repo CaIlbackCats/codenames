@@ -4,9 +4,7 @@
         <!--        <button @click="addPlayer">Ember Hozzáadás</button>-->
         <button @click="randomizeRoles">Véletlenszerű szerep kiosztás</button>
         <button @click="randomizeSide">Véletlenszerű csapat kiosztás</button>
-        <div v-for="player in players" :key="player.id">
-            {{player.name}}-{{player.role}}-{{player.side}}
-        </div>
+
     </div>
 
 </template>
@@ -31,14 +29,6 @@
             super();
         }
 
-        mounted() {
-            const room: RoomModel = {
-                name: this.lobbyName,
-                stompClient: this.stomp,
-            }
-            this.$store.dispatch("subscribeToOptions", room);
-            this.stomp.send(process.env.VUE_APP_OPTIONS_REFRESH, this.lobbyName);
-        }
 
         public randomizeRoles(): void {
             this.stomp.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, this.lobbyName);
@@ -47,11 +37,6 @@
         public randomizeSide(): void {
             this.stomp.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, this.lobbyName);
         }
-
-        get players(): Array<PlayerModel> {
-            return this.$store.getters["getPlayers"];
-        }
-
     }
 </script>
 

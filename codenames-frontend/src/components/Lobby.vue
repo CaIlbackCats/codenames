@@ -2,16 +2,37 @@
     <div>
         <div v-if="!playerSelected">
             <label for="current-player">Add meg a játékos neved</label>
-            <input id="current-player" type="text" v-model="currentPlayer">
+            <input id="current-player" type="text" v-model="currentPlayerName">
             <button @click="createPlayer">Kész!</button>
         </div>
         <div v-if="playerSelected">
-            <input class="input" type="text" readonly :value="path"/>
-            <button type="button" @click="copyPath">Szoba cím másolása</button>
-            <lobby-chat :current-player="currentPlayer"
+            <input class="input" type="text" readonly
+                   :value="path"/>
+            <button type="button"
+                    @click="copyPath">Szoba cím másolása
+            </button>
+            <div v-for="player in players"
+                 :key="player.id">
+                <button v-if="player.name!==currentPlayerName"
+                        @click="initKickPlayer(player)">Kidob
+                </button>
+                {{player.name}}-{{player.role}}-{{player.side}}
+            </div>
+
+
+            <KickPlayer v-if="showKickWindow"
+                        :stomp-client="stompClient"
+                        :kick-init-player="currentPlayer"
+                        :player-to-kick="playerToKick"
+                        :show-window="showKickWindow"
+            ></KickPlayer>
+
+
+            <lobby-chat :current-player="currentPlayerName"
                         :current-lobby="this.$route.params.lobbyId"
                         :stomp-client="stompClient"></lobby-chat>
-            <LobbyOption :lobby-name="this.$route.params.lobbyId"
+            <LobbyOption v-if="currentPlayer.lobbyOwner"
+                         :lobby-name="this.$route.params.lobbyId"
                          :stomp="stompClient"
             ></LobbyOption>
         </div>
@@ -25,26 +46,27 @@
     import {PlayerCreationModel} from "@/models/playerCreationModel";
     import SockJS from "sockjs-client";
     import Stomp, {Client} from "webstomp-client";
+    import {PlayerModel} from "@/models/playerModel";
+    import {RoomModel} from "@/models/roomModel";
+    import KickPlayer from "@/components/KickPlayer.vue";
 
     @Component({
-        components: {LobbyOption, LobbyChat}
+        components: {KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
 
-        private path = "http://localhost:4200";
-        private currentPlayer = "";
-        private playerSelected = false;
-
         private stompClient!: Client;
+        private path = "http://localhost:4200";
+        private currentPlayerName = "";
+        private playerSelected = false;
+        private playerToKick!: PlayerModel;
+        private showKickWindow = false;
 
         constructor() {
             super();
         };
 
         mounted() {
-            // if (this.$store.lobby !== undefined) {
-            //     dispatch('joinLobby')
-            // }
             this.path += this.$route.path;
             this.connect();
         };
@@ -57,26 +79,63 @@
             // this.stompClient.debug = () => {
             //     null
             // };
-            this.stompClient.connect({"name": this.currentPlayer}, frame => {
-                // this.subscribe();
-            })
+            this.stompClient.connect({"name": this.currentPlayerName}, frame => {
+                this.subscribeToOptions();
+            });
+        }
 
+        private subscribeToOptions() {
+            const room: RoomModel = {
+                name: this.$route.params.lobbyId,
+                stompClient: this.stompClient,
+            }
+            this.$store.dispatch("subscribeToOptions", room);
+        }
+
+        private subscribeToPlayerChange() {
+            const room: RoomModel = {
+                name: this.$route.params.lobbyId,
+                stompClient: this.stompClient,
+                playerName: this.currentPlayerName,
+            }
+            this.$store.dispatch("subscribeToPlayerChange", room);
         }
 
         public copyPath(): void {
             this.$copyText(this.path);
         }
 
-        public createPlayer() {
+        public createPlayer(): void {
             this.playerSelected = !this.playerSelected;
 
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
-                name: this.currentPlayer,
+                name: this.currentPlayerName,
             }
             this.stompClient.send(process.env.VUE_APP_OPTIONS_CREATE, JSON.stringify(newPlayer));
+            this.subscribeToPlayerChange();
+
         }
 
+        public initKickPlayer(player: PlayerModel): void {
+            this.playerToKick = player;
+            this.showKickWindow = true;
+            if (this.currentPlayer.lobbyOwner) {
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, this.currentPlayer.name);
+            } else {
+                this.players.filter(player => player.name !== this.playerToKick.name).forEach(player => {
+                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, player.name);
+                });
+            }
+        }
+
+        get players(): Array<PlayerModel> {
+            return this.$store.getters["getPlayers"];
+        }
+
+        get currentPlayer(): PlayerModel {
+            return this.$store.getters["getCurrentPlayer"];
+        }
     }
 </script>
 
