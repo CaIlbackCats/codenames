@@ -2,9 +2,11 @@ package com.callbackcats.codenames.player.service;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
+import com.callbackcats.codenames.player.domain.ActionType;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
+import com.callbackcats.codenames.player.dto.ActionData;
 import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import com.callbackcats.codenames.player.dto.PlayerRemovalData;
@@ -101,28 +103,47 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
 
-    public String removePlayerByVote(PlayerRemovalData playerRemovalData) {
+    public ActionData removePlayerByVote(PlayerRemovalData playerRemovalData) {
         Player player = findPlayerById(playerRemovalData.getPlayerToRemoveId());
         Lobby lobby = player.getLobby();
+        ActionData actionData = null;
         int playersInLobby = lobby.getPlayerList().size();
-        if (playerRemovalData.getVoteInitCount() > playersInLobby / 2) {
+        if (player.getKickVoteCount() > playersInLobby / 2) {
             removePlayer(player);
+            actionData = new ActionData(ActionType.GET_KICKED, new PlayerData(player));
+        } else {
+            //player.setKickVoteCount(0);
+            playerRepository.save(player);
         }
-        return lobby.getName();
+        return actionData;
     }
 
-    public String removePlayerByOwner(PlayerRemovalData playerRemovalData) {
+    public PlayerData removePlayerByOwner(PlayerRemovalData playerRemovalData) {
         Player owner = findPlayerById(playerRemovalData.getOwnerId());
         Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
         if (owner.getLobbyOwner()) {
             removePlayer(playerToRemove);
         }
-        return owner.getLobby().getName();
+        return new PlayerData(playerToRemove);
+    }
+
+
+    public void setPlayerKickScore(PlayerRemovalData playerRemovalData) {
+        if (playerRemovalData.getVote()) {
+            Player foundPlayer = findPlayerById(playerRemovalData.getPlayerToRemoveId());
+            Integer kickVoteCount = foundPlayer.getKickVoteCount();
+            foundPlayer.setKickVoteCount(++kickVoteCount);
+            playerRepository.save(foundPlayer);
+        }
     }
 
     private void removePlayer(Player player) {
         player.setLobby(null);
         playerRepository.delete(player);
+    }
+
+    public PlayerData findPlayerDataById(Long id) {
+        return new PlayerData(findPlayerById(id));
     }
 
     private Player findPlayerById(Long id) {

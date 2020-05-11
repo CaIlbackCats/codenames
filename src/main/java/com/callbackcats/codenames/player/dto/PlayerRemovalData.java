@@ -11,5 +11,5 @@ public class PlayerRemovalData {
 
     private Long ownerId;
     private Long playerToRemoveId;
-    private Integer voteInitCount;
+    private Boolean vote;
 }

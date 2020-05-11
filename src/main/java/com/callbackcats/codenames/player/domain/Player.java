@@ -39,10 +39,14 @@ public class Player {
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
+    @Column(name = "kick_vote")
+    private Integer kickVoteCount;
+
     public Player(PlayerCreationData playerCreationData) {
-      //  this.lobbyOwner = playerCreationData.getLobbyOwner();
+        //  this.lobbyOwner = playerCreationData.getLobbyOwner();
         this.name = playerCreationData.getName();
         this.role = RoleType.NOT_SELECTED;
         this.side = SideType.NOT_SELECTED;
+        this.kickVoteCount = 0;
     }
 }
