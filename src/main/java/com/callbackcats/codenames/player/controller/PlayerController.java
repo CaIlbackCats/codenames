@@ -39,6 +39,7 @@ public class PlayerController {
 
     @MessageMapping("/create")
     public List<PlayerData> registerNewPlayer(@Payload PlayerCreationData playerCreationData) {
+        log.info("Player creation requested");
         PlayerData playerData = playerService.savePlayer(playerCreationData);
         String lobbyName = playerCreationData.getLobbyName();
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
@@ -50,6 +51,7 @@ public class PlayerController {
 
     @MessageMapping("/role")
     public List<PlayerData> setPlayerRole(@Payload String lobbyName) {
+        log.info("Player random role setting requested");
         List<PlayerData> modifiedPlayers = playerService.setPlayerRole(lobbyName);
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
         return modifiedPlayers;
@@ -57,6 +59,7 @@ public class PlayerController {
 
     @MessageMapping("/side")
     public List<PlayerData> setPlayerSide(@Payload String lobbyName) {
+        log.info("Player randomize role and side requested");
         List<PlayerData> modifiedPlayers = playerService.randomizeTeamSetup(lobbyName);
         simpMessagingTemplate.convertAndSend("/topic/options/" + lobbyName, modifiedPlayers);
         return modifiedPlayers;
@@ -65,11 +68,13 @@ public class PlayerController {
 
     @MessageMapping("/kickCount")
     public void countKickVotes(@Payload PlayerRemovalData playerRemovalData) {
+        log.info("Player kick count modification requested");
         playerService.setPlayerKickScore(playerRemovalData);
     }
 
     @MessageMapping("/kickByVote")
     public List<PlayerData> removePlayerByVote(@Payload PlayerRemovalData playerRemovalData) {
+        log.info("Player kick by vote requested");
         ActionData actionData = playerService.removePlayerByVote(playerRemovalData);
         if (actionData != null) {
             PlayerData playerData = actionData.getCurrentPlayer();
@@ -83,6 +88,7 @@ public class PlayerController {
 
     @MessageMapping("/kickByOwner")
     public List<PlayerData> removePlayerByOwner(@Payload PlayerRemovalData playerRemovalData) {
+        log.info("Player kick by lobby owner requested");
         PlayerData removedPlayer = playerService.removePlayerByOwner(playerRemovalData);
         ActionData actionData = new ActionData(ActionType.GET_KICKED);
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
@@ -95,6 +101,7 @@ public class PlayerController {
 
     @MessageMapping("/kickInit")
     public ActionData initKick(@Payload String playerName) {
+        log.info("Initiate kicking requested");
         ActionData actionData = new ActionData(ActionType.INIT_KICK);
         simpMessagingTemplate.convertAndSend("/player/change/" + playerName, actionData);
         return actionData;

@@ -11,6 +11,7 @@ import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import com.callbackcats.codenames.player.dto.PlayerRemovalData;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class PlayerService {
 
     private static final int MAX_SPYMASTER = 2;
@@ -97,6 +99,7 @@ public class PlayerService {
     }
 
     public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
+        log.info("Get players in the given lobby:\t"+lobbyName);
         return getPlayersByLobbyName(lobbyName)
                 .stream()
                 .map(PlayerData::new)
@@ -111,6 +114,7 @@ public class PlayerService {
         if (player.getKickVoteCount() > playersInLobby / 2) {
             removePlayer(player);
             actionData = new ActionData(ActionType.GET_KICKED, new PlayerData(player));
+            log.info("Remove player:\t" + player.getId() + "\tby vote:\t" + player.getKickVoteCount());
         } else {
             //player.setKickVoteCount(0);
             playerRepository.save(player);
@@ -122,11 +126,11 @@ public class PlayerService {
         Player owner = findPlayerById(playerRemovalData.getOwnerId());
         Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
         if (owner.getLobbyOwner()) {
+            log.info("Remove player:\t" + playerToRemove.getId() + "\tby owner:\t" + owner.getId());
             removePlayer(playerToRemove);
         }
         return new PlayerData(playerToRemove);
     }
-
 
     public void setPlayerKickScore(PlayerRemovalData playerRemovalData) {
         if (playerRemovalData.getVote()) {
@@ -134,16 +138,18 @@ public class PlayerService {
             Integer kickVoteCount = foundPlayer.getKickVoteCount();
             foundPlayer.setKickVoteCount(++kickVoteCount);
             playerRepository.save(foundPlayer);
+            log.info("Set player kick score:\t" + kickVoteCount);
         }
+    }
+
+    public PlayerData findPlayerDataById(Long id) {
+        log.info("Find playerdata by id:\t" + id);
+        return new PlayerData(findPlayerById(id));
     }
 
     private void removePlayer(Player player) {
         player.setLobby(null);
         playerRepository.delete(player);
-    }
-
-    public PlayerData findPlayerDataById(Long id) {
-        return new PlayerData(findPlayerById(id));
     }
 
     private Player findPlayerById(Long id) {
