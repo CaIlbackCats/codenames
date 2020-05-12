@@ -63,23 +63,17 @@
                 this.ownerKick(false);
             } else {
                 const playerRemovalModel: PlayerRemovalModel = {
+                    ownerId: this.kickInitPlayer.id,
                     playerToRemoveId: this.playerToKick.id,
-                    vote: true,
                 }
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_BY_VOTE, JSON.stringify(playerRemovalModel));
             }
         }
 
-        public hidePopPup(): void {
-            if (this.kickWindow) {
-                this.$store.dispatch("showKickWindow", false);
-            }
-        }
-
         public kickPlayer(vote: boolean): void {
             if (this.kickInitPlayer.lobbyOwner) {
-                this.ownerKick(vote);
                 clearInterval(this.timer);
+                this.ownerKick(vote);
             } else {
                 const playerRemovalModel: PlayerRemovalModel = {
                     playerToRemoveId: this.playerToKick.id,
@@ -99,12 +93,17 @@
             this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_BY_OWNER, JSON.stringify(playerRemovalModel));
         }
 
+        public hidePopPup(): void {
+            if (this.kickWindow) {
+                this.$store.dispatch("showKickWindow", false);
+            }
+        }
+
         private decreaseCounter(): void {
             if (this.counter != 0) {
                 this.counter -= 1;
             }
         }
-
 
         get kickWindow(): boolean {
             return this.$store.getters["getInitKickWindow"]
