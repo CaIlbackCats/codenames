@@ -34,6 +34,7 @@ export default class PlayerModule extends VuexModule {
     @Mutation
     private SHOW_KICK_WINDOW(show: boolean): void {
         this.initKickWindow = show;
+        console.log(this.initKickWindow);
     }
 
     @Mutation

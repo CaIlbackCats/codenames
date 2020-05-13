@@ -20,11 +20,10 @@
             </div>
 
 
-            <KickPlayer v-if="showKickWindow"
+            <KickPlayer
                         :stomp-client="stompClient"
                         :kick-init-player="currentPlayer"
                         :player-to-kick="playerToKick"
-                        :show-window="showKickWindow"
             ></KickPlayer>
 
 
@@ -59,8 +58,14 @@
         private path = "http://localhost:4200";
         private currentPlayerName = "";
         private playerSelected = false;
-        private playerToKick!: PlayerModel;
-        private showKickWindow = false;
+        private playerToKick: PlayerModel ={
+            id: -1,
+            name: "",
+            lobbyOwner: false,
+            role: "",
+            side: "",
+        };
+      //  private showKickWindow = false;
 
         constructor() {
             super();
@@ -119,7 +124,7 @@
 
         public initKickPlayer(player: PlayerModel): void {
             this.playerToKick = player;
-            this.showKickWindow = true;
+           // this.showKickWindow = true;
             if (this.currentPlayer.lobbyOwner) {
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, this.currentPlayer.name);
             } else {
