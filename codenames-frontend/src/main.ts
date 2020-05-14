@@ -5,6 +5,12 @@ import store from "./store"
 import 'bootstrap/dist/css/bootstrap.css';
 import VueClipboard from "vue-clipboard2";
 //import 'bootstrap-vue/dist/bootstrap-vue.css';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+
+// Install BootstrapVue
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
 
 Vue.config.productionTip = false;
 Vue.use(VueClipboard);

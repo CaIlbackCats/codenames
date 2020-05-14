@@ -31,7 +31,7 @@ export default class LobbyModule extends VuexModule {
     @Mutation
     private CREATE_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel;
-          router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
+        router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
     }
 
     @Action({commit: 'setLobby'})
