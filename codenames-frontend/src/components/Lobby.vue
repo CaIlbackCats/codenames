@@ -8,6 +8,7 @@
                 <b-input-group size="md">
                     <b-form-input id="current-player"
                                   type="text"
+                                  maxlength="10"
                                   placeholder="Enter your name"
                                   v-on:keyup.enter="createPlayer"
                                   v-model="currentPlayerName">
@@ -15,41 +16,67 @@
                     <b-input-group-append>
                         <b-button squared
                                   type="submit"
-                                  @click="createPlayer">Ok</b-button>
+                                  @click="createPlayer">Ok
+                        </b-button>
                     </b-input-group-append>
                 </b-input-group>
             </div>
         </template>
-        <div v-else>
-            <input class="input" type="text" readonly
-                   :value="path"/>
-            <button type="button"
-                    @click="copyPath">Szoba cím másolása
-            </button>
-            <div v-for="player in players"
-                 :key="player.id">
-                <button v-if="player.name!==currentPlayerName"
-                        type="button"
-                        @click="initKickPlayer(player)">Kidob
-                </button>
-                {{player.name}}-{{player.role}}-{{player.side}}
+
+        <div v-else class="p-5 row">
+
+            <div class="col-sm-12 col-md-6">
+                <lobby-chat :current-player="currentPlayerName"
+                            :current-lobby="this.$route.params.lobbyId"
+                            :stomp-client="stompClient"></lobby-chat>
+                <LobbyOption v-if="currentPlayer.lobbyOwner"
+                             :lobby-name="this.$route.params.lobbyId"
+                             :stomp="stompClient"
+                ></LobbyOption>
             </div>
 
+            <div class="players-div col-sm-12 col-md-6 text-left">
+                <div class="players-background-div"></div>
+                <div class="players-list-div">
+                    <div v-for="player in players"
+                         :key="player.id">
+                        <label>{{player.name}}-{{player.role}}-{{player.side}}</label>
+                        <b-button squared v-if="player.name!==currentPlayerName"
+                                  type="button"
+                                  size="sm"
+                                  @click="initKickPlayer(player)">Kick
+                        </b-button>
+                    </div>
+                </div>
+                <KickPlayer
+                        :stomp-client="stompClient"
+                        :kick-init-player="currentPlayer"
+                        :player-to-kick="playerToKick"
+                ></KickPlayer>
+            </div>
 
-            <KickPlayer
-                    :stomp-client="stompClient"
-                    :kick-init-player="currentPlayer"
-                    :player-to-kick="playerToKick"
-            ></KickPlayer>
+            <div class="col-sm-12">
+                <b-input-group size="sm"
+                               class="col-sm-12
+                           col-md-6 col-lg-4
+                           offset-md-3 offset-lg-4
+                           fixed-bottom
+                           pb-5">
+                    <b-form-input id="current-player"
+                                  type="text"
+                                  readonly
+                                  :value="path"
+                                  v-on:keyup.enter="createPlayer">
+                    </b-form-input>
+                    <b-input-group-append>
+                        <b-button squared
+                                  type="button"
+                                  @click="copyPath">Copy link
+                        </b-button>
+                    </b-input-group-append>
+                </b-input-group>
+            </div>
 
-
-            <lobby-chat :current-player="currentPlayerName"
-                        :current-lobby="this.$route.params.lobbyId"
-                        :stomp-client="stompClient"></lobby-chat>
-            <LobbyOption v-if="currentPlayer.lobbyOwner"
-                         :lobby-name="this.$route.params.lobbyId"
-                         :stomp="stompClient"
-            ></LobbyOption>
         </div>
     </div>
 </template>
@@ -184,6 +211,35 @@
         width: 500px
     }
 
+    .players-background-div {
+        height: 100%;
+        width: 100%;
+        background-color: white;
+        position: absolute;
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .players-div {
+        height: 60vh;
+    }
+
+    .players-list-div {
+        height: 100%;
+        width: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        position: absolute;
+        z-index: 1;
+    }
+
+    .players-list-div::-webkit-scrollbar {
+        display: none;
+    }
+    .players-list-div {
+        -ms-overflow-style: none;
+    }
+
     label {
         color: white;
     }
@@ -195,7 +251,6 @@
         width: 100vw;
         height: 100vh;
     }
-
 
     img {
         max-width: 75%;

@@ -1,7 +1,7 @@
 <template>
     <div class="col-sm-12 col-md-6 text-left">
         <input id="chat-message" type="text" v-model="chatMessageToSend">
-        <button @click="sendChatMessage">Küldés</button>
+        <button @click="sendChatMessage">Send</button>
         <div class="message-window">
             <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
                 {{chatMessage.name}}:{{chatMessage.message}}
