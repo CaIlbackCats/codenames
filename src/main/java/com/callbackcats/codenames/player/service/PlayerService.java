@@ -99,37 +99,40 @@ public class PlayerService {
     }
 
     public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
-        log.info("Get players in the given lobby:\t"+lobbyName);
+        log.info("Get players in the given lobby:\t" + lobbyName);
         return getPlayersByLobbyName(lobbyName)
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
     }
 
-    public ActionData removePlayerByVote(PlayerRemovalData playerRemovalData) {
+    public Boolean isPlayerRemovedByVote(PlayerRemovalData playerRemovalData) {
         Player player = findPlayerById(playerRemovalData.getPlayerToRemoveId());
         Lobby lobby = player.getLobby();
-        ActionData actionData = null;
+        boolean removed = false;
         int playersInLobby = lobby.getPlayerList().size();
         if (player.getKickVoteCount() > playersInLobby / 2) {
             removePlayer(player);
-            actionData = new ActionData(ActionType.GET_KICKED, new PlayerData(player));
+            // actionData = new ActionData(ActionType.GET_KICKED, new PlayerData(player));
             log.info("Remove player:\t" + player.getId() + "\tby vote:\t" + player.getKickVoteCount());
+            removed = true;
         } else {
-            //player.setKickVoteCount(0);
+            player.setKickVoteCount(0);
             playerRepository.save(player);
         }
-        return actionData;
+        return removed;
     }
 
-    public PlayerData removePlayerByOwner(PlayerRemovalData playerRemovalData) {
+    public Boolean removePlayerByOwner(PlayerRemovalData playerRemovalData) {
         Player owner = findPlayerById(playerRemovalData.getOwnerId());
         Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
+        boolean removed = false;
         if (owner.getLobbyOwner()) {
             log.info("Remove player:\t" + playerToRemove.getId() + "\tby owner:\t" + owner.getId());
             removePlayer(playerToRemove);
+            removed = true;
         }
-        return new PlayerData(playerToRemove);
+        return removed;
     }
 
     public void setPlayerKickScore(PlayerRemovalData playerRemovalData) {

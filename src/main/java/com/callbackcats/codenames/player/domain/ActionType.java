@@ -1,7 +1,8 @@
 package com.callbackcats.codenames.player.domain;
 
 public enum ActionType {
-    SET_CURRENT_PLAYER,
+    UPDATE_LIST,
     GET_KICKED,
     INIT_KICK,
+    CREATE_PLAYER,
 }

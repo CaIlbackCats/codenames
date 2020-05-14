@@ -9,19 +9,6 @@ const BASE_URL = process.env.VUE_APP_BASE_URL;
 export default class LobbyModule extends VuexModule {
     lobby?: LobbyModel
 
-    // @Mutation
-    // private setLobby(id: string) {
-    //     this.lobby = { id }
-    // }
-
-    // @Action
-    // public async createLobby() {
-    //     // hhit backend and get back the ID of the lobby (async)
-    //     const id = createUUID()
-    //     this.context.commit('setLobby', id)
-    //     return router.push({name: "Lobby", params: {lobbyId: id}})
-    // }
-
     @Action({commit: "CREATE_LOBBY", rawError: true})
     public async createLobby(): Promise<string> {
         const response = await axios.get(BASE_URL + "/lobby")

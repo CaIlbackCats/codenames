@@ -21,9 +21,9 @@
 
 
             <KickPlayer
-                        :stomp-client="stompClient"
-                        :kick-init-player="currentPlayer"
-                        :player-to-kick="playerToKick"
+                    :stomp-client="stompClient"
+                    :kick-init-player="currentPlayer"
+                    :player-to-kick="playerToKick"
             ></KickPlayer>
 
 
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import LobbyChat from "@/components/LobbyChat.vue";
     import LobbyOption from "@/components/LobbyOption.vue";
     import {PlayerCreationModel} from "@/models/playerCreationModel";
@@ -48,6 +48,7 @@
     import {PlayerModel} from "@/models/playerModel";
     import {RoomModel} from "@/models/roomModel";
     import KickPlayer from "@/components/KickPlayer.vue";
+    import {PlayerRemovalModel} from "@/models/playerRemovalModel";
 
     @Component({
         components: {KickPlayer, LobbyOption, LobbyChat}
@@ -58,14 +59,26 @@
         private path = "http://localhost:4200";
         private currentPlayerName = "";
         private playerSelected = false;
-        private playerToKick: PlayerModel ={
+        private playerToKick: PlayerModel = {
             id: -1,
             name: "",
             lobbyOwner: false,
             role: "",
             side: "",
         };
-      //  private showKickWindow = false;
+
+        @Watch("currentPlayer")
+        private subscribeToPlayerChange() {
+            console.log(this.currentPlayer)
+            const room: RoomModel = {
+                name: this.$route.params.lobbyId,
+                stompClient: this.stompClient,
+                playerId: this.currentPlayer.id,
+            }
+            this.$store.dispatch("subscribeToPlayerChange", room);
+        }
+
+        //  private showKickWindow = false;
 
         constructor() {
             super();
@@ -85,26 +98,18 @@
             //     null
             // };
             this.stompClient.connect({"name": this.currentPlayerName}, frame => {
-                this.subscribeToOptions();
+                this.subscribeToLobby();
             });
         }
 
-        private subscribeToOptions() {
+        private subscribeToLobby() {
             const room: RoomModel = {
                 name: this.$route.params.lobbyId,
                 stompClient: this.stompClient,
             }
-            this.$store.dispatch("subscribeToOptions", room);
+            this.$store.dispatch("subscribeToLobby", room);
         }
 
-        private subscribeToPlayerChange() {
-            const room: RoomModel = {
-                name: this.$route.params.lobbyId,
-                stompClient: this.stompClient,
-                playerName: this.currentPlayerName,
-            }
-            this.$store.dispatch("subscribeToPlayerChange", room);
-        }
 
         public copyPath(): void {
             this.$copyText(this.path);
@@ -118,19 +123,32 @@
                 name: this.currentPlayerName,
             }
             this.stompClient.send(process.env.VUE_APP_OPTIONS_CREATE, JSON.stringify(newPlayer));
-            this.subscribeToPlayerChange();
+            //  this.subscribeToPlayerChange();
 
         }
 
         public initKickPlayer(player: PlayerModel): void {
             this.playerToKick = player;
-           // this.showKickWindow = true;
+            // this.showKickWindow = true;
             if (this.currentPlayer.lobbyOwner) {
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, this.currentPlayer.name);
+                const playerRemovalModel: PlayerRemovalModel = {
+                    kickType: "OWNER",
+                    ownerId: this.currentPlayer.id,
+                }
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
             } else {
-                this.players.filter(player => player.name !== this.playerToKick.name).forEach(player => {
-                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, player.name);
-                });
+
+                const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
+                const playerRemovalModel: PlayerRemovalModel = {
+                    kickType: "VOTE",
+                    ownerId: this.currentPlayer.id,
+                    votingPlayers: votingPlayers,
+                }
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
+
+                //   this.players.filter(player => player.name !== this.playerToKick.name).forEach(player => {
+                //       this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, player.name);
+                //   });
             }
         }
 

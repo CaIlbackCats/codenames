@@ -4,6 +4,7 @@ import {Message} from "webstomp-client";
 import {RoomModel} from "@/models/roomModel";
 import {ActionModel} from "@/models/actionModel";
 import router from "@/router";
+import {PlayerRemovalModel} from "@/models/playerRemovalModel";
 
 
 @Module
@@ -19,26 +20,36 @@ export default class PlayerModule extends VuexModule {
         side: "",
     };
 
+    private playerRemovalInfo: PlayerRemovalModel = {
+        ownerId: -1,
+        vote: false,
+        playerToRemoveId: -1,
+        kickType: "",
+    };
+
     private initKickWindow = false;
 
     @Mutation
-    private REFRESH_LIST(player: Message): void {
-        this.players = JSON.parse(player.body);
-    }
-
-    @Mutation
-    private SET_CURRENT_PLAYER(player: PlayerModel): void {
-        this.currentPlayer = player;
+    private ADD_PLAYER(player: PlayerModel): void {
+        console.log("------------------------")
+        console.log(this.currentPlayer)
+        if (this.currentPlayer.id === -1) {
+            this.currentPlayer = player;
+        }
     }
 
     @Mutation
     private SHOW_KICK_WINDOW(show: boolean): void {
         this.initKickWindow = show;
-        console.log(this.initKickWindow);
     }
 
     @Mutation
-    private REMOVE_CURRENT_PLAYER() {
+    private UPDATE_LIST(players: Array<PlayerModel>): void {
+        this.players = players;
+    }
+
+    @Mutation
+    private REMOVE_CURRENT_PLAYER(): void {
         this.currentPlayer = {
             id: -1,
             name: "",
@@ -46,39 +57,69 @@ export default class PlayerModule extends VuexModule {
             role: "",
             side: "",
         }
+        console.log("------------------------")
+        console.log(this.currentPlayer)
         router.push({name: "Home"});
+    }
 
+    @Mutation
+    private SET_PLAYER_REMOVAL(playerRemoval: PlayerRemovalModel): void {
+        this.playerRemovalInfo = playerRemoval;
+    }
+
+    @Mutation
+    private UPDATE_PLAYER_REMOVAL_INFO(playerRemovalModel: PlayerRemovalModel): void {
+        this.playerRemovalInfo.ownerId = playerRemovalModel.ownerId;
+        this.playerRemovalInfo.playerToRemoveId = playerRemovalModel.playerToRemoveId;
+        this.playerRemovalInfo.vote = playerRemovalModel.vote;
     }
 
     @Action({rawError: true})
-    public subscribeToOptions(roomModel: RoomModel): void {
+    public subscribeToLobby(roomModel: RoomModel): void {
         const client = roomModel.stompClient;
-        client.subscribe(process.env.VUE_APP_OPTIONS + roomModel.name, message => {
-            if (message.body) {
-                this.context.commit("REFRESH_LIST", message);
-            }
-        });
+        client.subscribe(process.env.VUE_APP_OPTIONS + roomModel.name,
+            message => {
+                if (message.body) {
+                    this.context.dispatch("executeLobbyChange", message);
+                }
+            },
+            {id: "lobby"});
+    };
+
+    @Action({rawError: true})
+    public executeLobbyChange(message: Message): void {
+        const messageResult: ActionModel = JSON.parse(message.body);
+        switch (messageResult.actionToDo) {
+            case "CREATE_PLAYER":
+                this.context.commit("ADD_PLAYER", messageResult.currentPlayer)
+                break;
+            case "UPDATE_LIST":
+                this.context.commit("UPDATE_LIST", messageResult.playerList)
+                break;
+        }
     }
 
     @Action({rawError: true})
     public subscribeToPlayerChange(roomModel: RoomModel): void {
         const client = roomModel.stompClient;
-        client.subscribe(process.env.VUE_APP_PLAYER_CHANGE + roomModel.playerName, message => {
-            if (message.body) {
-                this.context.dispatch("executePlayerChange", message);
-            }
-        });
+        client.subscribe(process.env.VUE_APP_PLAYER_CHANGE + roomModel.name + "/" + roomModel.playerId,
+            message => {
+                if (message.body) {
+                    this.context.dispatch("executePlayerChange", message);
+                }
+            },
+            {
+                id: "player",
+            });
     };
 
     @Action
     public executePlayerChange(message: Message): void {
         const messageResult: ActionModel = JSON.parse(message.body);
         switch (messageResult.actionToDo) {
-            case "SET_CURRENT_PLAYER":
-                this.context.dispatch("executeSetCurrentPlayer", messageResult);
-                break;
             case "INIT_KICK":
                 this.context.dispatch("showKickWindow", true);
+                this.context.dispatch("setPlayerRemoval", messageResult.playerRemoval)
                 break;
             case "GET_KICKED":
                 this.context.dispatch("executeGetKicked");
@@ -87,19 +128,24 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({commit: "SHOW_KICK_WINDOW", rawError: true})
-    public showKickWindow(show: boolean) {
+    public showKickWindow(show: boolean): boolean {
         return show;
     }
 
-    @Action({commit: "SET_CURRENT_PLAYER", rawError: true})
-    public executeSetCurrentPlayer(messageResult: ActionModel): PlayerModel {
-        return messageResult.currentPlayer;
-    }
-
     @Action({commit: "REMOVE_CURRENT_PLAYER"})
-    public executeGetKicked() {
+    public executeGetKicked(): boolean {
         return true;
     }
+
+    @Action({commit: "SET_PLAYER_REMOVAL", rawError: true})
+    public setPlayerRemoval(playerRemoval: PlayerRemovalModel): PlayerRemovalModel {
+        return playerRemoval;
+    }
+
+    @Action({commit: "UPDATE_PLAYER_REMOVAL_INFO", rawError: true})
+    public updatePlayerRemovalInfo(playerRemovalModel: PlayerRemovalModel): PlayerRemovalModel {
+        return playerRemovalModel;
+    };
 
     get getPlayers() {
         return this.players;
@@ -111,5 +157,9 @@ export default class PlayerModule extends VuexModule {
 
     get getInitKickWindow() {
         return this.initKickWindow;
+    }
+
+    get getPlayerRemovalInfo() {
+        return this.playerRemovalInfo;
     }
 }

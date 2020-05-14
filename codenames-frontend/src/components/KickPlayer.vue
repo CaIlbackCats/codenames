@@ -48,6 +48,7 @@
         @Watch("counter")
         private sendMsg() {
             if (this.counter == 0) {
+                clearInterval(this.timer);
                 this.hidePopPup()
                 this.sendKickMsg();
             }
@@ -58,39 +59,39 @@
         }
 
         private sendKickMsg() {
-            clearInterval(this.timer);
-            if (this.kickInitPlayer.lobbyOwner) {
-                this.ownerKick(false);
-            } else {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    ownerId: this.kickInitPlayer.id,
-                    playerToRemoveId: this.playerToKick.id,
-                }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_BY_VOTE, JSON.stringify(playerRemovalModel));
-            }
+            //  this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false);
+            this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+            this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+            this.playerRemovalInfo.vote = false;
+            this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
         }
 
         public kickPlayer(vote: boolean): void {
             if (this.kickInitPlayer.lobbyOwner) {
                 clearInterval(this.timer);
-                this.ownerKick(vote);
+                // this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
+                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                this.playerRemovalInfo.vote = vote;
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
             } else {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    playerToRemoveId: this.playerToKick.id,
-                    vote: vote,
-                }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(playerRemovalModel));
+                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
+
+                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                this.playerRemovalInfo.vote = vote;
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(this.playerRemovalInfo));
             }
             this.hidePopPup();
         }
 
-        private ownerKick(vote: boolean): void {
+        private updatePlayerRemovalInfo(ownerId: number, playerToRemoveId: number, vote: boolean): void {
             const playerRemovalModel: PlayerRemovalModel = {
-                ownerId: this.kickInitPlayer.id,
-                playerToRemoveId: this.playerToKick.id,
+                ownerId: ownerId,
+                playerToRemoveId: playerToRemoveId,
                 vote: vote,
             }
-            this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_BY_OWNER, JSON.stringify(playerRemovalModel));
+            this.$store.dispatch("updatePlayerRemovalInfo", playerRemovalModel);
         }
 
         public hidePopPup(): void {
@@ -106,7 +107,11 @@
         }
 
         get kickWindow(): boolean {
-            return this.$store.getters["getInitKickWindow"]
+            return this.$store.getters["getInitKickWindow"];
+        }
+
+        get playerRemovalInfo(): PlayerRemovalModel {
+            return this.$store.getters["getPlayerRemovalInfo"];
         }
 
 

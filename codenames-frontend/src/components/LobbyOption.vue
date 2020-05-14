@@ -1,7 +1,5 @@
 <template>
     <div>
-        <!--        <input type="text" v-model="playerName">-->
-        <!--        <button @click="addPlayer">Ember Hozzáadás</button>-->
         <button @click="randomizeRoles">Véletlenszerű szerep kiosztás</button>
         <button @click="randomizeSide">Véletlenszerű csapat kiosztás</button>
 
