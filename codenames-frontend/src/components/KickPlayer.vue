@@ -59,53 +59,34 @@
         }
 
         private sendKickMsg() {
-            //  this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false);
-            if (this.playerRemovalInfo.ownerId == -1) {
-                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-            }
-            if (this.playerRemovalInfo.playerToRemoveId == -1) {
-                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
-            }
-            this.playerRemovalInfo.vote = false;
-            if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id)
-            {
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
-            }
+            this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false).then(()=>{
+                if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id) {
+                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+                }
+            });
         }
 
         public kickPlayer(vote: boolean): void {
-            if (this.kickInitPlayer.lobbyOwner) {
+            if (this.playerRemovalInfo.ownerId==this.kickInitPlayer.id && this.kickInitPlayer.lobbyOwner) {
                 clearInterval(this.timer);
-                // this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
-                if (this.playerRemovalInfo.ownerId == -1) {
-                    this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-                }
-                if (this.playerRemovalInfo.playerToRemoveId == -1) {
-                    this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
-                }
-                this.playerRemovalInfo.vote = vote;
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
+                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+                });
             } else {
-                //  this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
-                if (this.playerRemovalInfo.ownerId == -1) {
-                    this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-                }
-                if (this.playerRemovalInfo.playerToRemoveId == -1) {
-                    this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
-                }
-                this.playerRemovalInfo.vote = vote;
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(this.playerRemovalInfo));
+                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
+                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(this.playerRemovalInfo));
+                });
             }
             this.hidePopPup();
         }
 
-        private updatePlayerRemovalInfo(ownerId: number, playerToRemoveId: number, vote: boolean): void {
+        private async updatePlayerRemovalInfo(ownerId: number, playerToRemoveId: number, vote: boolean): Promise<void> {
             const playerRemovalModel: PlayerRemovalModel = {
                 ownerId: ownerId,
                 playerToRemoveId: playerToRemoveId,
                 vote: vote,
             }
-            this.$store.dispatch("updatePlayerRemovalInfo", playerRemovalModel);
+            return this.$store.dispatch("updatePlayerRemovalInfo", playerRemovalModel);
         }
 
         public hidePopPup(): void {
