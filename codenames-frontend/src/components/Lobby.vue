@@ -69,7 +69,6 @@
 
         @Watch("currentPlayer")
         private subscribeToPlayerChange() {
-            console.log(this.currentPlayer)
             const room: RoomModel = {
                 name: this.$route.params.lobbyId,
                 stompClient: this.stompClient,

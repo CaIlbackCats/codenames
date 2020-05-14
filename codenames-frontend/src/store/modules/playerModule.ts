@@ -31,8 +31,6 @@ export default class PlayerModule extends VuexModule {
 
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
-        console.log("------------------------")
-        console.log(this.currentPlayer)
         if (this.currentPlayer.id === -1) {
             this.currentPlayer = player;
         }
@@ -57,8 +55,6 @@ export default class PlayerModule extends VuexModule {
             role: "",
             side: "",
         }
-        console.log("------------------------")
-        console.log(this.currentPlayer)
         router.push({name: "Home"});
     }
 
