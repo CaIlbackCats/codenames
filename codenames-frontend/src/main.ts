@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store"
 import 'bootstrap/dist/css/bootstrap.css';
 import VueClipboard from "vue-clipboard2";
+import VueJSModal from "vue-js-modal";
 //import 'bootstrap-vue/dist/bootstrap-vue.css';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 
@@ -12,8 +13,10 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
-Vue.config.productionTip = false;
 Vue.use(VueClipboard);
+Vue.use(VueJSModal);
+Vue.config.productionTip = false;
+
 
 const BASE_URL = "http:localhost:8080/api/chat";
 

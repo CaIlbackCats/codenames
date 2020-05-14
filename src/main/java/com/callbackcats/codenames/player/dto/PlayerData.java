@@ -1,8 +1,6 @@
 package com.callbackcats.codenames.player.dto;
 
 import com.callbackcats.codenames.player.domain.Player;
-import com.callbackcats.codenames.player.domain.RoleType;
-import com.callbackcats.codenames.player.domain.SideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,12 +24,17 @@ public class PlayerData {
 
     private String side;
 
+    private String lobbyName;
+
     public PlayerData(Player player) {
         this.id = player.getId();
         this.lobbyOwner = player.getLobbyOwner();
         this.name = player.getName();
         this.role = player.getRole().toString();
         this.side = player.getSide().toString();
+        if (player.getLobby() != null) {
+            this.lobbyName = player.getLobby().getId();
+        }
     }
 
     @Override

@@ -2,21 +2,29 @@ package com.callbackcats.codenames.player.service;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
+import com.callbackcats.codenames.player.domain.ActionType;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
+import com.callbackcats.codenames.player.dto.ActionData;
 import com.callbackcats.codenames.player.dto.PlayerCreationData;
 import com.callbackcats.codenames.player.dto.PlayerData;
+import com.callbackcats.codenames.player.dto.PlayerRemovalData;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Lob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class PlayerService {
 
     private static final int MAX_SPYMASTER = 2;
@@ -32,7 +40,11 @@ public class PlayerService {
     public PlayerData savePlayer(PlayerCreationData playerCreationData) {
         Player player = new Player(playerCreationData);
         Lobby lobby = lobbyRepository.findLobbyByName(playerCreationData.getLobbyName());
-
+        if (lobby.getPlayerList().isEmpty()) {
+            player.setLobbyOwner(true);
+        } else {
+            player.setLobbyOwner(false);
+        }
         player.setLobby(lobby);
         playerRepository.save(player);
         return new PlayerData(player);
@@ -66,7 +78,6 @@ public class PlayerService {
         if (!allPlayers.isEmpty()) {
             clearSides(allPlayers);
             clearRoles(allPlayers);
-            //   assignedPlayers.addAll(assignSideToSpymaster(allPlayers));
 
             int teamCapacity = (originPlayerSize - assignedPlayers.size()) / 2;
 
@@ -87,6 +98,80 @@ public class PlayerService {
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
+        log.info("Get players in the given lobby:\t" + lobbyName);
+        return getPlayersByLobbyName(lobbyName)
+                .stream()
+                .map(PlayerData::new)
+                .collect(Collectors.toList());
+    }
+
+    public Boolean isPlayerRemovedByVote(PlayerRemovalData playerRemovalData) {
+        Player player = findPlayerById(playerRemovalData.getPlayerToRemoveId());
+        Lobby lobby = player.getLobby();
+        boolean removed = false;
+        int playersInLobby = lobby.getPlayerList().size();
+        if (player.getKickVoteCount() > playersInLobby / 2) {
+            removePlayer(player);
+            // actionData = new ActionData(ActionType.GET_KICKED, new PlayerData(player));
+            log.info("Remove player:\t" + player.getId() + "\tby vote:\t" + player.getKickVoteCount());
+            removed = true;
+        } else {
+            player.setKickVoteCount(0);
+            playerRepository.save(player);
+        }
+        return removed;
+    }
+
+    public PlayerData reassignLobbyOwner(String lobbyName) {
+        List<Player> players = getPlayersByLobbyName(lobbyName);
+        Player newOwnerPlayer = getRandomPlayer(players);
+        newOwnerPlayer.setLobbyOwner(true);
+        playerRepository.save(newOwnerPlayer);
+        return new PlayerData(newOwnerPlayer);
+    }
+
+    public Boolean isLobbyOwnerInLobby(String lobbyName) {
+        List<Player> players = getPlayersByLobbyName(lobbyName);
+        return players.stream().anyMatch(Player::getLobbyOwner);
+    }
+
+    public Boolean removePlayerByOwner(PlayerRemovalData playerRemovalData) {
+        Player owner = findPlayerById(playerRemovalData.getOwnerId());
+        Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
+        boolean removed = false;
+        if (owner.getLobbyOwner() && playerRemovalData.getVote()) {
+            log.info("Remove player:\t" + playerToRemove.getId() + "\tby owner:\t" + owner.getId());
+            removePlayer(playerToRemove);
+            removed = true;
+        }
+        return removed;
+    }
+
+    public void setPlayerKickScore(PlayerRemovalData playerRemovalData) {
+        if (playerRemovalData.getVote()) {
+            Player foundPlayer = findPlayerById(playerRemovalData.getPlayerToRemoveId());
+            Integer kickVoteCount = foundPlayer.getKickVoteCount();
+            foundPlayer.setKickVoteCount(++kickVoteCount);
+            playerRepository.save(foundPlayer);
+            log.info("Set player kick score:\t" + kickVoteCount);
+        }
+    }
+
+    public PlayerData findPlayerDataById(Long id) {
+        log.info("Find playerdata by id:\t" + id);
+        return new PlayerData(findPlayerById(id));
+    }
+
+    private void removePlayer(Player player) {
+        player.setLobby(null);
+        playerRepository.delete(player);
+    }
+
+    private Player findPlayerById(Long id) {
+        return playerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Given Player not found"));
     }
 
     private void handleLeftoverSideSelection(List<Player> allPlayers, List<Player> assignedPlayers) {
@@ -112,27 +197,6 @@ public class PlayerService {
         return player;
     }
 
-    private List<Player> assignSideToSpymaster(List<Player> players) {
-        List<Player> spymasters = players
-                .stream()
-                .filter(player -> player.getRole() == RoleType.SPYMASTER)
-                .collect(Collectors.toList());
-        List<Player> assignedSpymaster = new ArrayList<>();
-        if (spymasters.size() == 1) {
-            Player spymaster = spymasters.get(0);
-            assignedSpymaster.add(setPlayerSide(spymaster, players, SideType.BLUE));
-        }
-        if (spymasters.size() == 2) {
-            Player spymaster = spymasters.get(0);
-            assignedSpymaster.add(setPlayerSide(spymaster, players, SideType.BLUE));
-
-            spymaster = spymasters.get(1);
-            assignedSpymaster.add(setPlayerSide(spymaster, players, SideType.RED));
-        }
-
-        return assignedSpymaster;
-    }
-
     private List<Player> setSideToPlayerList(List<Player> players, SideType side, int teamCapacity) {
         List<Player> assignedPlayers = new ArrayList<>();
         while (assignedPlayers.size() < teamCapacity) {
@@ -143,24 +207,10 @@ public class PlayerService {
         return assignedPlayers;
     }
 
-    private boolean isSpymasterInTeam(List<Player> players) {
-        return players
-                .stream()
-                .anyMatch(player -> player.getRole() == RoleType.SPYMASTER);
-    }
-
     private int getRandomIndex(List<Player> players) {
         return (int) Math.floor(Math.random() * players.size());
     }
 
-    public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
-        return getPlayersByLobbyName(lobbyName)
-                .stream()
-                .map(PlayerData::new)
-                .collect(Collectors.toList());
-    }
-
-    //todo when lobby entity implemented modify this to getplayers by given lobby
     private List<Player> getPlayersByLobbyName(String lobbyName) {
         return playerRepository.getPlayersByLobbyName(lobbyName);
     }
