@@ -3,7 +3,8 @@
         <div class="chat-div col-sm-12">
             <div class="message-window">
                 <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
-                    {{chatMessage.name}}:{{chatMessage.message}}
+                    <font-awesome-icon class="ml-2" v-if="chatMessage.name === currentPlayer.name" icon="user-secret"/>
+                    <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
                 </div>
             </div>
             <div class="message-window-background-div"></div>
@@ -16,8 +17,9 @@
                               v-model="chatMessageToSend"></b-form-input>
                 <b-input-group-append>
                     <b-button squared
-                              type="button"
-                              @click="sendChatMessage">Send</b-button>
+                              type="submit"
+                              @click="sendChatMessage">Send
+                    </b-button>
                 </b-input-group-append>
             </b-input-group>
         </div>
@@ -29,13 +31,14 @@
     import {MessageModel} from "@/models/messageModel";
     import {Client} from "webstomp-client";
     import {RoomModel} from "@/models/roomModel";
+    import {PlayerModel} from "@/models/playerModel";
 
 
     @Component
     export default class LobbyChat extends Vue {
 
         @Prop()
-        currentPlayer!: string;
+        currentPlayer!: PlayerModel;
         @Prop()
         currentLobby!: string;
         @Prop()
@@ -63,27 +66,33 @@
 
         public sendChatMessage(): void {
             const msgModel: MessageModel = {
-                name: this.currentPlayer,
+                name: this.currentPlayer.name,
                 message: this.chatMessageToSend,
                 lobbyName: this.currentLobby,
             }
+            this.chatMessageToSend = "";
             this.send(msgModel);
         }
 
         get chatMessages() {
             return this.$store.getters["chatModule/messages"];
         }
+
     }
 </script>
 
 <style scoped>
 
-    .chat-div{
+    label {
+        color: rgb(135, 25, 75);
+    }
+
+    .chat-div {
         height: 60vh;
         position: relative;
     }
 
-    .message-window-background-div{
+    .message-window-background-div {
         height: 100%;
         width: 100%;
         background-color: white;
@@ -103,8 +112,13 @@
     .message-window::-webkit-scrollbar {
         display: none;
     }
+
     .message-window {
         -ms-overflow-style: none;
+    }
+
+    svg{
+        color: rgb(135, 25, 75);
     }
 
     button {

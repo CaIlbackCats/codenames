@@ -25,9 +25,8 @@
             </template>
 
             <div v-else class="row m-0 p-4">
-
                 <div class="col-sm-12 col-lg-8">
-                    <lobby-chat :current-player="currentPlayerName"
+                    <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
                                 :stomp-client="stompClient"></lobby-chat>
                     <LobbyOption v-if="currentPlayer.lobbyOwner"
@@ -37,18 +36,15 @@
                 </div>
 
                 <div class="players-div col-sm-12 col-lg-4 text-left">
-
                     <div class="players-list-div">
                         <div class="m-2" v-for="player in players"
                              :key="player.id">
-                            <label>{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                            <b-button squared v-if="player.name!==currentPlayerName"
-                                      type="button"
-                                      size="sm"
-                                      class="float-right kick-btn"
-                                      @click="initKickPlayer(player)">
-                                Kick
-                            </b-button>
+                            <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
+                            <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
+                            <font-awesome-icon v-if="player.name!==currentPlayerName"
+                                               class="kick-btn"
+                                               @click="initKickPlayer(player)"
+                                               icon="user-minus"/>
                         </div>
                     </div>
                     <KickPlayer
@@ -62,8 +58,8 @@
                 <div class="col-sm-12">
                     <b-input-group size="sm"
                                    class="col-sm-12
-                           col-md-6 col-lg-4
-                           offset-md-3 offset-lg-4
+                           col-md-8 col-lg-6
+                           offset-md-2 offset-lg-3
                            pb-sm-2
                            pb-lg-5">
                         <b-form-input id="current-player"
@@ -215,6 +211,10 @@
         width: 500px
     }
 
+    svg{
+        color: rgb(135, 25, 75);
+    }
+
     .players-background-div {
         height: 100%;
         width: 100%;
@@ -229,6 +229,7 @@
 
     .players-list-div {
         height: 100%;
+        width: 100%;
         overflow-y: scroll;
         position: absolute;
         z-index: 1;
@@ -237,6 +238,7 @@
     .players-list-div::-webkit-scrollbar {
         display: none;
     }
+
     .players-list-div {
         -ms-overflow-style: none;
     }
@@ -258,14 +260,13 @@
         margin-bottom: 15vh;
     }
 
-    .kick-btn{
+    .kick-btn {
         opacity: 0.2;
     }
 
-    .kick-btn:hover{
+    .kick-btn:hover {
         opacity: 0.8;
     }
-
 
     button {
         background-color: rgb(135, 25, 75);
