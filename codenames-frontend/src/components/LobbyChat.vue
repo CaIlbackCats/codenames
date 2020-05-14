@@ -1,16 +1,19 @@
 <template>
     <div class="text-left">
-        <div class="chat-div">
-            <div class="message-window-background-div"></div>
+        <div class="chat-div col-sm-12">
             <div class="message-window">
                 <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
                     {{chatMessage.name}}:{{chatMessage.message}}
                 </div>
             </div>
+            <div class="message-window-background-div"></div>
         </div>
         <div class="col-sm-12 my-3">
             <b-input-group size="sm">
-                <b-form-input id="chat-message" type="text" v-model="chatMessageToSend"></b-form-input>
+                <b-form-input id="chat-message"
+                              type="text"
+                              v-on:keyup.enter="sendChatMessage"
+                              v-model="chatMessageToSend"></b-form-input>
                 <b-input-group-append>
                     <b-button squared
                               type="button"
@@ -77,7 +80,6 @@
 
     .chat-div{
         height: 60vh;
-        padding-right: 3rem;
         position: relative;
     }
 
@@ -85,9 +87,8 @@
         height: 100%;
         width: 100%;
         background-color: white;
-        position: absolute;
+        position: relative;
         opacity: 0.3;
-        z-index: 0;
     }
 
     .message-window {

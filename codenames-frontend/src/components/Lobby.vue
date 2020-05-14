@@ -1,6 +1,6 @@
 <template>
     <div class="main-div">
-        <div class="col-sm-12 col-lg-8 offset-lg-2">
+        <div class="col-sm-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2">
             <template v-if="!playerSelected">
                 <div class="codenames-header">
                     <b-img :src="logoUrl"></b-img>
@@ -24,9 +24,9 @@
                 </div>
             </template>
 
-            <div v-else class="p-5 row m-0">
+            <div v-else class="row m-0 p-4">
 
-                <div class="col-sm-12 col-md-8">
+                <div class="col-sm-12 col-lg-8">
                     <lobby-chat :current-player="currentPlayerName"
                                 :current-lobby="this.$route.params.lobbyId"
                                 :stomp-client="stompClient"></lobby-chat>
@@ -36,8 +36,8 @@
                     ></LobbyOption>
                 </div>
 
-                <div class="players-div col-sm-12 col-md-4 text-left ">
-                    <div class="players-background-div col-sm-12"></div>
+                <div class="players-div col-sm-12 col-lg-4 text-left">
+
                     <div class="players-list-div">
                         <div class="m-2" v-for="player in players"
                              :key="player.id">
@@ -56,6 +56,7 @@
                             :kick-init-player="currentPlayer"
                             :player-to-kick="playerToKick"
                     ></KickPlayer>
+                    <div class="players-background-div"></div>
                 </div>
 
                 <div class="col-sm-12">
@@ -63,8 +64,8 @@
                                    class="col-sm-12
                            col-md-6 col-lg-4
                            offset-md-3 offset-lg-4
-                           fixed-bottom
-                           pb-5">
+                           pb-sm-2
+                           pb-lg-5">
                         <b-form-input id="current-player"
                                       type="text"
                                       readonly
@@ -218,9 +219,8 @@
         height: 100%;
         width: 100%;
         background-color: white;
-        position: absolute;
+        position: relative;
         opacity: 0.3;
-        z-index: 0;
     }
 
     .players-div {
@@ -229,9 +229,7 @@
 
     .players-list-div {
         height: 100%;
-        width: 100%;
         overflow-y: scroll;
-        overflow-x: hidden;
         position: absolute;
         z-index: 1;
     }
@@ -250,9 +248,9 @@
     .main-div {
         background-image: url("../assets/background.svg");
         background-repeat: no-repeat;
-        background-size: 100%;
-        width: 100vw;
-        height: 100vh;
+        background-size: cover;
+        background-position: top;
+        min-height: 100vh;
     }
 
     img {
