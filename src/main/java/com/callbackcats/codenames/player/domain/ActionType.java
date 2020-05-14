@@ -5,4 +5,5 @@ public enum ActionType {
     GET_KICKED,
     INIT_KICK,
     CREATE_PLAYER,
+    UPDATE_PLAYER,
 }

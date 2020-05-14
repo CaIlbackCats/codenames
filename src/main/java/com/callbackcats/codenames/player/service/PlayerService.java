@@ -42,6 +42,8 @@ public class PlayerService {
         Lobby lobby = lobbyRepository.findLobbyByName(playerCreationData.getLobbyName());
         if (lobby.getPlayerList().isEmpty()) {
             player.setLobbyOwner(true);
+        } else {
+            player.setLobbyOwner(false);
         }
         player.setLobby(lobby);
         playerRepository.save(player);
@@ -123,11 +125,24 @@ public class PlayerService {
         return removed;
     }
 
+    public PlayerData reassignLobbyOwner(String lobbyName) {
+        List<Player> players = getPlayersByLobbyName(lobbyName);
+        Player newOwnerPlayer = getRandomPlayer(players);
+        newOwnerPlayer.setLobbyOwner(true);
+        playerRepository.save(newOwnerPlayer);
+        return new PlayerData(newOwnerPlayer);
+    }
+
+    public Boolean isLobbyOwnerInLobby(String lobbyName) {
+        List<Player> players = getPlayersByLobbyName(lobbyName);
+        return players.stream().anyMatch(Player::getLobbyOwner);
+    }
+
     public Boolean removePlayerByOwner(PlayerRemovalData playerRemovalData) {
         Player owner = findPlayerById(playerRemovalData.getOwnerId());
         Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
         boolean removed = false;
-        if (owner.getLobbyOwner()) {
+        if (owner.getLobbyOwner() && playerRemovalData.getVote()) {
             log.info("Remove player:\t" + playerToRemove.getId() + "\tby owner:\t" + owner.getId());
             removePlayer(playerToRemove);
             removed = true;

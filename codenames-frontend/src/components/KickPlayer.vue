@@ -60,25 +60,39 @@
 
         private sendKickMsg() {
             //  this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false);
-            this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-            this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+            if (this.playerRemovalInfo.ownerId == -1) {
+                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+            }
+            if (this.playerRemovalInfo.playerToRemoveId == -1) {
+                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+            }
             this.playerRemovalInfo.vote = false;
-            this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+            if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id)
+            {
+                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+            }
         }
 
         public kickPlayer(vote: boolean): void {
             if (this.kickInitPlayer.lobbyOwner) {
                 clearInterval(this.timer);
                 // this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
-                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                if (this.playerRemovalInfo.ownerId == -1) {
+                    this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+                }
+                if (this.playerRemovalInfo.playerToRemoveId == -1) {
+                    this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                }
                 this.playerRemovalInfo.vote = vote;
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
             } else {
-                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
-
-                this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
-                this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                //  this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote);
+                if (this.playerRemovalInfo.ownerId == -1) {
+                    this.playerRemovalInfo.ownerId = this.kickInitPlayer.id;
+                }
+                if (this.playerRemovalInfo.playerToRemoveId == -1) {
+                    this.playerRemovalInfo.playerToRemoveId = this.playerToKick.id;
+                }
                 this.playerRemovalInfo.vote = vote;
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(this.playerRemovalInfo));
             }

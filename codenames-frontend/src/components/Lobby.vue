@@ -133,6 +133,7 @@
                 const playerRemovalModel: PlayerRemovalModel = {
                     kickType: "OWNER",
                     ownerId: this.currentPlayer.id,
+                    playerToRemoveId: player.id,
                 }
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
             } else {
@@ -142,6 +143,7 @@
                     kickType: "VOTE",
                     ownerId: this.currentPlayer.id,
                     votingPlayers: votingPlayers,
+                    playerToRemoveId: player.id,
                 }
                 this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
 

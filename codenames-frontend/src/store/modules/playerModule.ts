@@ -65,9 +65,18 @@ export default class PlayerModule extends VuexModule {
 
     @Mutation
     private UPDATE_PLAYER_REMOVAL_INFO(playerRemovalModel: PlayerRemovalModel): void {
-        this.playerRemovalInfo.ownerId = playerRemovalModel.ownerId;
-        this.playerRemovalInfo.playerToRemoveId = playerRemovalModel.playerToRemoveId;
+        if (this.playerRemovalInfo.ownerId == -1) {
+            this.playerRemovalInfo.ownerId = playerRemovalModel.ownerId;
+        }
+        if (this.playerRemovalInfo.playerToRemoveId == -1) {
+            this.playerRemovalInfo.playerToRemoveId = playerRemovalModel.playerToRemoveId;
+        }
         this.playerRemovalInfo.vote = playerRemovalModel.vote;
+    }
+
+    @Mutation
+    private UPDATE_PLAYER(playerModel: PlayerModel): void {
+        this.currentPlayer = playerModel;
     }
 
     @Action({rawError: true})
@@ -120,7 +129,15 @@ export default class PlayerModule extends VuexModule {
             case "GET_KICKED":
                 this.context.dispatch("executeGetKicked");
                 break;
+            case "UPDATE_PLAYER":
+                this.context.dispatch("executePlayerUpdate", messageResult.currentPlayer);
+                break;
         }
+    }
+
+    @Action({commit: "UPDATE_PLAYER", rawError: true})
+    public executePlayerUpdate(playerModel: PlayerModel) {
+        return playerModel;
     }
 
     @Action({commit: "SHOW_KICK_WINDOW", rawError: true})

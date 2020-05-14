@@ -60,20 +60,25 @@ public class PlayerController {
     @MessageMapping("/kick")
     public ActionData kickPlayer(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Kicking player requested");
-        ActionData kickAction = new ActionData(ActionType.GET_KICKED);
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
         if (playerRemovalData.getKickType() == KickType.OWNER) {
-            setKickMsg(playerRemovalData, kickAction, lobbyName, playerService.removePlayerByOwner(playerRemovalData));
+            setKickMsg(playerRemovalData, lobbyName, playerService.removePlayerByOwner(playerRemovalData));
         } else {
-            setKickMsg(playerRemovalData, kickAction, lobbyName, playerService.isPlayerRemovedByVote(playerRemovalData));
+            setKickMsg(playerRemovalData, lobbyName, playerService.isPlayerRemovedByVote(playerRemovalData));
         }
 
         return updateList(lobbyName);
     }
 
-    private void setKickMsg(@Payload PlayerRemovalData playerRemovalData, ActionData kickAction, String lobbyName, Boolean isPlayerRemoved) {
+    private void setKickMsg(PlayerRemovalData playerRemovalData, String lobbyName, Boolean isPlayerRemoved) {
         if (isPlayerRemoved) {
+            ActionData kickAction = new ActionData(ActionType.GET_KICKED);
             simpMessagingTemplate.convertAndSend("/player/" + lobbyName + "/" + playerRemovalData.getPlayerToRemoveId(), kickAction);
+            if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
+                PlayerData newOwner = playerService.reassignLobbyOwner(lobbyName);
+                ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, newOwner);
+                simpMessagingTemplate.convertAndSend("/player/" + lobbyName + "/" + newOwner.getId(), updatePlayer);
+            }
         }
     }
 
