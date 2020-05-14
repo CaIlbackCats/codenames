@@ -39,7 +39,6 @@
         height: 100vh;
     }
 
-
     img {
         max-width: 75%;
         margin-bottom: 15vh;
@@ -64,5 +63,4 @@
         outline-offset: 15px;
         text-shadow: 1px 1px 2px #427388;
     }
-
 </style>
