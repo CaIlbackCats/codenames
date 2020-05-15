@@ -39,6 +39,9 @@
                     <div class="players-list-div">
                         <div class="m-2" v-for="player in players"
                              :key="player.id">
+                            <ReadyCheck
+                                    :stomp-client="stompClient"
+                                    :player="player"></ReadyCheck>
                             <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
                             <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                             <font-awesome-icon v-if="player.name!==currentPlayerName"
@@ -92,9 +95,10 @@
     import {RoomModel} from "@/models/roomModel";
     import KickPlayer from "@/components/KickPlayer.vue";
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
+    import ReadyCheck from "@/components/ReadyCheck.vue";
 
     @Component({
-        components: {KickPlayer, LobbyOption, LobbyChat}
+        components: {ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
         private logoUrl = require("../assets/codenames.png");
@@ -108,6 +112,7 @@
             lobbyOwner: false,
             role: "",
             side: "",
+            rdyState: false,
         };
 
         @Watch("currentPlayer")

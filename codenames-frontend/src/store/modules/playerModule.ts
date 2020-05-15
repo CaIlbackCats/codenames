@@ -5,6 +5,7 @@ import {RoomModel} from "@/models/roomModel";
 import {ActionModel} from "@/models/actionModel";
 import router from "@/router";
 import {PlayerRemovalModel} from "@/models/playerRemovalModel";
+import {LobbyModel} from "@/models/lobbyModel";
 
 
 @Module
@@ -18,6 +19,7 @@ export default class PlayerModule extends VuexModule {
         lobbyOwner: false,
         role: "",
         side: "",
+        rdyState: false,
     };
 
     private playerRemovalInfo: PlayerRemovalModel = {
@@ -26,6 +28,8 @@ export default class PlayerModule extends VuexModule {
         playerToRemoveId: -1,
         kickType: "",
     };
+
+    private everyOneRdy = false;
 
     private initKickWindow = false;
 
@@ -54,6 +58,7 @@ export default class PlayerModule extends VuexModule {
             lobbyOwner: false,
             role: "",
             side: "",
+            rdyState: false,
         }
         router.push({name: "Home"});
     }
@@ -79,6 +84,11 @@ export default class PlayerModule extends VuexModule {
         this.currentPlayer = playerModel;
     }
 
+    @Mutation
+    private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
+        this.everyOneRdy = lobbyModel.everyOneRdy;
+    }
+
     @Action({rawError: true})
     public subscribeToLobby(roomModel: RoomModel): void {
         const client = roomModel.stompClient;
@@ -100,6 +110,9 @@ export default class PlayerModule extends VuexModule {
                 break;
             case "UPDATE_LIST":
                 this.context.commit("UPDATE_LIST", messageResult.playerList)
+                break;
+            case "UPDATE_LOBBY":
+                this.context.commit("UPDATE_LOBBY", messageResult.lobbyDetails)
                 break;
         }
     }
@@ -174,5 +187,9 @@ export default class PlayerModule extends VuexModule {
 
     get getPlayerRemovalInfo() {
         return this.playerRemovalInfo;
+    }
+
+    get getEveryOneRdy() {
+        return this.everyOneRdy;
     }
 }

@@ -9,7 +9,13 @@ import lombok.NoArgsConstructor;
 public class LobbyDetails {
     private String id;
 
+    private Boolean everyOneRdy;
+
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();
+    }
+
+    public LobbyDetails(Boolean everyOneRdy) {
+        this.everyOneRdy = everyOneRdy;
     }
 }

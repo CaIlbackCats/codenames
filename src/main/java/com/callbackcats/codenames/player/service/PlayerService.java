@@ -6,10 +6,7 @@ import com.callbackcats.codenames.player.domain.ActionType;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
-import com.callbackcats.codenames.player.dto.ActionData;
-import com.callbackcats.codenames.player.dto.PlayerCreationData;
-import com.callbackcats.codenames.player.dto.PlayerData;
-import com.callbackcats.codenames.player.dto.PlayerRemovalData;
+import com.callbackcats.codenames.player.dto.*;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,6 +44,7 @@ public class PlayerService {
         }
         player.setLobby(lobby);
         playerRepository.save(player);
+        log.info("New player created by id:\t" + player.getId());
         return new PlayerData(player);
     }
 
@@ -67,6 +65,7 @@ public class PlayerService {
             setSpyRolesToPlayers(allPlayers);
             playerRepository.saveAll(allPlayers);
         }
+        log.info("Player roles randomized");
         return allPlayers.stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
@@ -93,7 +92,7 @@ public class PlayerService {
             setSpyRolesToPlayers(assignedPlayers);
             playerRepository.saveAll(assignedPlayers);
         }
-
+        log.info("Player sides and roles randomized");
         return assignedPlayers
                 .stream()
                 .map(PlayerData::new)
@@ -130,10 +129,12 @@ public class PlayerService {
         Player newOwnerPlayer = getRandomPlayer(players);
         newOwnerPlayer.setLobbyOwner(true);
         playerRepository.save(newOwnerPlayer);
+        log.info("New lobby owner assgined to player:\t" + newOwnerPlayer.getId());
         return new PlayerData(newOwnerPlayer);
     }
 
     public Boolean isLobbyOwnerInLobby(String lobbyName) {
+        log.info("Find lobby owner in lobby:\t" + lobbyName);
         List<Player> players = getPlayersByLobbyName(lobbyName);
         return players.stream().anyMatch(Player::getLobbyOwner);
     }
@@ -163,6 +164,20 @@ public class PlayerService {
     public PlayerData findPlayerDataById(Long id) {
         log.info("Find playerdata by id:\t" + id);
         return new PlayerData(findPlayerById(id));
+    }
+
+    public PlayerData setRdyState(RdyStateData rdyStateData) {
+        Player foundPlayer = findPlayerById(rdyStateData.getPlayerId());
+        foundPlayer.setRdyState(rdyStateData.getRdyState());
+        playerRepository.save(foundPlayer);
+        log.info("Ready state changed for player:\t" + foundPlayer.getId() + "\t to:\t" + foundPlayer.getRdyState());
+        return new PlayerData(foundPlayer);
+    }
+
+    public Boolean isEveryOneRdy(String lobbyName) {
+        log.info("Check if everyone is rdy!");
+        List<Player> players = getPlayersByLobbyName(lobbyName);
+        return players.stream().allMatch(Player::getRdyState);
     }
 
     private void removePlayer(Player player) {

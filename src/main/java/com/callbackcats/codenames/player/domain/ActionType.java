@@ -6,4 +6,5 @@ public enum ActionType {
     INIT_KICK,
     CREATE_PLAYER,
     UPDATE_PLAYER,
+    UPDATE_LOBBY,
 }

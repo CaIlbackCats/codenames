@@ -42,11 +42,15 @@ public class Player {
     @Column(name = "kick_vote")
     private Integer kickVoteCount;
 
+    @Column(name = "ready")
+    private Boolean rdyState;
+
     public Player(PlayerCreationData playerCreationData) {
         //  this.lobbyOwner = playerCreationData.getLobbyOwner();
         this.name = playerCreationData.getName();
         this.role = RoleType.NOT_SELECTED;
         this.side = SideType.NOT_SELECTED;
         this.kickVoteCount = 0;
+        this.rdyState = false;
     }
 }

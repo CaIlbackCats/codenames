@@ -10,6 +10,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {faUserMinus} from "@fortawesome/free-solid-svg-icons/faUserMinus";
+import ToggleButton from "vue-js-toggle-button";
 
 library.add(faUserSecret)
 library.add(faUserMinus)
@@ -18,13 +19,11 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+
+Vue.use(ToggleButton);
 Vue.use(VueClipboard);
 Vue.use(VueJSModal);
 Vue.config.productionTip = false;
-
-
-const BASE_URL = "http:localhost:8080/api/chat";
-
 
 new Vue({
     router,

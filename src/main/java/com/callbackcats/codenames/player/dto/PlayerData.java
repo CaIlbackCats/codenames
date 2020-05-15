@@ -26,6 +26,8 @@ public class PlayerData {
 
     private String lobbyName;
 
+    private Boolean rdyState;
+
     public PlayerData(Player player) {
         this.id = player.getId();
         this.lobbyOwner = player.getLobbyOwner();
@@ -35,6 +37,7 @@ public class PlayerData {
         if (player.getLobby() != null) {
             this.lobbyName = player.getLobby().getId();
         }
+        this.rdyState = player.getRdyState();
     }
 
     @Override

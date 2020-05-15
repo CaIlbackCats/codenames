@@ -2,14 +2,14 @@
     <div>
         <b-button squared @click="randomizeRoles">Random role</b-button>
         <b-button squared @click="randomizeSide">Random side</b-button>
-
+        <button :disabled="!getEveryOneRdy">Start The Game!</button>
     </div>
 
 </template>
 
 <script lang="ts">
 
-    import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
     import {Client} from "webstomp-client";
     import {RoomModel} from "@/models/roomModel";
@@ -34,6 +34,10 @@
 
         public randomizeSide(): void {
             this.stomp.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, this.lobbyName);
+        }
+
+        get getEveryOneRdy(): boolean {
+            return this.$store.getters["getEveryOneRdy"];
         }
     }
 </script>
