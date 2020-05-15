@@ -1,6 +1,8 @@
 <template>
-    <div class="main-div">
-        <div class="col-sm-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2">
+    <div class="main-div row m-0">
+        <div class="women-spy col-sm-1 col-lg-1 col-xl-2">
+        </div>
+        <div class="col-sm-12 col-xl-8">
             <template v-if="!playerSelected">
                 <div class="codenames-header">
                     <b-img :src="logoUrl"></b-img>
@@ -24,7 +26,7 @@
                 </div>
             </template>
 
-            <div v-else class="row m-0 p-4">
+            <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
                     <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
@@ -80,6 +82,8 @@
                     </b-input-group>
                 </div>
             </div>
+        </div>
+        <div class="man-spy col-sm-1 col-lg-1 col-xl-2">
         </div>
     </div>
 </template>
@@ -257,6 +261,31 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: top;
+        min-height: 100vh;
+    }
+
+    @media (max-width: 1025px){
+        .women-spy {
+            display: none;
+        }
+        .man-spy{
+            display: none;
+        }
+    }
+
+    .women-spy{
+        background-image: url("../assets/spy_woman.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: right;
+        max-height: 95vh;
+    }
+
+    .man-spy{
+        background-image: url("../assets/spy_man.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: left;
         min-height: 100vh;
     }
 
