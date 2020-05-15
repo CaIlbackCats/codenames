@@ -5,14 +5,19 @@ import store from "./store"
 import 'bootstrap/dist/css/bootstrap.css';
 import VueClipboard from "vue-clipboard2";
 import VueJSModal from "vue-js-modal";
-//import 'bootstrap-vue/dist/bootstrap-vue.css';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {faUserMinus} from "@fortawesome/free-solid-svg-icons/faUserMinus";
 
-// Install BootstrapVue
+library.add(faUserSecret)
+library.add(faUserMinus)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
-
 Vue.use(VueClipboard);
 Vue.use(VueJSModal);
 Vue.config.productionTip = false;
