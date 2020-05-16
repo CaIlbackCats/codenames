@@ -43,8 +43,8 @@
                                 <ReadyCheck
                                         :stomp-client="stompClient"
                                         :player="player"></ReadyCheck>
-                                <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
-                                <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
+                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id" icon="user-secret"/>
+                                <label class="mr-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name!==currentPlayerName"
                                                    class="kick-btn"
                                                    @click="initKickPlayer(player)"
