@@ -218,7 +218,12 @@
         }
 
         get players(): Array<PlayerModel> {
-            return this.$store.getters["getPlayers"];
+            const playersList: Array<PlayerModel> = [];
+            playersList.push(this.currentPlayer);
+            const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
+            playersFetched.filter(player => player.id != this.currentPlayer.id)
+                .forEach(player => playersList.push(player));
+            return playersList;
         }
 
         get currentPlayer(): PlayerModel {
