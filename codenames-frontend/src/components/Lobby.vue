@@ -218,6 +218,7 @@
         }
 
         get players(): Array<PlayerModel> {
+            // TODO: refactor
             const playersList: Array<PlayerModel> = [];
             playersList.push(this.currentPlayer);
             const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
@@ -257,7 +258,7 @@
         max-height: 60vh;
         overflow-y: scroll;
         position: absolute;
-        z-index: 1;
+        z-index: 2;
         -ms-overflow-style: none;
     }
 
@@ -268,7 +269,6 @@
     .lobby-options-div{
         height: 15vh;
     }
-
 
     label {
         color: white;
@@ -317,13 +317,13 @@
     }
 
     .spy-decor.left-out {
-        transform: translateX(-10%);
-        -webkit-transform: translateX(-10%);
+        transform: translateX(-20%);
+        -webkit-transform: translateX(-20%);
     }
 
     .spy-decor.right-out {
-        transform: translateX(10%);
-        -webkit-transform: translateX(10%);
+        transform: translateX(20%);
+        -webkit-transform: translateX(20%);
     }
 
     img {
