@@ -37,6 +37,7 @@
     }
 
     img {
+        margin-top: 60px;
         max-width: 75%;
         margin-bottom: 15vh;
     }
