@@ -7,13 +7,13 @@ import VueClipboard from "vue-clipboard2";
 import VueJSModal from "vue-js-modal";
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { faUserSecret, faUserMinus, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {faUserMinus} from "@fortawesome/free-solid-svg-icons/faUserMinus";
 import ToggleButton from "vue-js-toggle-button";
 
 library.add(faUserSecret)
 library.add(faUserMinus)
+library.add(faCheck)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
