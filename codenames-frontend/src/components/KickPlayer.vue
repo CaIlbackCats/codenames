@@ -50,6 +50,7 @@
                 this.timer = setInterval(() => this.decreaseCounter(), MILISEC);
             } else {
                 this.$bvModal.hide("kick-modal");
+                clearInterval(this.timer);
             }
         }
 
