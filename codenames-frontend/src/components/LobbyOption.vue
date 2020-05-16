@@ -1,10 +1,9 @@
 <template>
     <div>
-        <b-button squared @click="randomizeRoles">Random role</b-button>
-        <b-button squared @click="randomizeSide">Random side</b-button>
-        <button :disabled="!getEveryOneRdy">Start The Game!</button>
+        <b-button size="sm" block squared @click="randomizeRoles">Random role</b-button>
+        <b-button size="sm" block squared @click="randomizeSide">Random side</b-button>
+        <b-button size="sm" block squared :disabled="!getEveryOneRdy">Start The Game!</b-button>
     </div>
-
 </template>
 
 <script lang="ts">

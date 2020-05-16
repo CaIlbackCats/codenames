@@ -1,14 +1,12 @@
 <template>
 
-    <toggle-button
-            @change="sendRdyState"
+    <button
+            @click="sendRdyState"
             :disabled="player.name!==currentPlayer.name"
-            value="false"
-            :sync="true"
-            v-model="player.rdyState"
-            :labels="rdyLabel"
-    >
-    </toggle-button>
+            :pressed.sync="player.rdyState"
+            :class="['rdy-btn', player.rdyState ? 'is-ready' : '']"
+    ><font-awesome-icon icon="check"/>
+    </button>
 </template>
 
 <script lang="ts">
@@ -19,18 +17,12 @@
 
     @Component
     export default class ReadyCheck extends Vue {
-
-
         @Prop()
         private player!: PlayerModel;
-
         @Prop()
         private stompClient!: Client;
 
-        private isRdy = false;
-
-
-      //  @Watch("player.rdyState")
+        //  @Watch("player.rdyState")
         sendRdyState() {
             const rdyModel: RdyModel = {
                 playerId: this.currentPlayer.id,
@@ -39,18 +31,37 @@
             this.stompClient.send(process.env.VUE_APP_PLAYER_RDY, JSON.stringify(rdyModel));
         }
 
-        private rdyLabel = {
-            checked: "Mégsem!",
-            unchecked: "Mehet a játék",
-        }
-
         get currentPlayer(): PlayerModel {
             return this.$store.getters["getCurrentPlayer"];
         }
-
     }
 </script>
 
 <style scoped>
+    button {
+        all: unset;
+    }
+    button:disabled{
+        all: unset;
+        pointer-events: none;
+        opacity: .4;
+    }
+    button:active, button:hover, button:focus{
+        all: unset;
+    }
+    .rdy-btn{
+        all: unset;
+        cursor: pointer;
+    }
+    .rdy-btn:hover:enabled{
+        all: unset;
+        cursor: pointer;
+        color: lightgreen;
+    }
+    .is-ready{
+        all: unset;
+        cursor: pointer;
+        color: lightgreen !important;
+    }
 
 </style>

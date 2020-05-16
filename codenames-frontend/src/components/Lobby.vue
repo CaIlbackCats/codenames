@@ -33,33 +33,41 @@
                     <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
                                 :stomp-client="stompClient"></lobby-chat>
-                    <LobbyOption v-if="currentPlayer.lobbyOwner"
-                                 :lobby-name="this.$route.params.lobbyId"
-                                 :stomp="stompClient"
-                    ></LobbyOption>
                 </div>
 
-                <div class="players-div col-sm-12 col-lg-4 text-left">
-                    <div class="players-list-div">
-                        <div class="m-2" v-for="player in players"
-                             :key="player.id">
-                            <ReadyCheck
-                                    :stomp-client="stompClient"
-                                    :player="player"></ReadyCheck>
-                            <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
-                            <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                            <font-awesome-icon v-if="player.name!==currentPlayerName"
-                                               class="kick-btn"
-                                               @click="initKickPlayer(player)"
-                                               icon="user-minus"/>
+                <div class="col-sm-12 col-lg-4">
+                    <div class="players-div text-left row mx-0 mb-3">
+                        <div class="list-div">
+                            <div class="m-2" v-for="player in players"
+                                 :key="player.id">
+                                <ReadyCheck
+                                        :stomp-client="stompClient"
+                                        :player="player"></ReadyCheck>
+                                <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
+                                <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
+                                <font-awesome-icon v-if="player.name!==currentPlayerName"
+                                                   class="kick-btn"
+                                                   @click="initKickPlayer(player)"
+                                                   icon="user-minus"/>
+                            </div>
+                        </div>
+                        <KickPlayer
+                                :stomp-client="stompClient"
+                                :kick-init-player="currentPlayer"
+                                :player-to-kick="playerToKick"
+                        ></KickPlayer>
+                        <div class="white-background-div"></div>
+                    </div>
+
+                    <div class="lobby-options-div col">
+                        <div style="position: absolute; right: 0" class="list-div">
+                            <LobbyOption v-if="currentPlayer.lobbyOwner"
+                                         :lobby-name="this.$route.params.lobbyId"
+                                         :stomp="stompClient"
+                            ></LobbyOption>
                         </div>
                     </div>
-                    <KickPlayer
-                            :stomp-client="stompClient"
-                            :kick-init-player="currentPlayer"
-                            :player-to-kick="playerToKick"
-                    ></KickPlayer>
-                    <div class="players-background-div"></div>
+
                 </div>
 
                 <div class="col-sm-12">
@@ -210,7 +218,12 @@
         }
 
         get players(): Array<PlayerModel> {
-            return this.$store.getters["getPlayers"];
+            const playersList: Array<PlayerModel> = [];
+            playersList.push(this.currentPlayer);
+            const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
+            playersFetched.filter(player => player.id != this.currentPlayer.id)
+                .forEach(player => playersList.push(player));
+            return playersList;
         }
 
         get currentPlayer(): PlayerModel {
@@ -228,7 +241,7 @@
         color: rgb(135, 25, 75);
     }
 
-    .players-background-div {
+    .white-background-div {
         height: 100%;
         width: 100%;
         background-color: white;
@@ -240,21 +253,22 @@
         height: 60vh;
     }
 
-    .players-list-div {
-        height: 100%;
-        width: 100%;
+    .list-div {
+        max-height: 60vh;
         overflow-y: scroll;
         position: absolute;
         z-index: 1;
+        -ms-overflow-style: none;
     }
 
-    .players-list-div::-webkit-scrollbar {
+    .list-div::-webkit-scrollbar {
         display: none;
     }
 
-    .players-list-div {
-        -ms-overflow-style: none;
+    .lobby-options-div{
+        height: 15vh;
     }
+
 
     label {
         color: white;
