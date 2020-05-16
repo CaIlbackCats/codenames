@@ -44,7 +44,8 @@
                                         :stomp-client="stompClient"
                                         :player="player"></ReadyCheck>
                                 <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id" icon="user-secret"/>
-                                <label class="mr-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
+                                <label class="mr-2" :style="{ color: player.side}">
+                                    {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name!==currentPlayerName"
                                                    class="kick-btn"
                                                    @click="initKickPlayer(player)"
@@ -220,8 +221,11 @@
         get players(): Array<PlayerModel> {
             // TODO: refactor
             const playersList: Array<PlayerModel> = [];
-            playersList.push(this.currentPlayer);
             const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
+            const currentPlayer = playersFetched.find(player => player.id === this.currentPlayer.id);
+            if(currentPlayer){
+                playersList.push(currentPlayer);
+            }
             playersFetched.filter(player => player.id != this.currentPlayer.id)
                 .forEach(player => playersList.push(player));
             return playersList;
