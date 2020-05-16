@@ -1,11 +1,19 @@
-<template>
-    <modal @before-close="hidePopPup" name="kick-modal">
-        <p v-if="kickInitPlayer.lobbyOwner">Biztos ki akarod dobni?: {{playerToKick.name}}</p>
-        <p v-if="!kickInitPlayer.lobbyOwner">Biztos ki akarod rúgatni?: {{playerToKick.name}}</p>
-        <button @click="kickPlayer(true)">Igen</button>
-        <button @click="kickPlayer(false)">Nem</button>
-        <p>{{counter}}</p>
-    </modal>
+<template >
+        <b-modal size="sm"
+                 hide-footer
+                 hide-header
+                 @hide="hidePopPup"
+                 id="kick-modal"
+                 centered>
+                <div class="text-center">
+                    <p>Do you want to kick <span style="font-weight: bold">{{playerToKick.name}}</span>?</p>
+                    <button class="yes" @click="kickPlayer(true)">
+                        <font-awesome-icon style="font-size: 2rem; margin-right: 2rem" icon="check"/></button>
+                    <button class="no" @click="kickPlayer(false)">
+                        <font-awesome-icon style="font-size: 2rem" icon="times"/></button>
+                    <p>{{counter}}</p>
+                </div>
+        </b-modal>
 </template>
 
 <script lang="ts">
@@ -38,10 +46,11 @@
         private showModal() {
             if (this.kickWindow) {
                 this.counter = MAX_VOTE_TIME;
-                this.$modal.show("kick-modal");
+                this.$bvModal.show("kick-modal");
                 this.timer = setInterval(() => this.decreaseCounter(), MILISEC);
             } else {
-                this.$modal.hide("kick-modal");
+                this.$bvModal.hide("kick-modal");
+                clearInterval(this.timer);
             }
         }
 
@@ -59,7 +68,7 @@
         }
 
         private sendKickMsg() {
-            this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false).then(()=>{
+            this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false).then(() => {
                 if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id) {
                     this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
                 }
@@ -67,7 +76,7 @@
         }
 
         public kickPlayer(vote: boolean): void {
-            if (this.playerRemovalInfo.ownerId==this.kickInitPlayer.id && this.kickInitPlayer.lobbyOwner) {
+            if (this.playerRemovalInfo.ownerId == this.kickInitPlayer.id && this.kickInitPlayer.lobbyOwner) {
                 clearInterval(this.timer);
                 this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
                     this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
@@ -114,5 +123,19 @@
 </script>
 
 <style scoped>
+    button {
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        outline: none;
+        color: gray;
+    }
+    .yes:hover{
+        color: lightgreen;
+    }
+    .no:hover{
+        color: rgb(135, 25, 75);
+    }
+
 
 </style>

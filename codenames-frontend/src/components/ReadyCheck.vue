@@ -4,7 +4,7 @@
             @click="sendRdyState"
             :disabled="player.name!==currentPlayer.name"
             :pressed.sync="player.rdyState"
-            :class="['rdy-btn', player.rdyState ? 'is-ready' : '']"
+            :class="['rdy-btn mr-2', player.rdyState ? 'is-ready' : '']"
     ><font-awesome-icon icon="check"/>
     </button>
 </template>

@@ -43,8 +43,9 @@
                                 <ReadyCheck
                                         :stomp-client="stompClient"
                                         :player="player"></ReadyCheck>
-                                <font-awesome-icon v-if="player.id === currentPlayer.id" icon="user-secret"/>
-                                <label class="mx-2">{{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
+                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id" icon="user-secret"/>
+                                <label class="mr-2" :style="{ color: player.side}">
+                                    {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name!==currentPlayerName"
                                                    class="kick-btn"
                                                    @click="initKickPlayer(player)"
@@ -218,9 +219,13 @@
         }
 
         get players(): Array<PlayerModel> {
+            // TODO: refactor
             const playersList: Array<PlayerModel> = [];
-            playersList.push(this.currentPlayer);
             const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
+            const currentPlayer = playersFetched.find(player => player.id === this.currentPlayer.id);
+            if(currentPlayer){
+                playersList.push(currentPlayer);
+            }
             playersFetched.filter(player => player.id != this.currentPlayer.id)
                 .forEach(player => playersList.push(player));
             return playersList;
@@ -233,9 +238,6 @@
 </script>
 
 <style scoped>
-    .input {
-        width: 500px
-    }
 
     svg {
         color: rgb(135, 25, 75);
@@ -257,7 +259,7 @@
         max-height: 60vh;
         overflow-y: scroll;
         position: absolute;
-        z-index: 1;
+        z-index: 2;
         -ms-overflow-style: none;
     }
 
@@ -269,7 +271,6 @@
         height: 15vh;
     }
 
-
     label {
         color: white;
     }
@@ -279,8 +280,8 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: top;
-        height: 100vh;
-        width: 100vw;
+        min-height: 100vh;
+        min-width: 100vw;
     }
 
     @media (max-width: 1025px) {
@@ -317,13 +318,13 @@
     }
 
     .spy-decor.left-out {
-        transform: translateX(-10%);
-        -webkit-transform: translateX(-10%);
+        transform: translateX(-20%);
+        -webkit-transform: translateX(-20%);
     }
 
     .spy-decor.right-out {
-        transform: translateX(10%);
-        -webkit-transform: translateX(10%);
+        transform: translateX(20%);
+        -webkit-transform: translateX(20%);
     }
 
     img {
