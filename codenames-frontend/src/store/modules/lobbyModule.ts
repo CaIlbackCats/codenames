@@ -21,9 +21,9 @@ export default class LobbyModule extends VuexModule {
         router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
     }
 
-    @Action({commit: 'setLobby'})
-    public async joinLobby(id: string) {
-        // update the backend, registering a new player
-        return id
-    }
+    // @Action({commit: 'setLobby'})
+    // public async joinLobby(id: string) {
+    //     // update the backend, registering a new player
+    //     return id
+    // }
 }
