@@ -1,13 +1,24 @@
 <template>
     <div class="main-div col-sm-12">
+        <div id="spies"
+             :class="['col-lg-4 offset-lg-4',
+                      {'move-right':isOverCreate},
+                      {'move-left':isOverRandom}]"></div>
         <div class="codenames-header">
             <b-img :src="logoUrl"></b-img>
         </div>
-        <div class="text-center">
-            <b-button squared @click="createLobby" class="mr-5">
+        <div id="welcome-buttons" class="text-center col-md-8 offset-md-2">
+            <b-button squared
+                      @click="createLobby"
+                      @mouseover="isOverCreate = true"
+                      @mouseleave="isOverCreate = false"
+                      class="mr-5">
                 Create private room
             </b-button>
-            <b-button squared>
+            <b-button squared
+                      @mouseover="isOverRandom = true"
+                      @mouseleave="isOverRandom = false"
+            >
                 Random room
             </b-button>
         </div>
@@ -20,6 +31,8 @@
     })
     export default class WelcomeHeader extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
+        private isOverCreate = false;
+        private isOverRandom = false;
 
         public createLobby() {
             this.$store.dispatch("createLobby");
@@ -28,17 +41,54 @@
 </script>
 
 <style scoped>
+
+    @media (max-width: 1025px) {
+        #spies {
+            display: none;
+        }
+    }
+
+    #spies{
+        background-image: url("../assets/spies.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: absolute;
+        bottom: 0;
+        height: 95vh;
+        z-index: 0;
+        opacity: 1;
+        transition: .5s;
+    }
+
+
+    #spies.move-right {
+        transform: translateX(3%);
+        -webkit-transform: translateX(3%);
+    }
+
+    #spies.move-left {
+        transform: translateX(-3%);
+        -webkit-transform: translateX(-3%);
+    }
+
+
+    #welcome-buttons{
+        margin-top: 30vh;
+        position: absolute;
+        z-index: 1;
+    }
+
     .main-div {
         background-image: url("../assets/background.svg");
         background-repeat: no-repeat;
-        background-size: 100%;
-        width: 100vw;
+        background-size: cover;
+        background-position: top;
         height: 100vh;
+        width: 100vw;
     }
 
     img {
         max-width: 75%;
-        margin-bottom: 15vh;
     }
 
     button {
