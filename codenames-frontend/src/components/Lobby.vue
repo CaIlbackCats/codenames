@@ -280,8 +280,10 @@
     }
 
     .spy-decor {
+        overflow: hidden;
         background-repeat: no-repeat;
         background-size: cover;
+        background-position: top;
         position: absolute;
         height: 100vh;
         width: 25vw;
@@ -291,13 +293,11 @@
 
     #women-spy {
         background-image: url("../assets/spy_woman.png");
-        background-position: right;
         left: 0;
     }
 
     #man-spy {
         background-image: url("../assets/spy_man.png");
-        background-position: left;
         right: 0;
     }
 
