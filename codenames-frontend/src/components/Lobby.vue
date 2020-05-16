@@ -1,8 +1,10 @@
 <template>
     <div class="main-div row m-0">
-        <div class="women-spy col-sm-1 col-lg-1 col-xl-2">
+        <div id="women-spy" :class="['spy-decor', {'left-out':isMouseInMiddle}]">
         </div>
-        <div class="col-sm-12 col-xl-8">
+        <div class="col-sm-12 col-xl-8 offset-xl-2"
+             @mouseenter="isMouseInMiddle = true"
+             @mouseleave="isMouseInMiddle = false">
             <template v-if="!playerSelected">
                 <div class="codenames-header">
                     <b-img :src="logoUrl"></b-img>
@@ -83,7 +85,7 @@
                 </div>
             </div>
         </div>
-        <div class="man-spy col-sm-1 col-lg-1 col-xl-2">
+        <div id="man-spy" :class="['spy-decor',{'right-out':isMouseInMiddle}]">
         </div>
     </div>
 </template>
@@ -105,6 +107,7 @@
         components: {ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
+        private isMouseInMiddle = false;
         private logoUrl = require("../assets/codenames.png");
         private stompClient!: Client;
         private path = "http://localhost:4200";
@@ -220,7 +223,7 @@
         width: 500px
     }
 
-    svg{
+    svg {
         color: rgb(135, 25, 75);
     }
 
@@ -261,32 +264,51 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: top;
-        min-height: 100vh;
+        height: 100vh;
+        width: 100vw;
     }
 
-    @media (max-width: 1025px){
-        .women-spy {
+    @media (max-width: 1025px) {
+        #women-spy {
             display: none;
         }
-        .man-spy{
+
+        #man-spy {
             display: none;
         }
     }
 
-    .women-spy{
+    .spy-decor {
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: absolute;
+        z-index: 1;
+        transition: all 1.5s ease;
+    }
+
+    #women-spy {
         background-image: url("../assets/spy_woman.png");
-        background-repeat: no-repeat;
-        background-size: cover;
         background-position: right;
-        max-height: 95vh;
+        height: 95vh;
+        width: 25vw;
     }
 
-    .man-spy{
+    #man-spy {
         background-image: url("../assets/spy_man.png");
-        background-repeat: no-repeat;
-        background-size: cover;
         background-position: left;
-        min-height: 100vh;
+        height: 100vh;
+        width: 25vw;
+        right: 0;
+    }
+
+    .spy-decor.left-out {
+        transform: translateX(-10%);
+        -webkit-transform: translateX(-10%);
+    }
+
+    .spy-decor.right-out {
+        transform: translateX(10%);
+        -webkit-transform: translateX(10%);
     }
 
     img {
