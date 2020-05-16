@@ -283,21 +283,22 @@
         overflow: hidden;
         background-repeat: no-repeat;
         background-size: cover;
-        background-position: top;
         position: absolute;
         height: 100vh;
         width: 25vw;
         z-index: 1;
-        transition: all 1.5s ease;
+        transition: 1.5s;
     }
 
     #women-spy {
         background-image: url("../assets/spy_woman.png");
+        background-position: top 0 right 0;
         left: 0;
     }
 
     #man-spy {
         background-image: url("../assets/spy_man.png");
+        background-position: top 0 left 0;
         right: 0;
     }
 
