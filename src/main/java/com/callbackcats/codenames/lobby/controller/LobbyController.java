@@ -30,6 +30,4 @@ public class LobbyController {
         log.info("New lobby generation requested");
         return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
     }
-
-
 }
