@@ -238,9 +238,6 @@
 </script>
 
 <style scoped>
-    .input {
-        width: 500px
-    }
 
     svg {
         color: rgb(135, 25, 75);
@@ -283,8 +280,8 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: top;
-        height: 100vh;
-        width: 100vw;
+        min-height: 100vh;
+        min-width: 100vw;
     }
 
     @media (max-width: 1025px) {
