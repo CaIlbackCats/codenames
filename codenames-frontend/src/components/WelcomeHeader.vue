@@ -19,8 +19,7 @@
     @Component({
     })
     export default class WelcomeHeader extends Vue {
-
-        private logoUrl = require("../assets/codenames.png");
+        private logoUrl = require("../assets/semanedoc.png");
 
         public createLobby() {
             this.$store.dispatch("createLobby");

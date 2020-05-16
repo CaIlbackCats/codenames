@@ -107,8 +107,9 @@
         components: {ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
+        private logoUrl = require("../assets/semanedoc.png");
         private isMouseInMiddle = false;
-        private logoUrl = require("../assets/codenames.png");
+
         private stompClient!: Client;
         private path = "http://localhost:4200";
         private currentPlayerName = "";
@@ -282,6 +283,8 @@
         background-repeat: no-repeat;
         background-size: cover;
         position: absolute;
+        height: 100vh;
+        width: 25vw;
         z-index: 1;
         transition: all 1.5s ease;
     }
@@ -289,15 +292,12 @@
     #women-spy {
         background-image: url("../assets/spy_woman.png");
         background-position: right;
-        height: 95vh;
-        width: 25vw;
+        left: 0;
     }
 
     #man-spy {
         background-image: url("../assets/spy_man.png");
         background-position: left;
-        height: 100vh;
-        width: 25vw;
         right: 0;
     }
 
