@@ -108,7 +108,7 @@
     })
     export default class Lobby extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
-        private isMouseInMiddle = false;
+        private isMouseInMiddle = true;
 
         private stompClient!: Client;
         private path = "http://localhost:4200";
