@@ -11,7 +11,7 @@ export default class LobbyModule extends VuexModule {
 
     @Action({commit: "CREATE_LOBBY", rawError: true})
     public async createLobby(): Promise<string> {
-        const response = await axios.get(BASE_URL + "/lobby")
+        const response = await axios.post(BASE_URL + "/lobby")
         return response.data;
     }
 
