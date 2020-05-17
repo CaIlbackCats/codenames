@@ -60,6 +60,8 @@
         }
 
         private send(message: MessageModel) {
+            // TODO: change this to dispatch('chatModule/sendMessage', msg)
+            // (keep all the stomp stuff in the store modules)
             this.stompClient.send(process.env.VUE_APP_SEND_ENDPOINT, JSON.stringify(message), {});
         }
 

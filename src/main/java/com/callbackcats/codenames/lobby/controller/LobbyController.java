@@ -23,14 +23,14 @@ public class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String id) {
         Optional<Lobby> maybeLobby = this.lobbyService.getLobbyById(id);
         if (maybeLobby.isPresent()) {
             LobbyDetails lobbyDetails = new LobbyDetails(maybeLobby.get());
-            return new ResponseEntity<LobbyDetails>(lobbyDetails, HttpStatus.OK);
+            return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
         }
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
