@@ -5,11 +5,12 @@ import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/lobby")
@@ -23,7 +24,17 @@ public class LobbyController {
     }
 
     @GetMapping
-    public ResponseEntity<LobbyDetails> getNewLobby() {
+    public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String id) {
+        Optional<Lobby> maybeLobby = this.lobbyService.getLobbyById(id);
+        if (maybeLobby.isPresent()) {
+            LobbyDetails lobbyDetails = new LobbyDetails(maybeLobby.get());
+            return new ResponseEntity<LobbyDetails>(lobbyDetails, HttpStatus.OK);
+        }
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping
+    public ResponseEntity<LobbyDetails> createLobby() {
         Lobby lobby = new Lobby();
         this.lobbyService.saveNewLobby(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
