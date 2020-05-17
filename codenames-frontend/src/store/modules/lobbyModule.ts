@@ -9,16 +9,36 @@ const BASE_URL = process.env.VUE_APP_BASE_URL;
 export default class LobbyModule extends VuexModule {
     lobby?: LobbyModel
 
-    @Action({commit: "CREATE_LOBBY", rawError: true})
-    public async createLobby(): Promise<string> {
+    @Action
+    public async createLobby(): Promise<void> {
         const response = await axios.post(BASE_URL + "/lobby")
-        return response.data;
+        if (response.status === 200) {
+            const lobby: LobbyModel = response.data
+            // this.context.commit('SET_LOBBY', lobby)
+            router.push({name: "Lobby", params: {lobbyId: lobby.id}});
+        }
+    }
+
+    @Action
+    public async joinLobby(id: string): Promise<void> {
+        try {
+            // check that the lobby exists
+            const response = await axios.get(`${BASE_URL}/lobby/${id}`)
+            if (response.status === 200) {
+                const lobby: LobbyModel = response.data
+                this.context.commit('SET_LOBBY', lobby)
+            } else {
+                router.push('/')
+            }
+            // TODO: register a new player etc.
+        } catch (err) {
+            router.push('/')
+        }
     }
 
     @Mutation
-    private CREATE_LOBBY(lobbyModel: LobbyModel): void {
-        this.lobby = lobbyModel;
-        router.push({name: "Lobby", params: {lobbyId: lobbyModel.id}});
+    private SET_LOBBY(lobbyModel: LobbyModel): void {
+        this.lobby = lobbyModel
     }
 
     // @Action({commit: 'setLobby'})

@@ -150,6 +150,7 @@
 
         mounted() {
             this.path += this.$route.path;
+            this.$store.dispatch('joinLobby', this.$route.params.lobbyId)
             this.connect();
         };
 
