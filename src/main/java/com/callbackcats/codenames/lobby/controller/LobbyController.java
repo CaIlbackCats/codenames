@@ -2,10 +2,8 @@ package com.callbackcats.codenames.lobby.controller;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

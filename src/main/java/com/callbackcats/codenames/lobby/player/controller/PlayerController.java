@@ -117,6 +117,15 @@ public class PlayerController {
         return updateList(lobbyName);
     }
 
+    @MessageMapping("/getPlayer")
+    public ActionData getPlayer(@Payload PlayerDetailsData playerDetailsData){
+        log.info("Get player requested");
+        PlayerData playerDataById = playerService.findPlayerDataById(playerDetailsData.getId());
+        ActionData currentPlayer = new ActionData(ActionType.UPDATE_PLAYER, playerDataById);
+        simpMessagingTemplate.convertAndSend("/lobby/" + playerDetailsData.getLobbyName(), currentPlayer);
+        return updateList(playerDetailsData.getLobbyName());
+    }
+
     private ActionData updateList(String lobbyName) {
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
         LobbyDetails lobbyDetails = new LobbyDetails();

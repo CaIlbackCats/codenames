@@ -126,6 +126,9 @@ export default class PlayerModule extends VuexModule {
             case "UPDATE_LOBBY":
                 this.context.commit("UPDATE_LOBBY", messageResult.lobbyDetails)
                 break;
+            case "UPDATE_PLAYER":
+                this.context.commit("UPDATE_PLAYER", messageResult.currentPlayer)
+                break;
         }
     }
 

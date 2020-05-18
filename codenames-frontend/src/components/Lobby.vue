@@ -117,6 +117,7 @@
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
     import ReadyCheck from "@/components/ReadyCheck.vue";
     import RolePick from "@/components/RolePick.vue";
+    import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 
     @Component({
         components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
@@ -145,6 +146,7 @@
                 stompClient: this.stompClient,
                 playerId: this.currentPlayer.id,
             }
+            localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
             this.$store.dispatch("subscribeToPlayerChange", room);
         }
 
@@ -155,9 +157,9 @@
         };
 
         mounted() {
-            this.path += this.$route.path;
-            this.$store.dispatch('joinLobby', this.$route.params.lobbyId)
             this.connect();
+            this.path += this.$route.path;
+            this.$store.dispatch('joinLobby', this.$route.params.lobbyId);
         };
 
         public connect(): void {
@@ -168,17 +170,27 @@
             // this.stompClient.debug = () => {
             //     null
             // };
-            this.stompClient.connect({"name": this.currentPlayerName}, frame => {
-                this.subscribeToLobby();
+            this.stompClient.connect({}, frame => {
+                this.subscribeToLobby().then(() => {
+                    const currentPlayerId = localStorage.getItem('currentPlayerId');
+                    if (currentPlayerId) {
+                        this.playerSelected = true;
+                        const existingPlayer: PlayerDetailsModel = {
+                            lobbyName: this.$route.params.lobbyId,
+                            id: Number(currentPlayerId),
+                        }
+                        this.stompClient.send(process.env.VUE_APP_PLAYER_FETCH, JSON.stringify(existingPlayer));
+                    }
+                })
             });
         }
 
-        private subscribeToLobby() {
+        private async subscribeToLobby() {
             const room: RoomModel = {
                 name: this.$route.params.lobbyId,
                 stompClient: this.stompClient,
             }
-            this.$store.dispatch("subscribeToLobby", room);
+            await this.$store.dispatch("subscribeToLobby", room);
         }
 
 
@@ -187,7 +199,7 @@
         }
 
         public createPlayer(): void {
-            this.playerSelected = !this.playerSelected;
+            this.playerSelected = true;
 
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
@@ -366,4 +378,5 @@
         outline-offset: 15px;
         text-shadow: 1px 1px 2px #427388;
     }
+
 </style>
