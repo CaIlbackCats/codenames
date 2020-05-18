@@ -6,6 +6,7 @@ import {ActionModel} from "@/models/actionModel";
 import router from "@/router";
 import {PlayerRemovalModel} from "@/models/playerRemovalModel";
 import {LobbyModel} from "@/models/lobbyModel";
+import {LobbyTeamModel} from "@/models/lobbyTeamModel";
 
 
 @Module
@@ -33,6 +34,11 @@ export default class PlayerModule extends VuexModule {
 
     private initKickWindow = false;
 
+    private blueSpymaster = false;
+    private blueSpy = false;
+    private redSpymaster = false;
+    private redSpy = false;
+
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
         if (this.currentPlayer.id === -1) {
@@ -46,8 +52,14 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Mutation
-    private UPDATE_LIST(players: Array<PlayerModel>): void {
-        this.players = players;
+    private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
+        this.players = lobbyModel.players;
+        this.everyOneRdy = lobbyModel.everyOneRdy;
+        this.blueSpymaster = lobbyModel.blueSpymaster;
+        this.blueSpy = lobbyModel.blueSpy;
+        this.redSpymaster = lobbyModel.redSpymaster;
+        this.redSpy = lobbyModel.redSpy;
+
     }
 
     @Mutation
@@ -85,8 +97,11 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Mutation
-    private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
-        this.everyOneRdy = lobbyModel.everyOneRdy;
+    private UPDATE_LOBBY_TEAM(lobbyTeam: LobbyTeamModel): void {
+        this.blueSpymaster = lobbyTeam.blueSpymaster;
+        this.blueSpy = lobbyTeam.blueSpy;
+        this.redSpymaster = lobbyTeam.redSpymaster;
+        this.redSpy = lobbyTeam.redSpy;
     }
 
     @Action({rawError: true})
@@ -107,9 +122,6 @@ export default class PlayerModule extends VuexModule {
         switch (messageResult.actionToDo) {
             case "CREATE_PLAYER":
                 this.context.commit("ADD_PLAYER", messageResult.currentPlayer)
-                break;
-            case "UPDATE_LIST":
-                this.context.commit("UPDATE_LIST", messageResult.playerList)
                 break;
             case "UPDATE_LOBBY":
                 this.context.commit("UPDATE_LOBBY", messageResult.lobbyDetails)
@@ -173,23 +185,39 @@ export default class PlayerModule extends VuexModule {
         return playerRemovalModel;
     };
 
-    get getPlayers() {
+    get getPlayers(): Array<PlayerModel> {
         return this.players;
     }
 
-    get getCurrentPlayer() {
+    get getCurrentPlayer(): PlayerModel {
         return this.currentPlayer;
     }
 
-    get getInitKickWindow() {
+    get getInitKickWindow(): boolean {
         return this.initKickWindow;
     }
 
-    get getPlayerRemovalInfo() {
+    get getPlayerRemovalInfo(): PlayerRemovalModel {
         return this.playerRemovalInfo;
     }
 
-    get getEveryOneRdy() {
+    get isEveryOneRdy(): boolean {
         return this.everyOneRdy;
+    }
+
+    get isBlueSpymasterFull(): boolean {
+        return this.blueSpymaster;
+    }
+
+    get isBlueSpyFull(): boolean {
+        return this.blueSpy;
+    }
+
+    get isRedSpymasterFull(): boolean {
+        return this.redSpymaster;
+    }
+
+    get isRedSpyFull(): boolean {
+        return this.redSpy;
     }
 }
