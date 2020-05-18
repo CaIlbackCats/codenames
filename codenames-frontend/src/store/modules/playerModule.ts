@@ -30,6 +30,9 @@ export default class PlayerModule extends VuexModule {
         kickType: "",
     };
 
+    private playerSelected = false;
+
+
     private everyOneRdy = false;
 
     private initKickWindow = false;
@@ -38,6 +41,11 @@ export default class PlayerModule extends VuexModule {
     private blueSpy = false;
     private redSpymaster = false;
     private redSpy = false;
+
+    @Mutation
+    private SET_PLAYER_SELECTED(playerSelected: boolean) {
+        this.playerSelected = playerSelected;
+    }
 
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
@@ -126,8 +134,11 @@ export default class PlayerModule extends VuexModule {
             case "UPDATE_LOBBY":
                 this.context.commit("UPDATE_LOBBY", messageResult.lobbyDetails)
                 break;
-            case "UPDATE_PLAYER":
+            case "SET_PREVIOUS_PLAYER":
                 this.context.commit("UPDATE_PLAYER", messageResult.currentPlayer)
+                break;
+            case "DELETE_PREV_PLAYER":
+                this.context.commit("SET_PLAYER_SELECTED", false)
                 break;
         }
     }
@@ -222,5 +233,9 @@ export default class PlayerModule extends VuexModule {
 
     get isRedSpyFull(): boolean {
         return this.redSpy;
+    }
+
+    get getPlayerSelected(): boolean {
+        return this.playerSelected;
     }
 }

@@ -129,7 +129,7 @@
         private stompClient!: Client;
         private path = "http://localhost:4200";
         private currentPlayerName = "";
-        private playerSelected = false;
+        //   private playerSelected = false;
         private playerToKick: PlayerModel = {
             id: -1,
             name: "",
@@ -174,7 +174,8 @@
                 this.subscribeToLobby().then(() => {
                     const currentPlayerId = localStorage.getItem('currentPlayerId');
                     if (currentPlayerId) {
-                        this.playerSelected = true;
+                        //this.playerSelected = true;
+                        this.$store.commit("SET_PLAYER_SELECTED", true);
                         const existingPlayer: PlayerDetailsModel = {
                             lobbyName: this.$route.params.lobbyId,
                             id: Number(currentPlayerId),
@@ -199,7 +200,8 @@
         }
 
         public createPlayer(): void {
-            this.playerSelected = true;
+           // this.playerSelected = true;
+            this.$store.commit("SET_PLAYER_SELECTED", true);
 
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
@@ -252,6 +254,10 @@
 
         get currentPlayer(): PlayerModel {
             return this.$store.getters["getCurrentPlayer"];
+        }
+
+        get playerSelected(): boolean {
+            return this.$store.getters["getPlayerSelected"]
         }
     }
 </script>

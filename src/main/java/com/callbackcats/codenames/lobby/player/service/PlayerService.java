@@ -159,6 +159,11 @@ public class PlayerService {
         }
     }
 
+    public Boolean isGivenPlayerInLobby(PlayerDetailsData playerDetailsData) {
+        List<Player> playersInLobby = getPlayersByLobbyName(playerDetailsData.getLobbyName());
+        return playersInLobby.stream().map(Player::getId).anyMatch(id -> id.equals(playerDetailsData.getId()));
+    }
+
     public PlayerData findPlayerDataById(Long id) {
         log.info("Find playerdata by id:\t" + id);
         return new PlayerData(findPlayerById(id));
@@ -216,7 +221,7 @@ public class PlayerService {
         lobbyDetails.setRedSpymaster(redSpymasterFull);
         lobbyDetails.setRedSpy(redSpyFull);
 
-      //  return lobbyDetails;
+        //  return lobbyDetails;
     }
 
     private void removePlayer(Player player) {

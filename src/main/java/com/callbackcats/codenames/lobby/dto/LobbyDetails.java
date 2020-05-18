@@ -29,7 +29,6 @@ public class LobbyDetails {
 
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();
-       // this.players = lobby.getPlayerList().stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
     public LobbyDetails(Boolean everyOneRdy) {
