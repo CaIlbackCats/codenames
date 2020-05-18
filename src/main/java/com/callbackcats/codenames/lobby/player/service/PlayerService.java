@@ -1,22 +1,20 @@
-package com.callbackcats.codenames.player.service;
+package com.callbackcats.codenames.lobby.player.service;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
-import com.callbackcats.codenames.player.domain.ActionType;
-import com.callbackcats.codenames.player.domain.Player;
-import com.callbackcats.codenames.player.domain.RoleType;
-import com.callbackcats.codenames.player.domain.SideType;
-import com.callbackcats.codenames.player.dto.*;
-import com.callbackcats.codenames.player.repository.PlayerRepository;
+import com.callbackcats.codenames.lobby.player.domain.Player;
+import com.callbackcats.codenames.lobby.player.domain.RoleType;
+import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.lobby.player.dto.*;
+import com.callbackcats.codenames.lobby.player.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.Lob;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -178,6 +176,47 @@ public class PlayerService {
         log.info("Check if everyone is rdy!");
         List<Player> players = getPlayersByLobbyName(lobbyName);
         return players.stream().allMatch(Player::getRdyState);
+    }
+
+    public PlayerData setPlayerSideAndRole(SelectionData selectionData) {
+        Player player = findPlayerById(selectionData.getPlayerId());
+        player.setRole(RoleType.valueOf(selectionData.getRole()));
+        player.setSide(SideType.valueOf(selectionData.getSide()));
+        playerRepository.save(player);
+        return new PlayerData(player);
+    }
+
+    public void getTeamsByRoles(String lobbyName, LobbyDetails lobbyDetails) {
+        List<Player> playersInLobby = getPlayersByLobbyName(lobbyName);
+
+        long blueSpymaster = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPYMASTER)
+                .count();
+        long blueSpy = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPY)
+                .count();
+        long redSpymaster = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPYMASTER)
+                .count();
+        long redSpy = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPY)
+                .count();
+
+        boolean blueSpymasterFull = blueSpymaster == 1;
+        boolean blueSpyFull = playersInLobby.size() / 2 - blueSpy == 0;
+        boolean redSpymasterFull = redSpymaster == 1;
+        boolean redSpyFull = playersInLobby.size() / 2 - redSpy == 0;
+
+        lobbyDetails.setBlueSpymaster(blueSpymasterFull);
+        lobbyDetails.setBlueSpy(blueSpyFull);
+        lobbyDetails.setRedSpymaster(redSpymasterFull);
+        lobbyDetails.setRedSpy(redSpyFull);
+
+      //  return lobbyDetails;
     }
 
     private void removePlayer(Player player) {

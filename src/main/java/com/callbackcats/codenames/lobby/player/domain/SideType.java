@@ -1,6 +1,4 @@
-package com.callbackcats.codenames.player.domain;
-
-import java.util.Random;
+package com.callbackcats.codenames.lobby.player.domain;
 
 public enum SideType {
     BLUE,

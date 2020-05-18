@@ -1,4 +1,4 @@
-package com.callbackcats.codenames.lobby_chat.dto;
+package com.callbackcats.codenames.lobby.lobby_chat.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

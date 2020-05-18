@@ -1,4 +1,4 @@
-package com.callbackcats.codenames.player.dto;
+package com.callbackcats.codenames.lobby.player.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

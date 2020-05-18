@@ -1,10 +1,11 @@
-package com.callbackcats.codenames.player.controller;
+package com.callbackcats.codenames.lobby.player.controller;
 
+import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.player.domain.ActionType;
-import com.callbackcats.codenames.player.domain.KickType;
-import com.callbackcats.codenames.player.dto.*;
-import com.callbackcats.codenames.player.service.PlayerService;
+import com.callbackcats.codenames.lobby.player.domain.ActionType;
+import com.callbackcats.codenames.lobby.player.domain.KickType;
+import com.callbackcats.codenames.lobby.player.dto.*;
+import com.callbackcats.codenames.lobby.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -33,9 +34,9 @@ public class PlayerController {
         ActionData actionData = new ActionData(ActionType.CREATE_PLAYER, playerData);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, actionData);
 
-        Boolean everyOneRdy = playerService.isEveryOneRdy(lobbyName);
-        LobbyDetails lobbyDetails = new LobbyDetails(everyOneRdy);
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails));
+//        Boolean everyOneRdy = playerService.isEveryOneRdy(lobbyName);
+//        LobbyDetails lobbyDetails = new LobbyDetails(everyOneRdy);
+//        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails));
 
         return updateList(lobbyName);
     }
@@ -73,19 +74,6 @@ public class PlayerController {
         return updateList(lobbyName);
     }
 
-    private void setKickMsg(PlayerRemovalData playerRemovalData, String lobbyName, Boolean isPlayerRemoved) {
-        if (isPlayerRemoved) {
-            ActionData kickAction = new ActionData(ActionType.GET_KICKED);
-            setPlayerChangeMsg(lobbyName, playerRemovalData.getPlayerToRemoveId(), kickAction);
-            if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
-                PlayerData newOwner = playerService.reassignLobbyOwner(lobbyName);
-                ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, newOwner);
-                setPlayerChangeMsg(lobbyName, newOwner.getId(), updatePlayer);
-            }
-        }
-    }
-
-
     @MessageMapping("/kickInit")
     public ActionData initKick(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Initiate kicking requested");
@@ -110,23 +98,52 @@ public class PlayerController {
         setPlayerChangeMsg(lobbyName, playerData.getId(), setRdyAction);
 
         //todo refactor
-        Boolean everyOneRdy = playerService.isEveryOneRdy(lobbyName);
-        LobbyDetails lobbyDetails = new LobbyDetails(everyOneRdy);
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails));
+//        Boolean everyOneRdy = playerService.isEveryOneRdy(lobbyName);
+//        LobbyDetails lobbyDetails = new LobbyDetails(everyOneRdy);
+//        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails));
 
+
+        return updateList(lobbyName);
+    }
+
+    @MessageMapping("/selection")
+    public ActionData setPlayerSideAndRole(@Payload SelectionData selectionData) {
+        log.info("Player selection requested");
+        PlayerData modifiedPlayer = playerService.setPlayerSideAndRole(selectionData);
+        String lobbyName = modifiedPlayer.getLobbyName();
+        ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, modifiedPlayer);
+        setPlayerChangeMsg(lobbyName, modifiedPlayer.getId(), updatePlayer);
 
         return updateList(lobbyName);
     }
 
     private ActionData updateList(String lobbyName) {
         List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
-        ActionData actionData = new ActionData(ActionType.UPDATE_LIST, players);
+        LobbyDetails lobbyDetails = new LobbyDetails();
+
+        playerService.getTeamsByRoles(lobbyName, lobbyDetails);
+        lobbyDetails.setEveryOneRdy(playerService.isEveryOneRdy(lobbyName));
+        lobbyDetails.setPlayers(players);
+
+        ActionData actionData = new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, actionData);
         return actionData;
     }
 
     private void setPlayerChangeMsg(String lobbyName, Long id, ActionData actionData) {
         simpMessagingTemplate.convertAndSend("/player/" + lobbyName + "/" + id, actionData);
+    }
+
+    private void setKickMsg(PlayerRemovalData playerRemovalData, String lobbyName, Boolean isPlayerRemoved) {
+        if (isPlayerRemoved) {
+            ActionData kickAction = new ActionData(ActionType.GET_KICKED);
+            setPlayerChangeMsg(lobbyName, playerRemovalData.getPlayerToRemoveId(), kickAction);
+            if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
+                PlayerData newOwner = playerService.reassignLobbyOwner(lobbyName);
+                ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, newOwner);
+                setPlayerChangeMsg(lobbyName, newOwner.getId(), updatePlayer);
+            }
+        }
     }
 
 

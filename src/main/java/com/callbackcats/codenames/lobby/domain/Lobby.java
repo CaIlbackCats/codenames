@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.lobby.domain;
 
-import com.callbackcats.codenames.player.domain.Player;
+import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

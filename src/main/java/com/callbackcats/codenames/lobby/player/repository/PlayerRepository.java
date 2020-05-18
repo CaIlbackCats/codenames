@@ -1,6 +1,6 @@
-package com.callbackcats.codenames.player.repository;
+package com.callbackcats.codenames.lobby.player.repository;
 
-import com.callbackcats.codenames.player.domain.Player;
+import com.callbackcats.codenames.lobby.player.domain.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
