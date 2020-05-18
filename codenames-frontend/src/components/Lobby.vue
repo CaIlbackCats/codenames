@@ -43,7 +43,8 @@
                                 <ReadyCheck
                                         :stomp-client="stompClient"
                                         :player="player"></ReadyCheck>
-                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id" icon="user-secret"/>
+                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
+                                                   icon="user-secret"/>
                                 <label class="mr-2" :style="{ color: player.side}">
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name!==currentPlayerName"
@@ -62,6 +63,10 @@
 
                     <div class="lobby-options-div col">
                         <div style="position: absolute; right: 0" class="list-div">
+                            <RolePick
+                                    :stomp-client="stompClient"
+
+                            ></RolePick>
                             <LobbyOption v-if="currentPlayer.lobbyOwner"
                                          :lobby-name="this.$route.params.lobbyId"
                                          :stomp="stompClient"
@@ -111,9 +116,10 @@
     import KickPlayer from "@/components/KickPlayer.vue";
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
     import ReadyCheck from "@/components/ReadyCheck.vue";
+    import RolePick from "@/components/RolePick.vue";
 
     @Component({
-        components: {ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
+        components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
@@ -224,7 +230,7 @@
             const playersList: Array<PlayerModel> = [];
             const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
             const currentPlayer = playersFetched.find(player => player.id === this.currentPlayer.id);
-            if(currentPlayer){
+            if (currentPlayer) {
                 playersList.push(currentPlayer);
             }
             playersFetched.filter(player => player.id != this.currentPlayer.id)
@@ -268,7 +274,7 @@
         display: none;
     }
 
-    .lobby-options-div{
+    .lobby-options-div {
         height: 15vh;
     }
 

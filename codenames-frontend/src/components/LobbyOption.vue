@@ -36,7 +36,7 @@
         }
 
         get getEveryOneRdy(): boolean {
-            return this.$store.getters["getEveryOneRdy"];
+            return this.$store.getters["isEveryOneRdy"];
         }
     }
 </script>

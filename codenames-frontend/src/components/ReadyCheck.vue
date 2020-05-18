@@ -22,7 +22,6 @@
         @Prop()
         private stompClient!: Client;
 
-        //  @Watch("player.rdyState")
         sendRdyState() {
             const rdyModel: RdyModel = {
                 playerId: this.currentPlayer.id,
