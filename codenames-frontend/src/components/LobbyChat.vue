@@ -41,30 +41,13 @@
         currentPlayer!: PlayerModel;
         @Prop()
         currentLobby!: string;
-        @Prop()
-        private stompClient!: Client;
 
         private chatMessageToSend = "";
 
-
-        constructor() {
-            super();
-        };
-
         mounted() {
-            const room: RoomModel = {
-                name: this.currentLobby,
-                stompClient: this.stompClient,
-            }
-            this.$store.dispatch("chatModule/subscribeToChat", room);
+            // TODO: can we get types for action payloads? use action creators?
+            this.$store.dispatch("chatModule/subscribeToChat", { roomName: this.currentLobby });
         }
-
-        private send(message: MessageModel) {
-            // TODO: change this to dispatch('chatModule/sendMessage', msg)
-            // (keep all the stomp stuff in the store modules)
-            this.stompClient.send(process.env.VUE_APP_SEND_ENDPOINT, JSON.stringify(message), {});
-        }
-
 
         public sendChatMessage(): void {
             const msgModel: MessageModel = {
@@ -73,7 +56,7 @@
                 lobbyName: this.currentLobby,
             }
             this.chatMessageToSend = "";
-            this.send(msgModel);
+            this.$store.dispatch("chatModule/sendChatMessage", { message: msgModel })
         }
 
         get chatMessages() {
