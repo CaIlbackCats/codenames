@@ -20,8 +20,8 @@
 
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
-    import {Client} from "webstomp-client";
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
+    import * as websocket from '@/services/websocket'
 
     const MAX_VOTE_TIME = 15;
     const MILISEC = 1000;
@@ -34,9 +34,6 @@
 
         @Prop()
         private kickInitPlayer!: PlayerModel;
-
-        @Prop()
-        private stompClient!: Client;
 
         private counter = MAX_VOTE_TIME;
 
@@ -70,7 +67,7 @@
         private sendKickMsg() {
             this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false).then(() => {
                 if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id) {
-                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+                    websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
                 }
             });
         }
@@ -79,11 +76,11 @@
             if (this.playerRemovalInfo.ownerId == this.kickInitPlayer.id && this.kickInitPlayer.lobbyOwner) {
                 clearInterval(this.timer);
                 this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
-                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK, JSON.stringify(this.playerRemovalInfo));
+                    websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
                 });
             } else {
                 this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
-                    this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_COUNT, JSON.stringify(this.playerRemovalInfo));
+                    websocket.send(process.env.VUE_APP_PLAYER_KICK_COUNT, this.playerRemovalInfo);
                 });
             }
             this.hidePopPup();

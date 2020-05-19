@@ -5,7 +5,7 @@
         <div class="col-sm-12 col-xl-8 offset-xl-2"
              @mouseenter="isMouseInMiddle = true"
              @mouseleave="isMouseInMiddle = false">
-            <template v-if="!playerSelected">
+            <template v-if="!isPlayerSelected">
                 <div class="codenames-header">
                     <b-img :src="logoUrl"></b-img>
                 </div>
@@ -32,7 +32,7 @@
                 <div class="col-sm-12 col-lg-8">
                     <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
-                                :stomp-client="stompClient"></lobby-chat>
+                                ></lobby-chat>
                 </div>
 
                 <div class="col-sm-12 col-lg-4">
@@ -41,7 +41,6 @@
                             <div class="m-2" v-for="player in players"
                                  :key="player.id">
                                 <ReadyCheck
-                                        :stomp-client="stompClient"
                                         :player="player"></ReadyCheck>
                                 <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
                                                    icon="user-secret"/>
@@ -54,7 +53,6 @@
                             </div>
                         </div>
                         <KickPlayer
-                                :stomp-client="stompClient"
                                 :kick-init-player="currentPlayer"
                                 :player-to-kick="playerToKick"
                         ></KickPlayer>
@@ -63,13 +61,9 @@
 
                     <div class="lobby-options-div col">
                         <div style="position: absolute; right: 0" class="list-div">
-                            <RolePick
-                                    :stomp-client="stompClient"
-
-                            ></RolePick>
+                            <RolePick></RolePick>
                             <LobbyOption v-if="currentPlayer.lobbyOwner"
                                          :lobby-name="this.$route.params.lobbyId"
-                                         :stomp="stompClient"
                             ></LobbyOption>
                         </div>
                     </div>
@@ -109,15 +103,13 @@
     import LobbyChat from "@/components/LobbyChat.vue";
     import LobbyOption from "@/components/LobbyOption.vue";
     import {PlayerCreationModel} from "@/models/playerCreationModel";
-    import SockJS from "sockjs-client";
-    import Stomp, {Client} from "webstomp-client";
     import {PlayerModel} from "@/models/playerModel";
     import {RoomModel} from "@/models/roomModel";
     import KickPlayer from "@/components/KickPlayer.vue";
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
     import ReadyCheck from "@/components/ReadyCheck.vue";
     import RolePick from "@/components/RolePick.vue";
-    import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+    import * as websocket from '@/services/websocket'
 
     @Component({
         components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
@@ -126,7 +118,6 @@
         private logoUrl = require("../assets/semanedoc.png");
         private isMouseInMiddle = true;
 
-        private stompClient!: Client;
         private path = "http://localhost:4200";
         private currentPlayerName = "";
         //   private playerSelected = false;
@@ -143,7 +134,6 @@
         private subscribeToPlayerChange() {
             const room: RoomModel = {
                 name: this.$route.params.lobbyId,
-                stompClient: this.stompClient,
                 playerId: this.currentPlayer.id,
             }
             localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
@@ -152,47 +142,10 @@
 
         //  private showKickWindow = false;
 
-        constructor() {
-            super();
-        };
-
         mounted() {
-            this.connect();
             this.path += this.$route.path;
-            this.$store.dispatch('joinLobby', this.$route.params.lobbyId);
+            this.$store.dispatch('joinLobby', { lobbyId: this.$route.params.lobbyId });
         };
-
-        public connect(): void {
-            const socket = new SockJS(process.env.VUE_APP_BASE_URL);
-            this.stompClient = Stomp.over(socket);
-
-            //kikapcsolja a loggolást
-            // this.stompClient.debug = () => {
-            //     null
-            // };
-            this.stompClient.connect({}, frame => {
-                this.subscribeToLobby().then(() => {
-                    const currentPlayerId = localStorage.getItem('currentPlayerId');
-                    if (currentPlayerId) {
-                        //this.playerSelected = true;
-                        this.$store.commit("SET_PLAYER_SELECTED", true);
-                        const existingPlayer: PlayerDetailsModel = {
-                            lobbyName: this.$route.params.lobbyId,
-                            id: Number(currentPlayerId),
-                        }
-                        this.stompClient.send(process.env.VUE_APP_PLAYER_FETCH, JSON.stringify(existingPlayer));
-                    }
-                })
-            });
-        }
-
-        private async subscribeToLobby() {
-            const room: RoomModel = {
-                name: this.$route.params.lobbyId,
-                stompClient: this.stompClient,
-            }
-            await this.$store.dispatch("subscribeToLobby", room);
-        }
 
 
         public copyPath(): void {
@@ -200,16 +153,13 @@
         }
 
         public createPlayer(): void {
-           // this.playerSelected = true;
-            this.$store.commit("SET_PLAYER_SELECTED", true);
+           this.$store.commit("SET_PLAYER_SELECTED", true);
 
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayerName,
             }
-            this.stompClient.send(process.env.VUE_APP_OPTIONS_CREATE, JSON.stringify(newPlayer));
-            //  this.subscribeToPlayerChange();
-
+            websocket.send(process.env.VUE_APP_OPTIONS_CREATE, newPlayer);
         }
 
         public initKickPlayer(player: PlayerModel): void {
@@ -221,7 +171,7 @@
                     ownerId: this.currentPlayer.id,
                     playerToRemoveId: player.id,
                 }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
+                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
             } else {
 
                 const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
@@ -231,7 +181,7 @@
                     votingPlayers: votingPlayers,
                     playerToRemoveId: player.id,
                 }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, JSON.stringify(playerRemovalModel));
+                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
 
                 //   this.players.filter(player => player.name !== this.playerToKick.name).forEach(player => {
                 //       this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, player.name);
@@ -256,7 +206,7 @@
             return this.$store.getters["getCurrentPlayer"];
         }
 
-        get playerSelected(): boolean {
+        get isPlayerSelected(): boolean {
             return this.$store.getters["getPlayerSelected"]
         }
     }

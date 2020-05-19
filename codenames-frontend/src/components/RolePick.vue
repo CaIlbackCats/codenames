@@ -36,15 +36,12 @@
 <script lang="ts">
 
     import {Component, Prop, Vue} from "vue-property-decorator";
-    import {Client} from "webstomp-client";
     import {PlayerModel} from "@/models/playerModel";
     import {SelectionModel} from "@/models/selectionModel";
+    import * as websocket from '@/services/websocket'
 
     @Component
     export default class RolePick extends Vue {
-
-        @Prop()
-        private stompClient!: Client;
 
         private roleSelected = false;
 
@@ -55,7 +52,7 @@
                     side: side,
                     role: role,
                 }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_SELECTION, JSON.stringify(selection));
+                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
                 this.roleSelected = true;
             } else {
                 const selection: SelectionModel = {
@@ -63,7 +60,7 @@
                     side: "NOT_SELECTED",
                     role: "NOT_SELECTED",
                 }
-                this.stompClient.send(process.env.VUE_APP_PLAYER_SELECTION, JSON.stringify(selection));
+                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
                 this.roleSelected = false;
             }
         }

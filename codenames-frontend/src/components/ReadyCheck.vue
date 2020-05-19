@@ -12,22 +12,20 @@
 <script lang="ts">
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
-    import {Client} from "webstomp-client";
     import {RdyModel} from "@/models/rdyModel";
+    import * as websocket from '@/services/websocket'
 
     @Component
     export default class ReadyCheck extends Vue {
         @Prop()
         private player!: PlayerModel;
-        @Prop()
-        private stompClient!: Client;
 
         sendRdyState() {
             const rdyModel: RdyModel = {
                 playerId: this.currentPlayer.id,
                 rdyState: !this.currentPlayer.rdyState,
             }
-            this.stompClient.send(process.env.VUE_APP_PLAYER_RDY, JSON.stringify(rdyModel));
+            websocket.send(process.env.VUE_APP_PLAYER_RDY, rdyModel);
         }
 
         get currentPlayer(): PlayerModel {

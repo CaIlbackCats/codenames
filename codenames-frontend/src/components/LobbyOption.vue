@@ -9,9 +9,7 @@
 <script lang="ts">
 
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-    import {PlayerModel} from "@/models/playerModel";
-    import {Client} from "webstomp-client";
-    import {RoomModel} from "@/models/roomModel";
+    import * as websocket from '@/services/websocket'
 
     @Component
     export default class LobbyOption extends Vue {
@@ -19,20 +17,17 @@
         @Prop()
         private readonly lobbyName!: string;
 
-        @Prop()
-        private stomp!: Client;
-
         constructor() {
             super();
         }
 
 
         public randomizeRoles(): void {
-            this.stomp.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, this.lobbyName);
+            websocket.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, {lobbyId: this.lobbyName});
         }
 
         public randomizeSide(): void {
-            this.stomp.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, this.lobbyName);
+            websocket.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, {lobbyId: this.lobbyName});
         }
 
         get getEveryOneRdy(): boolean {

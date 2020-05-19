@@ -29,8 +29,6 @@
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/messageModel";
-    import {Client} from "webstomp-client";
-    import {RoomModel} from "@/models/roomModel";
     import {PlayerModel} from "@/models/playerModel";
 
 

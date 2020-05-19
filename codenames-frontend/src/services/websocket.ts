@@ -23,9 +23,9 @@ export const send = async (path, body) => {
 }
 
 
-export const subscribe = async (path: string, callback: (body?: object) => void) => {
+export const subscribe = async (path: string, callback: (body?: object) => void, headers: object = {}) => {
     if (!client) await connect()
 
     const wrappedCallback = (message: Message) => callback(JSON.parse(message.body))
-    return client.subscribe(path, wrappedCallback)
+    return client.subscribe(path, wrappedCallback, headers)
 }

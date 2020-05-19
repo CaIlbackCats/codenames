@@ -1,13 +1,20 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
+
+import router from "@/router";
+import * as websocket from '@/services/websocket'
 import {PlayerModel} from "@/models/playerModel";
-import {Message} from "webstomp-client";
 import {RoomModel} from "@/models/roomModel";
 import {ActionModel} from "@/models/actionModel";
-import router from "@/router";
 import {PlayerRemovalModel} from "@/models/playerRemovalModel";
 import {LobbyModel} from "@/models/lobbyModel";
 import {LobbyTeamModel} from "@/models/lobbyTeamModel";
+import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+import {config} from "@/config";
 
+
+interface CheckSelectedPlayerActionPayload {
+    lobbyId: string;
+}
 
 @Module
 export default class PlayerModule extends VuexModule {
@@ -30,7 +37,7 @@ export default class PlayerModule extends VuexModule {
         kickType: "",
     };
 
-    private playerSelected = false;
+    private isPlayerSelected = false;
 
 
     private everyOneRdy = false;
@@ -43,8 +50,8 @@ export default class PlayerModule extends VuexModule {
     private redSpy = false;
 
     @Mutation
-    private SET_PLAYER_SELECTED(playerSelected: boolean) {
-        this.playerSelected = playerSelected;
+    private SET_PLAYER_SELECTED(isPlayerSelected: boolean) {
+        this.isPlayerSelected = isPlayerSelected;
     }
 
     @Mutation
@@ -113,29 +120,16 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public subscribeToLobby(roomModel: RoomModel): void {
-        const client = roomModel.stompClient;
-        client.subscribe(process.env.VUE_APP_OPTIONS + roomModel.name,
-            message => {
-                if (message.body) {
-                    this.context.dispatch("executeLobbyChange", message);
-                }
-            },
-            {id: "lobby"});
-    };
-
-    @Action({rawError: true})
-    public executeLobbyChange(message: Message): void {
-        const messageResult: ActionModel = JSON.parse(message.body);
-        switch (messageResult.actionToDo) {
+    public executeLobbyChange(messageBody: ActionModel): void {
+        switch (messageBody.actionToDo) {
             case "CREATE_PLAYER":
-                this.context.commit("ADD_PLAYER", messageResult.currentPlayer)
+                this.context.commit("ADD_PLAYER", messageBody.currentPlayer)
                 break;
             case "UPDATE_LOBBY":
-                this.context.commit("UPDATE_LOBBY", messageResult.lobbyDetails)
+                this.context.commit("UPDATE_LOBBY", messageBody.lobbyDetails)
                 break;
             case "SET_PREVIOUS_PLAYER":
-                this.context.commit("UPDATE_PLAYER", messageResult.currentPlayer)
+                this.context.commit("UPDATE_PLAYER", messageBody.currentPlayer)
                 break;
             case "DELETE_PREV_PLAYER":
                 this.context.commit("SET_PLAYER_SELECTED", false)
@@ -145,11 +139,10 @@ export default class PlayerModule extends VuexModule {
 
     @Action({rawError: true})
     public subscribeToPlayerChange(roomModel: RoomModel): void {
-        const client = roomModel.stompClient;
-        client.subscribe(process.env.VUE_APP_PLAYER_CHANGE + roomModel.name + "/" + roomModel.playerId,
-            message => {
-                if (message.body) {
-                    this.context.dispatch("executePlayerChange", message);
+        websocket.subscribe(process.env.VUE_APP_PLAYER_CHANGE + roomModel.name + "/" + roomModel.playerId,
+            messageBody => {
+                if (messageBody) {
+                    this.context.dispatch("executePlayerChange", messageBody);
                 }
             },
             {
@@ -158,19 +151,31 @@ export default class PlayerModule extends VuexModule {
     };
 
     @Action
-    public executePlayerChange(message: Message): void {
-        const messageResult: ActionModel = JSON.parse(message.body);
-        switch (messageResult.actionToDo) {
+    public executePlayerChange(messageBody: ActionModel): void {
+        switch (messageBody.actionToDo) {
             case "INIT_KICK":
                 this.context.dispatch("showKickWindow", true);
-                this.context.dispatch("setPlayerRemoval", messageResult.playerRemoval)
+                this.context.dispatch("setPlayerRemoval", messageBody.playerRemoval)
                 break;
             case "GET_KICKED":
                 this.context.dispatch("executeGetKicked");
                 break;
             case "UPDATE_PLAYER":
-                this.context.dispatch("executePlayerUpdate", messageResult.currentPlayer);
+                this.context.dispatch("executePlayerUpdate", messageBody.currentPlayer);
                 break;
+        }
+    }
+
+    @Action
+    public checkSelectedPlayer(payload: CheckSelectedPlayerActionPayload) {
+        const currentPlayerId = localStorage.getItem('currentPlayerId');
+        if (currentPlayerId) {
+            this.context.commit("SET_PLAYER_SELECTED", true);
+            const existingPlayer: PlayerDetailsModel = {
+                lobbyName: payload.lobbyId,
+                id: Number(currentPlayerId),
+            }
+            return websocket.send(config.wsFetchPlayerPath, existingPlayer)
         }
     }
 
@@ -236,6 +241,6 @@ export default class PlayerModule extends VuexModule {
     }
 
     get getPlayerSelected(): boolean {
-        return this.playerSelected;
+        return this.isPlayerSelected;
     }
 }

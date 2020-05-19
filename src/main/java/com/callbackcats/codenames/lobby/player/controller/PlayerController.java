@@ -42,17 +42,19 @@ public class PlayerController {
     }
 
     @MessageMapping("/role")
-    public ActionData setPlayerRole(@Payload String lobbyName) {
+    public ActionData setPlayerRole(@Payload RoleSelectionData roleSelectionData) {
         log.info("Player random role setting requested");
-        playerService.setPlayerRole(lobbyName);
-        return updateList(lobbyName);
+        String lobbyId = roleSelectionData.getLobbyId();
+        playerService.setPlayerRole(lobbyId);
+        return updateList(lobbyId);
     }
 
     @MessageMapping("/side")
-    public ActionData setPlayerSide(@Payload String lobbyName) {
+    public ActionData setPlayerSide(@Payload SideSelectionData sideSelectionData) {
         log.info("Player randomize role and side requested");
-        playerService.randomizeTeamSetup(lobbyName);
-        return updateList(lobbyName);
+        String lobbyId = sideSelectionData.getLobbyId();
+        playerService.randomizeTeamSetup(lobbyId);
+        return updateList(lobbyId);
     }
 
     @MessageMapping("/kickCount")

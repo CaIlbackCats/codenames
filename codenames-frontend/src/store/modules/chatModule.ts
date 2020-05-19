@@ -37,5 +37,4 @@ export default class ChatModule extends VuexModule {
     public sendChatMessage(payload: SendActionPayload) {
         return websocket.send(config.wsChatPublishPath, payload.message)
     }
-
 }
