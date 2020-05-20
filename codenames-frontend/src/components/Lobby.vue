@@ -32,7 +32,7 @@
                 <div class="col-sm-12 col-lg-8">
                     <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
-                                ></lobby-chat>
+                    ></lobby-chat>
                     <div class="col-sm-12 mb-3">
                         <RolePick></RolePick>
                     </div>
@@ -46,7 +46,12 @@
                                 <ReadyCheck :player="player"></ReadyCheck>
                                 <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
                                                    icon="user-secret"/>
-                                <label class="mr-2" :style="{ color: player.side}">
+                                <font-awesome-icon v-if="player.role === 'SPYMASTER'"
+                                                   :icon="['fab', 'redhat']"
+                                                   :class="[ 'mr-2', player.side === 'BLUE' ? 'blue-spymaster': 'red-spymaster'] "
+                                ></font-awesome-icon>
+                                <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
+                                                        player.side === 'RED' ? 'color: indianred' : 'color: #87194B' ">
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name !== currentPlayer.name"
                                                    class="kick-btn"
@@ -55,7 +60,7 @@
                             </div>
                         </div>
                         <KickPlayer :kick-init-player="currentPlayer"
-                                :player-to-kick="playerToKick"></KickPlayer>
+                                    :player-to-kick="playerToKick"></KickPlayer>
                         <div class="white-background-div"></div>
                     </div>
 
@@ -139,7 +144,7 @@
 
         mounted() {
             this.path += this.$route.path;
-            this.$store.dispatch('joinLobby', { lobbyId: this.$route.params.lobbyId });
+            this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
         };
 
         public copyPath(): void {
@@ -147,7 +152,7 @@
         }
 
         public createPlayer(): void {
-           this.$store.commit("SET_PLAYER_SELECTED", true);
+            this.$store.commit("SET_PLAYER_SELECTED", true);
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayerName,
@@ -205,12 +210,20 @@
         color: rgb(135, 25, 75);
     }
 
+    .blue-spymaster{
+        color: dodgerblue;
+    }
+
+    .red-spymaster{
+        color: indianred;
+    }
+
     .white-background-div {
         height: 100%;
         width: 100%;
         background-color: white;
         position: relative;
-        opacity: 0.3;
+        opacity: 0.6;
     }
 
     .players-div {

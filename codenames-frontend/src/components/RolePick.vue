@@ -138,7 +138,7 @@
         width: 100%;
         background-color: white;
         position: relative;
-        opacity: 0.3;
+        opacity: 0.6;
     }
 
     @media (max-width: 450px) {
