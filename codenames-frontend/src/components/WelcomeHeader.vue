@@ -27,15 +27,23 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    @Component({
-    })
+    import router from "@/router";
+
+    @Component({})
     export default class WelcomeHeader extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
         private isOverCreate = false;
         private isOverRandom = false;
 
-        public createLobby() {
-            this.$store.dispatch("createLobby");
+        public async createLobby() {
+            const created: boolean = await this.$store.dispatch("createLobby");
+            if (created) {
+                router.push({name: "Lobby", params: {lobbyId: this.lobbyId}});
+            }
+        }
+
+        get lobbyId(): string {
+            return this.$store.getters["lobbyId"];
         }
     }
 </script>
@@ -48,7 +56,7 @@
         }
     }
 
-    #spies{
+    #spies {
         background-image: url("../assets/spies.png");
         background-repeat: no-repeat;
         background-size: cover;
@@ -72,7 +80,7 @@
     }
 
 
-    #welcome-buttons{
+    #welcome-buttons {
         margin-top: 30vh;
         position: absolute;
         z-index: 1;

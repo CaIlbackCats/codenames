@@ -30,8 +30,7 @@
 
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
-                    <lobby-chat :current-player="currentPlayer"
-                                :current-lobby="this.$route.params.lobbyId"
+                    <lobby-chat
                     ></lobby-chat>
                     <div class="col-sm-12 mb-3">
                         <RolePick></RolePick>
@@ -59,15 +58,16 @@
                                                    icon="user-minus"/>
                             </div>
                         </div>
-                        <KickPlayer :kick-init-player="currentPlayer"
-                                    :player-to-kick="playerToKick"></KickPlayer>
+                        <KickPlayer
+                                :player-to-kick="playerToKick"
+                        ></KickPlayer>
                         <div class="white-background-div"></div>
                     </div>
 
                     <div class="lobby-options-div col">
                         <div style="position: absolute; right: 0" class="list-div">
                             <LobbyOption v-if="currentPlayer.lobbyOwner"
-                                         :lobby-name="this.$route.params.lobbyId"></LobbyOption>
+                            ></LobbyOption>
                         </div>
                     </div>
 
@@ -112,6 +112,7 @@
     import ReadyCheck from "@/components/ReadyCheck.vue";
     import RolePick from "@/components/RolePick.vue";
     import * as websocket from '@/services/websocket'
+    import router from "@/router";
 
     @Component({
         components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
@@ -131,19 +132,23 @@
             rdyState: false,
         };
 
-        @Watch("currentPlayer")
+        @Watch("currentPlayer.id")
         private subscribeToPlayerChange() {
-            const room: RoomModel = {
-                name: this.$route.params.lobbyId,
-                playerId: this.currentPlayer.id,
+            if (this.currentPlayer.id!==-1){
+                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
+                this.$store.dispatch("subscribeToPlayerChange");
             }
-            localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
-            this.$store.dispatch("subscribeToPlayerChange", room);
         }
 
-        mounted() {
+        async mounted() {
+            await websocket.connect();
             this.path += this.$route.path;
-            this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
+            const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
+            if (!joined) {
+                router.push('/')
+            } else {
+                this.$store.dispatch("chatModule/subscribeToChat", this.$route.params.lobbyId);
+            }
         };
 
         public copyPath(): void {
@@ -181,16 +186,7 @@
         }
 
         get players(): Array<PlayerModel> {
-            // TODO: refactor
-            const playersList: Array<PlayerModel> = [];
-            const playersFetched: Array<PlayerModel> = this.$store.getters["getPlayers"];
-            const currentPlayer = playersFetched.find(player => player.id === this.currentPlayer.id);
-            if (currentPlayer) {
-                playersList.push(currentPlayer);
-            }
-            playersFetched.filter(player => player.id != this.currentPlayer.id)
-                .forEach(player => playersList.push(player));
-            return playersList;
+            return this.$store.getters["playersOrdered"];
         }
 
         get currentPlayer(): PlayerModel {

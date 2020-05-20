@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class PlayerService {
 
     private static final int MAX_SPYMASTER = 2;
+    private static final int MIN_PLAYERS = 4;
     private final PlayerRepository playerRepository;
     private final LobbyRepository lobbyRepository;
 
@@ -46,9 +47,9 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-    public List<PlayerData> setPlayerRole(String lobbyName) {
+    public void setPlayerRole(String lobbyName) {
         List<Player> allPlayers = getPlayersByLobbyName(lobbyName);
-        if (!allPlayers.isEmpty()) {
+        if (allPlayers.size() >= MIN_PLAYERS) {
             clearRoles(allPlayers);
             long sidelessPlayersNumber = allPlayers
                     .stream()
@@ -64,10 +65,9 @@ public class PlayerService {
             playerRepository.saveAll(allPlayers);
         }
         log.info("Player roles randomized");
-        return allPlayers.stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
-    public List<PlayerData> randomizeTeamSetup(String lobbyName) {
+    public void randomizeTeamSetup(String lobbyName) {
         List<Player> allPlayers = getPlayersByLobbyName(lobbyName);
         int originPlayerSize = allPlayers.size();
         List<Player> assignedPlayers = new ArrayList<>();
@@ -91,10 +91,6 @@ public class PlayerService {
             playerRepository.saveAll(assignedPlayers);
         }
         log.info("Player sides and roles randomized");
-        return assignedPlayers
-                .stream()
-                .map(PlayerData::new)
-                .collect(Collectors.toList());
     }
 
     public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {

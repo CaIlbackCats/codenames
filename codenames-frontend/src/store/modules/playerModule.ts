@@ -138,15 +138,13 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public subscribeToPlayerChange(roomModel: RoomModel): void {
-        websocket.subscribe(process.env.VUE_APP_PLAYER_CHANGE + roomModel.name + "/" + roomModel.playerId,
+    public subscribeToPlayerChange(): void {
+        const lobbyId: string = this.context.getters["lobbyId"];
+        websocket.subscribe(process.env.VUE_APP_PLAYER_CHANGE + lobbyId + "/" + this.currentPlayer.id,
             messageBody => {
                 if (messageBody) {
                     this.context.dispatch("executePlayerChange", messageBody);
                 }
-            },
-            {
-                id: "player",
             });
     };
 
@@ -166,16 +164,16 @@ export default class PlayerModule extends VuexModule {
         }
     }
 
-    @Action
+    @Action({rawError: true})
     public checkSelectedPlayer(payload: CheckSelectedPlayerActionPayload) {
         const currentPlayerId = localStorage.getItem('currentPlayerId');
         if (currentPlayerId) {
             this.context.commit("SET_PLAYER_SELECTED", true);
             const existingPlayer: PlayerDetailsModel = {
-                lobbyName: payload.lobbyId,
+                lobbyName: this.context.getters["lobbyId"],
                 id: Number(currentPlayerId),
             }
-            return websocket.send(config.wsFetchPlayerPath, existingPlayer)
+            websocket.send(config.wsFetchPlayerPath, existingPlayer);
         }
     }
 
@@ -204,12 +202,25 @@ export default class PlayerModule extends VuexModule {
         return playerRemovalModel;
     };
 
-    get getPlayers(): Array<PlayerModel> {
+    get playersOrdered(): Array<PlayerModel> {
+        const currentPlayerIndex: number = this.players.map(player => player.id).indexOf(this.currentPlayer.id);
+        const temp: PlayerModel = this.players[0];
+        this.players[0] = this.currentPlayer;
+        this.players[currentPlayerIndex] = temp;
+
         return this.players;
     }
 
     get getCurrentPlayer(): PlayerModel {
         return this.currentPlayer;
+    }
+
+    get currentPlayerId(): number {
+        return this.currentPlayer.id;
+    }
+
+    get partySize(): number {
+        return this.players.length;
     }
 
     get getInitKickWindow(): boolean {

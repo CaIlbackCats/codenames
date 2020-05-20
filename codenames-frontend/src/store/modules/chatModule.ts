@@ -4,13 +4,6 @@ import {MessageModel} from "@/models/messageModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 
-interface SubscribeActionPayload {
-    roomName: string
-}
-interface SendActionPayload {
-    message: MessageModel
-}
-
 @Module({namespaced: true})
 export default class ChatModule extends VuexModule {
 
@@ -25,16 +18,16 @@ export default class ChatModule extends VuexModule {
         this.chatMessages.push(message);
     };
 
-    @Action
-    public subscribeToChat(payload: SubscribeActionPayload) {
-        const path = `${config.wsChatSubscribePath}${payload.roomName}`
+    @Action({rawError: true})
+    public subscribeToChat(lobbyId:string) {
+        const path = `${config.wsChatSubscribePath}${lobbyId}`
         return websocket.subscribe(path, (message) => {
             if (message) this.context.commit("ADD_MESSAGE", message);
         });
     }
 
     @Action
-    public sendChatMessage(payload: SendActionPayload) {
-        return websocket.send(config.wsChatPublishPath, payload.message)
+    public sendChatMessage(messageModel: MessageModel) {
+        return websocket.send(config.wsChatPublishPath, messageModel)
     }
 }

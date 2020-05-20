@@ -1,19 +1,21 @@
-<template >
-        <b-modal size="sm"
-                 hide-footer
-                 hide-header
-                 @hide="hidePopPup"
-                 id="kick-modal"
-                 centered>
-                <div class="text-center">
-                    <p>Do you want to kick <span style="font-weight: bold">{{playerToKick.name}}</span>?</p>
-                    <button class="yes" @click="kickPlayer(true)">
-                        <font-awesome-icon style="font-size: 2rem; margin-right: 2rem" icon="check"/></button>
-                    <button class="no" @click="kickPlayer(false)">
-                        <font-awesome-icon style="font-size: 2rem" icon="times"/></button>
-                    <p>{{counter}}</p>
-                </div>
-        </b-modal>
+<template>
+    <b-modal size="sm"
+             hide-footer
+             hide-header
+             @hide="hidePopPup"
+             id="kick-modal"
+             centered>
+        <div class="text-center">
+            <p>Do you want to kick <span style="font-weight: bold">{{playerToKick.name}}</span>?</p>
+            <button class="yes" @click="kickPlayer(true)">
+                <font-awesome-icon style="font-size: 2rem; margin-right: 2rem" icon="check"/>
+            </button>
+            <button class="no" @click="kickPlayer(false)">
+                <font-awesome-icon style="font-size: 2rem" icon="times"/>
+            </button>
+            <p>{{counter}}</p>
+        </div>
+    </b-modal>
 </template>
 
 <script lang="ts">
@@ -31,9 +33,6 @@
 
         @Prop()
         private playerToKick!: PlayerModel;
-
-        @Prop()
-        private kickInitPlayer!: PlayerModel;
 
         private counter = MAX_VOTE_TIME;
 
@@ -65,21 +64,21 @@
         }
 
         private sendKickMsg() {
-            this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, false).then(() => {
-                if (this.playerRemovalInfo.ownerId === this.kickInitPlayer.id) {
+            this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, false).then(() => {
+                if (this.playerRemovalInfo.ownerId === this.currentPlayer.id) {
                     websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
                 }
             });
         }
 
         public kickPlayer(vote: boolean): void {
-            if (this.playerRemovalInfo.ownerId == this.kickInitPlayer.id && this.kickInitPlayer.lobbyOwner) {
+            if (this.playerRemovalInfo.ownerId == this.currentPlayer.id && this.currentPlayer.lobbyOwner) {
                 clearInterval(this.timer);
-                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
+                this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
                     websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
                 });
             } else {
-                this.updatePlayerRemovalInfo(this.kickInitPlayer.id, this.playerToKick.id, vote).then(() => {
+                this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
                     websocket.send(process.env.VUE_APP_PLAYER_KICK_COUNT, this.playerRemovalInfo);
                 });
             }
@@ -114,21 +113,27 @@
         get playerRemovalInfo(): PlayerRemovalModel {
             return this.$store.getters["getPlayerRemovalInfo"];
         }
+
+        get currentPlayer():PlayerModel{
+            return this.$store.getters["getCurrentPlayer"];
+        }
     }
 </script>
 
 <style scoped>
-     button {
-         background-color: transparent;
-         border: none;
-         box-shadow: none;
-         outline: none;
-         color: gray;
-     }
-    .yes:hover{
+    button {
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        outline: none;
+        color: gray;
+    }
+
+    .yes:hover {
         color: lightgreen;
     }
-    .no:hover{
+
+    .no:hover {
         color: rgb(135, 25, 75);
     }
 

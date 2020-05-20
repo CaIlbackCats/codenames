@@ -35,30 +35,32 @@
     @Component
     export default class LobbyChat extends Vue {
 
-        @Prop()
-        currentPlayer!: PlayerModel;
-        @Prop()
-        currentLobby!: string;
-
         private chatMessageToSend = "";
 
         mounted() {
             // TODO: can we get types for action payloads? use action creators?
-            this.$store.dispatch("chatModule/subscribeToChat", { roomName: this.currentLobby });
         }
 
         public sendChatMessage(): void {
             const msgModel: MessageModel = {
                 name: this.currentPlayer.name,
                 message: this.chatMessageToSend,
-                lobbyName: this.currentLobby,
+                lobbyName: this.lobbyId,
             }
             this.chatMessageToSend = "";
-            this.$store.dispatch("chatModule/sendChatMessage", { message: msgModel })
+            this.$store.dispatch("chatModule/sendChatMessage", msgModel)
         }
 
         get chatMessages() {
             return this.$store.getters["chatModule/messages"];
+        }
+
+        get currentPlayer(): PlayerModel {
+            return this.$store.getters["getCurrentPlayer"]
+        }
+
+        get lobbyId(): string {
+            return this.$store.getters["lobbyId"];
         }
 
     }
@@ -110,7 +112,7 @@
         -ms-overflow-style: none;
     }
 
-    svg{
+    svg {
         color: rgb(135, 25, 75);
     }
 

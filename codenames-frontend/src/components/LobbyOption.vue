@@ -1,8 +1,10 @@
 <template>
     <div>
-        <b-button size="sm" block squared @click="randomizeRoles">Random role</b-button>
-        <b-button size="sm" block squared @click="randomizeSide">Random side</b-button>
+        <b-button size="sm" block squared @click="randomizeRoles" :disabled="partySize<MIN_PARTY_SIZE">Random role
+        </b-button>
+        <b-button size="sm" block squared @click="randomizeSide" :disabled="partySize<MIN_PARTY_SIZE">Random side</b-button>
         <b-button size="sm" block squared :disabled="!getEveryOneRdy">Start The Game!</b-button>
+        <span v-if="partySize<MIN_PARTY_SIZE">There must be at least 4 players to use these functions</span>
     </div>
 </template>
 
@@ -14,23 +16,30 @@
     @Component
     export default class LobbyOption extends Vue {
 
-        @Prop()
-        private readonly lobbyName!: string;
+        private MIN_PARTY_SIZE = 4;
 
         constructor() {
             super();
         }
 
         public randomizeRoles(): void {
-            websocket.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, {lobbyId: this.lobbyName});
+            websocket.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, {lobbyId: this.lobbyId});
         }
 
         public randomizeSide(): void {
-            websocket.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, {lobbyId: this.lobbyName});
+            websocket.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, {lobbyId: this.lobbyId});
         }
 
         get getEveryOneRdy(): boolean {
             return this.$store.getters["isEveryOneRdy"];
+        }
+
+        get lobbyId(): string {
+            return this.$store.getters["lobbyId"];
+        }
+
+        get partySize(): number {
+            return this.$store.getters["partySize"];
         }
     }
 </script>

@@ -14,7 +14,15 @@ interface JoinActionPayload {
 
 @Module
 export default class LobbyModule extends VuexModule {
-    lobby?: LobbyModel
+    lobby: LobbyModel = {
+        id: "",
+        players: [],
+        everyOneRdy: false,
+        redSpy: false,
+        blueSpy: false,
+        redSpymaster: false,
+        blueSpymaster: false,
+    }
 
     @Mutation
     private SET_LOBBY(lobbyModel: LobbyModel): void {
@@ -22,39 +30,44 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action
-    public async createLobby(): Promise<void> {
+    public async createLobby(): Promise<boolean> {
         const response = await axios.post(BASE_URL + "/lobby")
         if (response.status === 200) {
             const lobby: LobbyModel = response.data
-            // this.context.commit('SET_LOBBY', lobby)
-            router.push({name: "Lobby", params: {lobbyId: lobby.id}});
+            this.context.commit('SET_LOBBY', lobby)
+            return true;
         }
+        return false;
     }
 
-    @Action
-    public async joinLobby(payload: JoinActionPayload): Promise<void> {
-        try {
-            // check that the lobby exists
-            const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
-            if (response.status === 200) {
-                const lobby: LobbyModel = response.data
-                this.context.commit('SET_LOBBY', lobby)
-
-                // subscribe player to lobby
-                await websocket.subscribe(
-                    `${config.wsLobbyPath}${payload.lobbyId}`,
-                    body => {
-                        if (body) this.context.dispatch("executeLobbyChange", body, {root: true});
-                    }
-                    ,
-                    {id: "lobby"}
-                );
-                this.context.dispatch("checkSelectedPlayer", {lobbyId: payload.lobbyId})
-            } else {
-                router.push('/')
-            }
-        } catch (err) {
-            router.push('/')
+    @Action({rawError: true})
+    public async joinLobby(payload: JoinActionPayload): Promise<boolean> {
+        // check that the lobby exists
+        const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
+        if (response.status === 200) {
+            const lobby: LobbyModel = response.data
+            this.context.commit('SET_LOBBY', lobby)
+            // subscribe player to lobby
+           await this.context.dispatch("subscribeToLobby");
+           await this.context.dispatch("checkSelectedPlayer", {root: true});
+            return true;
         }
+        return false;
+
+    }
+
+    @Action({rawError: true})
+    public async subscribeToLobby() : Promise<void> {
+      await websocket.subscribe(
+            `${config.wsLobbyPath}${this.lobby.id}`,
+            body => {
+                if (body) {
+                    this.context.dispatch("executeLobbyChange", body, {root: true});
+                }
+            });
+    }
+
+    get lobbyId(): string {
+        return this.lobby.id;
     }
 }
