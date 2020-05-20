@@ -122,8 +122,8 @@
 
     svg:hover {
         cursor: pointer;
-        -webkit-filter: drop-shadow(2px 2px 2px rgba(250, 230, 15, 0.6));
-        filter: drop-shadow(2px 2px 2px rgba(250, 230, 15, 0.6));
+        -webkit-filter: drop-shadow(2px 2px 2px rgba(255, 255, 255, 0.6));
+        filter: drop-shadow(2px 2px 2px rgba(255, 255, 255, 0.6));
     }
 
     .role-picker-div {
