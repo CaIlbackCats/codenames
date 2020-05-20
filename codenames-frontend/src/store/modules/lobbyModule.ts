@@ -57,5 +57,4 @@ export default class LobbyModule extends VuexModule {
             router.push('/')
         }
     }
-
 }

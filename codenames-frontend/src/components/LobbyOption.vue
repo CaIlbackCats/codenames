@@ -21,7 +21,6 @@
             super();
         }
 
-
         public randomizeRoles(): void {
             websocket.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, {lobbyId: this.lobbyName});
         }
@@ -37,7 +36,6 @@
 </script>
 
 <style scoped>
-
     button {
         background-color: rgb(135, 25, 75);
         border: 0 solid;

@@ -26,7 +26,6 @@ public class ActionData {
         this.currentPlayer = playerData;
     }
 
-
     public ActionData(ActionType actionToDo, PlayerRemovalData playerRemovalData) {
         this.actionToDo = actionToDo;
         this.playerRemoval = playerRemovalData;

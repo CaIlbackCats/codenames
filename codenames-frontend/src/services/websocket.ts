@@ -1,4 +1,4 @@
-import webstomp, {Message} from 'webstomp-client';
+import webstomp, {Client, Message} from 'webstomp-client';
 
 import { config } from '@/config'
 import SockJS from "sockjs-client";
@@ -18,7 +18,6 @@ export const connect = async () => {
 
 export const send = async (path, body) => {
     if (!client) await connect()
-
     return client.send(path, JSON.stringify(body))
 }
 
