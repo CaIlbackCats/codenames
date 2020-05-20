@@ -64,11 +64,9 @@
                         <div class="white-background-div"></div>
                     </div>
 
-                    <div class="lobby-options-div col">
-                        <div style="position: absolute; right: 0" class="list-div">
+                    <div class="lobby-options-div col-sm-12">
                             <LobbyOption v-if="currentPlayer.lobbyOwner"
                             ></LobbyOption>
-                        </div>
                     </div>
 
                 </div>
