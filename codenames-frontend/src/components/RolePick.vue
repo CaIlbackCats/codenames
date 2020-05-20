@@ -1,7 +1,7 @@
 <template>
     <div class="role-picker-div">
         <div class="role-picker">
-            <div v-if="!roleSelected">
+            <div v-if="roleSelected">
                 <font-awesome-icon
                         title="blue spymaster"
                         style="color: dodgerblue"
@@ -50,7 +50,7 @@
 
 <script lang="ts">
 
-    import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
     import {SelectionModel} from "@/models/selectionModel";
     import * as websocket from '@/services/websocket'
@@ -59,6 +59,11 @@
     export default class RolePick extends Vue {
 
         private roleSelected = false;
+
+        @Watch("getCurrentPlayer.role")
+        private roleChange(): void {
+            this.roleSelected = this.getCurrentPlayer.role === "NOT_SELECTED";
+        }
 
         public sendSelection(side: string, role: string): void {
             if (this.getCurrentPlayer.role === "NOT_SELECTED" && this.getCurrentPlayer.side === "NOT_SELECTED") {
@@ -104,7 +109,7 @@
 </script>
 
 <style scoped>
-    button{
+    button {
         margin: 1.5rem;
     }
 
@@ -147,14 +152,14 @@
     }
 
     @media (max-width: 450px) {
-        svg{
+        svg {
             font-size: 2rem;
             margin: 1rem 0.5rem 1rem 0.5rem;
         }
     }
-    
+
     @media (max-width: 320px) {
-        svg{
+        svg {
             font-size: 2rem;
             margin: 1rem 0.2rem 1rem 0.2rem;
         }

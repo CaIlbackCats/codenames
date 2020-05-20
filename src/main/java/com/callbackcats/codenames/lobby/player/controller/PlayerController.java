@@ -46,6 +46,11 @@ public class PlayerController {
         log.info("Player random role setting requested");
         String lobbyId = roleSelectionData.getLobbyId();
         playerService.setPlayerRole(lobbyId);
+        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
+        players.forEach(player -> {
+            ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, player);
+            setPlayerChangeMsg(lobbyId, player.getId(), updatePlayer);
+        });
         return updateList(lobbyId);
     }
 
@@ -54,6 +59,11 @@ public class PlayerController {
         log.info("Player randomize role and side requested");
         String lobbyId = sideSelectionData.getLobbyId();
         playerService.randomizeTeamSetup(lobbyId);
+        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
+        players.forEach(player -> {
+            ActionData updatePlayer = new ActionData(ActionType.UPDATE_PLAYER, player);
+            setPlayerChangeMsg(lobbyId, player.getId(), updatePlayer);
+        });
         return updateList(lobbyId);
     }
 
