@@ -8,7 +8,7 @@
                         id="blue-spymaster"
                         @click="sendSelection('BLUE','SPYMASTER')"
                         :disabled="isBlueSpymasterFull"
-                        :icon="['fab', 'redhat']">
+                        :icon="['fas', 'briefcase']">
                 </font-awesome-icon>
                 <font-awesome-icon
                         title="blue spy"
@@ -16,7 +16,7 @@
                         id="blue-spy"
                         @click="sendSelection('BLUE','SPY')"
                         :disabled="isBlueSpyFull"
-                        :icon="['fab', 'black-tie']">
+                        :icon="['fas', 'user-secret']">
                 </font-awesome-icon>
                 <font-awesome-icon
                         title="red spymaster"
@@ -24,7 +24,7 @@
                         id="red-spymaster"
                         @click="sendSelection('RED','SPYMASTER')"
                         :disabled="isRedSpymasterFull"
-                        :icon="['fab', 'redhat']">
+                        :icon="['fas', 'briefcase']">
                 </font-awesome-icon>
                 <font-awesome-icon
                         title="red spy"
@@ -32,7 +32,7 @@
                         id="red-spy"
                         @click="sendSelection('RED','SPY')"
                         :disabled="isRedSpyFull"
-                        :icon="['fab', 'black-tie']">
+                        :icon="['fas', 'user-secret']">
                 </font-awesome-icon>
             </div>
             <div v-else>
@@ -111,8 +111,8 @@
     svg {
         font-size: 3rem;
         box-sizing: content-box;
-        -webkit-filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
-        filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
+        -webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
         margin: 0.5rem 1rem 0.5rem 1rem;
     }
 
@@ -122,8 +122,8 @@
 
     svg:hover {
         cursor: pointer;
-        -webkit-filter: drop-shadow(2px 2px 2px rgba(255, 255, 255, 0.6));
-        filter: drop-shadow(2px 2px 2px rgba(255, 255, 255, 0.6));
+        -webkit-filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.7));
+        filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.7));
     }
 
     .role-picker-div {

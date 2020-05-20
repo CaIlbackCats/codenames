@@ -47,7 +47,7 @@
                                 <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
                                                    icon="user-secret"/>
                                 <font-awesome-icon v-if="player.role === 'SPYMASTER'"
-                                                   :icon="['fab', 'redhat']"
+                                                   :icon="['fas', 'briefcase']"
                                                    :class="[ 'mr-2', player.side === 'BLUE' ? 'blue-spymaster': 'red-spymaster'] "
                                 ></font-awesome-icon>
                                 <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
