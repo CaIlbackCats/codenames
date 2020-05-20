@@ -80,11 +80,10 @@
                            offset-md-2 offset-lg-3
                            pb-sm-2
                            pb-lg-5">
-                        <b-form-input id="current-player"
+                        <b-form-input id="current-url"
                                       type="text"
                                       readonly
-                                      :value="path"
-                                      v-on:keyup.enter="createPlayer">
+                                      :value="path">
                         </b-form-input>
                         <b-input-group-append>
                             <b-button squared
@@ -335,4 +334,18 @@
         text-shadow: 1px 1px 2px #427388;
     }
 
+    input{
+        opacity: 0.6;
+    }
+
+    input:read-only{
+        opacity: 0.6;
+    }
+
+    input:focus{
+        opacity: 1;
+        outline: none;
+        box-shadow: none;
+        border: none;
+    }
 </style>

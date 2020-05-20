@@ -71,6 +71,9 @@
 
     input:focus{
         opacity: 1;
+        outline: none;
+        box-shadow: none;
+        border: none;
     }
 
     label {
