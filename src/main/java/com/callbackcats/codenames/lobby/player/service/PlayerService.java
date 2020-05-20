@@ -16,6 +16,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -72,7 +73,7 @@ public class PlayerService {
         int originPlayerSize = allPlayers.size();
         List<Player> assignedPlayers = new ArrayList<>();
 
-        if (!allPlayers.isEmpty()) {
+        if (allPlayers.size() >= MIN_PLAYERS) {
             clearSides(allPlayers);
             clearRoles(allPlayers);
 
@@ -280,12 +281,12 @@ public class PlayerService {
     }
 
     private void setSpymasterRoleToSidedPlayers(List<Player> players) {
-        while (getTotalSpymasters(players) != MAX_SPYMASTER) {
-            Player randomPlayer = getRandomPlayer(players);
-            if (randomPlayer.getRole() == RoleType.NOT_SELECTED) {
-                randomPlayer.setRole(RoleType.SPYMASTER);
-            }
-        }
+        List<Player> blueTeam = players.stream().filter(player -> player.getSide() == SideType.BLUE).collect(Collectors.toList());
+        List<Player> redTeam = players.stream().filter(player -> player.getSide() == SideType.RED).collect(Collectors.toList());
+        Player blueSpymaster = getRandomPlayer(blueTeam);
+        Player redSpymaster = getRandomPlayer(redTeam);
+        blueSpymaster.setRole(RoleType.SPYMASTER);
+        redSpymaster.setRole(RoleType.SPYMASTER);
     }
 
     private void setSpyRolesToPlayers(List<Player> players) {
