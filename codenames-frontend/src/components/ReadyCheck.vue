@@ -1,5 +1,4 @@
 <template>
-
     <button
             @click="sendRdyState"
             :disabled="player.name!==currentPlayer.name"

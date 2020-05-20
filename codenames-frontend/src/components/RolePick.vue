@@ -1,36 +1,50 @@
 <template>
-    <div v-if="!roleSelected">
-        <b-button id="blue-spymaster"
-                  @click="sendSelection('BLUE','SPYMASTER')"
-                  :disabled="isBlueSpymasterFull"
-        >Blue Spymaster
-        </b-button>
-        <b-button
-                id="blue-spy"
-                @click="sendSelection('BLUE','SPY')"
-                :disabled="isBlueSpyFull"
-        >Blue Spy
-        </b-button>
-        <b-button
-                id="red-spymaster"
-                @click="sendSelection('RED','SPYMASTER')"
-                :disabled="isRedSpymasterFull"
-        >Red Spymaster
-        </b-button>
-        <b-button
-                id="red-spy"
-                @click="sendSelection('RED','SPY')"
-                :disabled="isRedSpyFull"
-        >Red Spy
-        </b-button>
+    <div  class="role-picker-div">
+        <div v-if="!roleSelected" class="role-picker">
+            <font-awesome-icon
+                    title="blue spymaster"
+                    style="color: dodgerblue"
+                    id="blue-spymaster"
+                    @click="sendSelection('BLUE','SPYMASTER')"
+                    :disabled="isBlueSpymasterFull"
+                    :icon="['fab', 'redhat']">
+            </font-awesome-icon>
+            <font-awesome-icon
+                    title="blue spy"
+                    style="color: dodgerblue"
+                    id="blue-spy"
+                    @click="sendSelection('BLUE','SPY')"
+                    :disabled="isBlueSpyFull"
+                    :icon="['fab', 'black-tie']">
+            </font-awesome-icon>
+            <font-awesome-icon
+                    title="red spymaster"
+                    style="color: indianred"
+                    id="red-spymaster"
+                    @click="sendSelection('RED','SPYMASTER')"
+                    :disabled="isRedSpymasterFull"
+                    :icon="['fab', 'redhat']">
+            </font-awesome-icon>
+            <font-awesome-icon
+                    title="red spy"
+                    style="color: indianred"
+                    id="red-spy"
+                    @click="sendSelection('RED','SPY')"
+                    :disabled="isRedSpyFull"
+                    :icon="['fab', 'black-tie']">
+            </font-awesome-icon>
+        </div>
+        <div v-else>
+            <b-button id="clear-selection"
+                      size="sm"
+                      squared
+                      block
+                      @click="sendSelection">
+                Clear Selection
+            </b-button>
+        </div>
+        <div class="role-picker-background-div"></div>
     </div>
-    <div v-else>
-        <b-button id="clear-selection"
-                  @click="sendSelection">
-            Clear Selection
-        </b-button>
-    </div>
-
 </template>
 
 <script lang="ts">
@@ -65,7 +79,6 @@
             }
         }
 
-
         get getCurrentPlayer(): PlayerModel {
             return this.$store.getters["getCurrentPlayer"];
         }
@@ -90,5 +103,55 @@
 </script>
 
 <style scoped>
+    svg {
+        font-size: 3rem;
+        box-sizing: content-box;
+        -webkit-filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
+        filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
+        margin: 0.5rem 1rem 0.5rem 1rem;
+    }
 
+    svg:disabled {
+        color: grey;
+    }
+
+    svg:hover {
+        cursor: pointer;
+        -webkit-filter: drop-shadow(2px 2px 2px rgba(250, 230, 15, 0.6));
+        filter: drop-shadow(2px 2px 2px rgba(250, 230, 15, 0.6));
+    }
+
+    .role-picker-div {
+        height: 10vh;
+        position: relative;
+    }
+
+    .role-picker {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index: 1;
+    }
+
+    .role-picker-background-div {
+        height: 100%;
+        width: 100%;
+        background-color: white;
+        position: relative;
+        opacity: 0.3;
+    }
+
+    @media (max-width: 450px) {
+        svg{
+            font-size: 2rem;
+            margin: 1rem 0.5rem 1rem 0.5rem;
+        }
+    }
+    
+    @media (max-width: 320px) {
+        svg{
+            font-size: 2rem;
+            margin: 1rem 0.2rem 1rem 0.2rem;
+        }
+    }
 </style>

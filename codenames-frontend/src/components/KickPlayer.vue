@@ -114,19 +114,17 @@
         get playerRemovalInfo(): PlayerRemovalModel {
             return this.$store.getters["getPlayerRemovalInfo"];
         }
-
-
     }
 </script>
 
 <style scoped>
-    button {
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        outline: none;
-        color: gray;
-    }
+     button {
+         background-color: transparent;
+         border: none;
+         box-shadow: none;
+         outline: none;
+         color: gray;
+     }
     .yes:hover{
         color: lightgreen;
     }

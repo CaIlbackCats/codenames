@@ -33,6 +33,9 @@
                     <lobby-chat :current-player="currentPlayer"
                                 :current-lobby="this.$route.params.lobbyId"
                                 ></lobby-chat>
+                    <div class="col-sm-12 mb-3">
+                        <RolePick></RolePick>
+                    </div>
                 </div>
 
                 <div class="col-sm-12 col-lg-4">
@@ -40,31 +43,26 @@
                         <div class="list-div">
                             <div class="m-2" v-for="player in players"
                                  :key="player.id">
-                                <ReadyCheck
-                                        :player="player"></ReadyCheck>
+                                <ReadyCheck :player="player"></ReadyCheck>
                                 <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
                                                    icon="user-secret"/>
                                 <label class="mr-2" :style="{ color: player.side}">
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                                <font-awesome-icon v-if="player.name!==currentPlayerName"
+                                <font-awesome-icon v-if="player.name !== currentPlayer.name"
                                                    class="kick-btn"
                                                    @click="initKickPlayer(player)"
                                                    icon="user-minus"/>
                             </div>
                         </div>
-                        <KickPlayer
-                                :kick-init-player="currentPlayer"
-                                :player-to-kick="playerToKick"
-                        ></KickPlayer>
+                        <KickPlayer :kick-init-player="currentPlayer"
+                                :player-to-kick="playerToKick"></KickPlayer>
                         <div class="white-background-div"></div>
                     </div>
 
                     <div class="lobby-options-div col">
                         <div style="position: absolute; right: 0" class="list-div">
-                            <RolePick></RolePick>
                             <LobbyOption v-if="currentPlayer.lobbyOwner"
-                                         :lobby-name="this.$route.params.lobbyId"
-                            ></LobbyOption>
+                                         :lobby-name="this.$route.params.lobbyId"></LobbyOption>
                         </div>
                     </div>
 
@@ -120,7 +118,6 @@
 
         private path = "http://localhost:4200";
         private currentPlayerName = "";
-        //   private playerSelected = false;
         private playerToKick: PlayerModel = {
             id: -1,
             name: "",
@@ -140,13 +137,10 @@
             this.$store.dispatch("subscribeToPlayerChange", room);
         }
 
-        //  private showKickWindow = false;
-
         mounted() {
             this.path += this.$route.path;
             this.$store.dispatch('joinLobby', { lobbyId: this.$route.params.lobbyId });
         };
-
 
         public copyPath(): void {
             this.$copyText(this.path);
@@ -154,7 +148,6 @@
 
         public createPlayer(): void {
            this.$store.commit("SET_PLAYER_SELECTED", true);
-
             const newPlayer: PlayerCreationModel = {
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayerName,
@@ -164,7 +157,6 @@
 
         public initKickPlayer(player: PlayerModel): void {
             this.playerToKick = player;
-            // this.showKickWindow = true;
             if (this.currentPlayer.lobbyOwner) {
                 const playerRemovalModel: PlayerRemovalModel = {
                     kickType: "OWNER",
@@ -173,7 +165,6 @@
                 }
                 websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
             } else {
-
                 const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
                 const playerRemovalModel: PlayerRemovalModel = {
                     kickType: "VOTE",
@@ -182,10 +173,6 @@
                     playerToRemoveId: player.id,
                 }
                 websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-
-                //   this.players.filter(player => player.name !== this.playerToKick.name).forEach(player => {
-                //       this.stompClient.send(process.env.VUE_APP_PLAYER_KICK_INIT, player.name);
-                //   });
             }
         }
 
