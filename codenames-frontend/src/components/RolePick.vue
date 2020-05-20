@@ -1,47 +1,48 @@
 <template>
-    <div  class="role-picker-div">
-        <div v-if="!roleSelected" class="role-picker">
-            <font-awesome-icon
-                    title="blue spymaster"
-                    style="color: dodgerblue"
-                    id="blue-spymaster"
-                    @click="sendSelection('BLUE','SPYMASTER')"
-                    :disabled="isBlueSpymasterFull"
-                    :icon="['fab', 'redhat']">
-            </font-awesome-icon>
-            <font-awesome-icon
-                    title="blue spy"
-                    style="color: dodgerblue"
-                    id="blue-spy"
-                    @click="sendSelection('BLUE','SPY')"
-                    :disabled="isBlueSpyFull"
-                    :icon="['fab', 'black-tie']">
-            </font-awesome-icon>
-            <font-awesome-icon
-                    title="red spymaster"
-                    style="color: indianred"
-                    id="red-spymaster"
-                    @click="sendSelection('RED','SPYMASTER')"
-                    :disabled="isRedSpymasterFull"
-                    :icon="['fab', 'redhat']">
-            </font-awesome-icon>
-            <font-awesome-icon
-                    title="red spy"
-                    style="color: indianred"
-                    id="red-spy"
-                    @click="sendSelection('RED','SPY')"
-                    :disabled="isRedSpyFull"
-                    :icon="['fab', 'black-tie']">
-            </font-awesome-icon>
-        </div>
-        <div v-else>
-            <b-button id="clear-selection"
-                      size="sm"
-                      squared
-                      block
-                      @click="sendSelection">
-                Clear Selection
-            </b-button>
+    <div class="role-picker-div">
+        <div class="role-picker">
+            <div v-if="!roleSelected">
+                <font-awesome-icon
+                        title="blue spymaster"
+                        style="color: dodgerblue"
+                        id="blue-spymaster"
+                        @click="sendSelection('BLUE','SPYMASTER')"
+                        :disabled="isBlueSpymasterFull"
+                        :icon="['fab', 'redhat']">
+                </font-awesome-icon>
+                <font-awesome-icon
+                        title="blue spy"
+                        style="color: dodgerblue"
+                        id="blue-spy"
+                        @click="sendSelection('BLUE','SPY')"
+                        :disabled="isBlueSpyFull"
+                        :icon="['fab', 'black-tie']">
+                </font-awesome-icon>
+                <font-awesome-icon
+                        title="red spymaster"
+                        style="color: indianred"
+                        id="red-spymaster"
+                        @click="sendSelection('RED','SPYMASTER')"
+                        :disabled="isRedSpymasterFull"
+                        :icon="['fab', 'redhat']">
+                </font-awesome-icon>
+                <font-awesome-icon
+                        title="red spy"
+                        style="color: indianred"
+                        id="red-spy"
+                        @click="sendSelection('RED','SPY')"
+                        :disabled="isRedSpyFull"
+                        :icon="['fab', 'black-tie']">
+                </font-awesome-icon>
+            </div>
+            <div v-else>
+                <b-button id="clear-selection"
+                          size="sm"
+                          squared
+                          @click="sendSelection">
+                    Clear Selection
+                </b-button>
+            </div>
         </div>
         <div class="role-picker-background-div"></div>
     </div>
@@ -103,6 +104,10 @@
 </script>
 
 <style scoped>
+    button{
+        margin: 1.5rem;
+    }
+
     svg {
         font-size: 3rem;
         box-sizing: content-box;
