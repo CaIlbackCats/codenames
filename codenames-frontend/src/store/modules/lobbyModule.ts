@@ -44,12 +44,12 @@ export default class LobbyModule extends VuexModule {
                 await websocket.subscribe(
                     `${config.wsLobbyPath}${payload.lobbyId}`,
                     body => {
-                            if (body) this.context.dispatch("executeLobbyChange", body, {root:true});
-                        }
+                        if (body) this.context.dispatch("executeLobbyChange", body, {root: true});
+                    }
                     ,
                     {id: "lobby"}
                 );
-                this.context.dispatch("checkSelectedPlayer", {root:true})
+                this.context.dispatch("checkSelectedPlayer", {lobbyId: payload.lobbyId})
             } else {
                 router.push('/')
             }
