@@ -65,6 +65,13 @@
 </script>
 
 <style scoped>
+    input{
+        opacity: 0.6;
+    }
+
+    input:focus{
+        opacity: 1;
+    }
 
     label {
         color: rgb(135, 25, 75);
