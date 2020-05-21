@@ -4,4 +4,5 @@ export const config = {
     wsChatPublishPath: process.env.VUE_APP_SEND_ENDPOINT,
     wsLobbyPath: process.env.VUE_APP_OPTIONS,
     wsFetchPlayerPath: process.env.VUE_APP_PLAYER_FETCH,
+    HIDE_PLAYER: "/player/hidePlayer",
 }

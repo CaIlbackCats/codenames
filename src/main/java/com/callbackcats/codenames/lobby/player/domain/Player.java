@@ -44,6 +44,9 @@ public class Player {
     @Column(name = "ready")
     private Boolean rdyState;
 
+    @Column(name = "visible")
+    private Boolean visible;
+
     public Player(PlayerCreationData playerCreationData) {
         //  this.lobbyOwner = playerCreationData.getLobbyOwner();
         this.name = playerCreationData.getName();
@@ -51,5 +54,6 @@ public class Player {
         this.side = SideType.NOT_SELECTED;
         this.kickVoteCount = 0;
         this.rdyState = false;
+        this.visible = true;
     }
 }

@@ -16,7 +16,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -49,7 +48,7 @@ public class PlayerService {
     }
 
     public void setPlayerRole(String lobbyName) {
-        List<Player> allPlayers = getPlayersByLobbyName(lobbyName);
+        List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         if (allPlayers.size() >= MIN_PLAYERS) {
             clearRoles(allPlayers);
             long sidelessPlayersNumber = allPlayers
@@ -69,7 +68,7 @@ public class PlayerService {
     }
 
     public void randomizeTeamSetup(String lobbyName) {
-        List<Player> allPlayers = getPlayersByLobbyName(lobbyName);
+        List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         int originPlayerSize = allPlayers.size();
         List<Player> assignedPlayers = new ArrayList<>();
 
@@ -96,7 +95,7 @@ public class PlayerService {
 
     public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
         log.info("Get players in the given lobby:\t" + lobbyName);
-        return getPlayersByLobbyName(lobbyName)
+        return getVisiblePlayersByLobbyName(lobbyName)
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
@@ -120,7 +119,7 @@ public class PlayerService {
     }
 
     public PlayerData reassignLobbyOwner(String lobbyName) {
-        List<Player> players = getPlayersByLobbyName(lobbyName);
+        List<Player> players = getVisiblePlayersByLobbyName(lobbyName);
         Player newOwnerPlayer = getRandomPlayer(players);
         newOwnerPlayer.setLobbyOwner(true);
         playerRepository.save(newOwnerPlayer);
@@ -130,7 +129,7 @@ public class PlayerService {
 
     public Boolean isLobbyOwnerInLobby(String lobbyName) {
         log.info("Find lobby owner in lobby:\t" + lobbyName);
-        List<Player> players = getPlayersByLobbyName(lobbyName);
+        List<Player> players = getVisiblePlayersByLobbyName(lobbyName);
         return players.stream().anyMatch(Player::getLobbyOwner);
     }
 
@@ -157,13 +156,26 @@ public class PlayerService {
     }
 
     public Boolean isGivenPlayerInLobby(PlayerDetailsData playerDetailsData) {
-        List<Player> playersInLobby = getPlayersByLobbyName(playerDetailsData.getLobbyName());
+        List<Player> playersInLobby = getAllPlayersByLobbyName(playerDetailsData.getLobbyName());
         return playersInLobby.stream().map(Player::getId).anyMatch(id -> id.equals(playerDetailsData.getId()));
     }
 
     public PlayerData findPlayerDataById(Long id) {
         log.info("Find playerdata by id:\t" + id);
         return new PlayerData(findPlayerById(id));
+    }
+
+    public PlayerData showPlayer(Long id) {
+        Player player = findPlayerById(id);
+        player.setVisible(true);
+        playerRepository.save(player);
+        return new PlayerData(player);
+    }
+
+    public void hidePlayer(Long id) {
+        Player player = findPlayerById(id);
+        player.setVisible(false);
+        playerRepository.save(player);
     }
 
     public PlayerData setRdyState(RdyStateData rdyStateData) {
@@ -176,7 +188,7 @@ public class PlayerService {
 
     public Boolean isEveryOneRdy(String lobbyName) {
         log.info("Check if everyone is rdy!");
-        List<Player> players = getPlayersByLobbyName(lobbyName);
+        List<Player> players = getVisiblePlayersByLobbyName(lobbyName);
         return players.stream().allMatch(Player::getRdyState);
     }
 
@@ -189,7 +201,7 @@ public class PlayerService {
     }
 
     public void getTeamsByRoles(String lobbyName, LobbyDetails lobbyDetails) {
-        List<Player> playersInLobby = getPlayersByLobbyName(lobbyName);
+        List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
 
         long blueSpymaster = playersInLobby
                 .stream()
@@ -267,8 +279,12 @@ public class PlayerService {
         return (int) Math.floor(Math.random() * players.size());
     }
 
-    private List<Player> getPlayersByLobbyName(String lobbyName) {
-        return playerRepository.getPlayersByLobbyName(lobbyName);
+    private List<Player> getVisiblePlayersByLobbyName(String lobbyName) {
+        return playerRepository.getVisiblePlayersByLobbyName(lobbyName);
+    }
+
+    private List<Player> getAllPlayersByLobbyName(String lobbyName) {
+        return playerRepository.getAllPlayersByLobbyName(lobbyName);
     }
 
     private void setSpymasterToSidelessPlayer(List<Player> players) {
