@@ -1,0 +1,31 @@
+package com.callbackcats.codenames.game.domain;
+
+import com.callbackcats.codenames.lobby.domain.Lobby;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "game")
+@NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+public class Game {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "lobby_id")
+    private Lobby lobby;
+
+    @OneToOne(mappedBy = "game")
+    private Board board;
+
+}

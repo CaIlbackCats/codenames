@@ -15,8 +15,12 @@ import java.util.List;
 public class Board {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    private Game game;
 
     @ElementCollection
     private List<String> codewords;

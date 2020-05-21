@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.lobby.domain;
 
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,8 @@ public class Lobby {
 
     @OneToMany(mappedBy = "lobby")
     private List<Player> playerList;
+
+    @OneToMany(mappedBy = "lobby")
+    private List<Game> games;
 
 }

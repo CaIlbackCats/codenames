@@ -1,7 +1,10 @@
 package com.callbackcats.codenames.game.controller;
 
+import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.service.GameService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,4 +18,9 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
+
+//    public ResponseEntity<GameDetails> getGame(@PathVariable String lobbyId) {
+//        // if lobby exists get game
+//    }
+
 }
