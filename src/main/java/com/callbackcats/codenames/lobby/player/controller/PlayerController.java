@@ -134,13 +134,20 @@ public class PlayerController {
         log.info("Get player requested");
         String lobbyName = playerDetailsData.getLobbyName();
         if (playerService.isGivenPlayerInLobby(playerDetailsData)) {
-            PlayerData playerDataById = playerService.findPlayerDataById(playerDetailsData.getId());
+            PlayerData playerDataById = playerService.showPlayer(playerDetailsData.getId());
             ActionData setPrevious = new ActionData(ActionType.SET_PREVIOUS_PLAYER, playerDataById);
             simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, setPrevious);
             updateList(playerDetailsData.getLobbyName());
         } else {
             simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.DELETE_PREV_PLAYER));
         }
+    }
+
+    @MessageMapping("/hidePlayer")
+    public void hidePlayer(@Payload PlayerDetailsData playerDetailsData) {
+        playerService.hidePlayer(playerDetailsData.getId());
+
+        updateList(playerDetailsData.getLobbyName());
     }
 
     private ActionData updateList(String lobbyName) {

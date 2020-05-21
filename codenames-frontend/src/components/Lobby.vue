@@ -65,8 +65,8 @@
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
-                            <LobbyOption v-if="currentPlayer.lobbyOwner"
-                            ></LobbyOption>
+                        <LobbyOption v-if="currentPlayer.lobbyOwner"
+                        ></LobbyOption>
                     </div>
 
                 </div>
@@ -111,6 +111,8 @@
     import RolePick from "@/components/RolePick.vue";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
+    import {config} from "@/config";
+    import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 
     @Component({
         components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
@@ -132,10 +134,23 @@
 
         @Watch("currentPlayer.id")
         private subscribeToPlayerChange() {
-            if (this.currentPlayer.id!==-1){
+            if (this.currentPlayer.id !== -1) {
                 localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
                 this.$store.dispatch("subscribeToPlayerChange");
             }
+        }
+
+        constructor() {
+            super();
+            window.addEventListener('beforeunload', this.hideLeftPlayer);
+        }
+
+        private hideLeftPlayer(): void {
+            const playerDetails: PlayerDetailsModel = {
+                id: this.currentPlayer.id,
+                lobbyName: this.lobbyId,
+            }
+            websocket.send(config.HIDE_PLAYER, playerDetails);
         }
 
         async mounted() {
@@ -194,6 +209,10 @@
         get isPlayerSelected(): boolean {
             return this.$store.getters["getPlayerSelected"]
         }
+
+        get lobbyId(): string {
+            return this.$store.getters["lobbyId"];
+        }
     }
 </script>
 
@@ -203,11 +222,11 @@
         color: rgb(135, 25, 75);
     }
 
-    .blue-spymaster{
+    .blue-spymaster {
         color: dodgerblue;
     }
 
-    .red-spymaster{
+    .red-spymaster {
         color: indianred;
     }
 
@@ -328,15 +347,15 @@
         text-shadow: 1px 1px 2px #427388;
     }
 
-    input{
+    input {
         opacity: 0.6;
     }
 
-    input:read-only{
+    input:read-only {
         opacity: 0.6;
     }
 
-    input:focus{
+    input:focus {
         opacity: 1;
         outline: none;
         box-shadow: none;
