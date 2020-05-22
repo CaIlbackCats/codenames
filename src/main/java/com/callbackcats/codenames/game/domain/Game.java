@@ -1,6 +1,5 @@
 package com.callbackcats.codenames.game.domain;
 
-import com.callbackcats.codenames.game.dto.CardData;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +25,8 @@ public class Game {
     @ManyToOne
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
+
+    @OneToMany(mappedBy = "game")
+    private List<Card> board;
+
 }

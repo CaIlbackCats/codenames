@@ -8,13 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CardData {
+public class CardDetails {
 
     private String word;
     private String type;
     private boolean isFound;
 
-    public CardData(Card card) {
+    public CardDetails(Card card) {
         this.word = card.getWord();
         this.type = card.getType().name();
         this.isFound = card.isFound();

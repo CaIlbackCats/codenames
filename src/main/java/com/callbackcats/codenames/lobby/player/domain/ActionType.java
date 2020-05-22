@@ -8,5 +8,6 @@ public enum ActionType {
     UPDATE_LOBBY,
     SET_PREVIOUS_PLAYER,
     DELETE_PREV_PLAYER,
+    CREATE_GAME
 
 }
