@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.game.domain;
 
+import com.callbackcats.codenames.game.dto.CardData;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "game")
@@ -24,8 +26,4 @@ public class Game {
     @ManyToOne
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
-
-    @OneToOne(mappedBy = "game")
-    private Board board;
-
 }

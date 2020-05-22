@@ -19,7 +19,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/chat","/lobby","/options","/player")
-                .enableSimpleBroker("/lobby","/player","/chat");
+        registry.setApplicationDestinationPrefixes("/chat","/lobby","/options","/player", "/game")
+                .enableSimpleBroker("/lobby","/player","/chat", "/game");
     }
 }

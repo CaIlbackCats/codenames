@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.lobby.service;
 
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
@@ -25,5 +26,10 @@ public class LobbyService {
 
     public Optional<Lobby> getLobbyById(String id) {
         return this.lobbyRepository.findById(id);
+    }
+
+    public void addGame(Lobby lobby, Game game) {
+        lobby.getGames().add(game);
+        this.lobbyRepository.save(lobby);
     }
 }
