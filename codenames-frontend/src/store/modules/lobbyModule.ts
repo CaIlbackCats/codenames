@@ -2,7 +2,6 @@ import axios from 'axios';
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
 import {LobbyModel} from "@/models/lobbyModel";
-import router from "@/router";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 

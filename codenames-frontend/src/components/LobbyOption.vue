@@ -5,7 +5,7 @@
         <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
                   size="sm" block squared @click="randomizeSide" :disabled="partySize<MIN_PARTY_SIZE">Random side</b-button>
         <b-button :title="getEveryOneRdy ? '' : '' "
-                size="md" block squared :disabled="!getEveryOneRdy" class="mt-3">Start The Game!</b-button>
+                size="md" block squared :disabled="!getEveryOneRdy" @click="createGame" class="mt-3">Start The Game!</b-button>
     </div>
 </template>
 
@@ -13,14 +13,26 @@
 
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import * as websocket from '@/services/websocket'
+    import router from "@/router";
 
     @Component
     export default class LobbyOption extends Vue {
 
         private MIN_PARTY_SIZE = 4;
 
+        @Watch("gameId")
+        private navigateToGame() {
+            if(this.gameId != -1) {
+                router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
+            }
+        }
+
         constructor() {
             super();
+        }
+
+        public createGame(): void {
+            this.$store.dispatch("createGame");
         }
 
         public randomizeRoles(): void {
@@ -41,6 +53,10 @@
 
         get partySize(): number {
             return this.$store.getters["partySize"];
+        }
+
+        get gameId(): number {
+            return this.$store.getters["gameId"];
         }
     }
 </script>

@@ -30,6 +30,7 @@ public class GameService {
         Game game = new Game();
         this.gameRepository.save(game);
         lobbyService.addGame(lobby, game);
+        log.info("Game created");
         return new GameDetails(game);
     }
 

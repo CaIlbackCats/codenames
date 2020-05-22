@@ -16,6 +16,8 @@ public class GameDetails {
 
     public GameDetails(Game game) {
         this.id = game.getId();
-        this.board = game.getBoard().stream().map(CardDetails::new).collect(Collectors.toList());
+        if(game.getBoard() != null && !game.getBoard().isEmpty()) {
+            this.board = game.getBoard().stream().map(CardDetails::new).collect(Collectors.toList());
+        }
     }
 }

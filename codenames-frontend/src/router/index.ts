@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from "vue-router";
 import axios from 'axios'
 import Home from "../views/Home.vue";
 import Lobby from "@/components/Lobby.vue";
+import WelcomeHeader from "@/components/WelcomeHeader.vue";
 
 Vue.use(VueRouter);
 
@@ -16,10 +17,11 @@ const routes: Array<RouteConfig> = [
     path: "/lobby/:lobbyId",
     name: "Lobby",
     component: Lobby,
-    // beforeEnter: (to, from, next) => {
-    //   const lobbyId = to.params.lobbyId
-    //
-    // }
+  },
+  {
+    path: "/lobby/:lobbyId/:gameId",
+    name: "Game",
+    component: WelcomeHeader
   },
   {
     path: "/about",

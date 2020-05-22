@@ -5,4 +5,5 @@ export const config = {
     wsLobbyPath: process.env.VUE_APP_OPTIONS,
     wsFetchPlayerPath: process.env.VUE_APP_PLAYER_FETCH,
     HIDE_PLAYER: "/player/hidePlayer",
+    CREATE_GAME: "/game/createGame"
 }

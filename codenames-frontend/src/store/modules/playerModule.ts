@@ -134,6 +134,9 @@ export default class PlayerModule extends VuexModule {
             case "DELETE_PREV_PLAYER":
                 this.context.commit("SET_PLAYER_SELECTED", false)
                 break;
+            case "CREATE_GAME":
+                this.context.commit("SET_GAME", messageBody.gameDetails)
+                break;
         }
     }
 

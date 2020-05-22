@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.game.dto.GameDetails;
+import com.callbackcats.codenames.game.dto.PayloadData;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.lobby.player.domain.ActionType;
 import com.callbackcats.codenames.lobby.player.dto.ActionData;
@@ -23,9 +24,10 @@ public class GameController {
     }
 
     @MessageMapping("/createGame")
-    public void createGame(@Payload String lobbyId) {
-        GameDetails gameDetails = gameService.createGame(lobbyId);
+    public void createGame(@Payload PayloadData payloadData) {
+        log.info("Game creation requested");
+        GameDetails gameDetails = gameService.createGame(payloadData.getLobbyId());
         ActionData actionData = new ActionData(ActionType.CREATE_GAME, gameDetails);
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId, actionData);
+        simpMessagingTemplate.convertAndSend("/lobby/" + payloadData.getLobbyId(), actionData);
     }
 }
