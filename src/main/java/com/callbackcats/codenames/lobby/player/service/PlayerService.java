@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.lobby.player.service;
 
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
@@ -198,6 +199,10 @@ public class PlayerService {
         player.setSide(SideType.valueOf(selectionData.getSide()));
         playerRepository.save(player);
         return new PlayerData(player);
+    }
+
+    public List<PlayerData> findPlayersByGame(Game game) {
+        return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
     public void getTeamsByRoles(String lobbyName, LobbyDetails lobbyDetails) {

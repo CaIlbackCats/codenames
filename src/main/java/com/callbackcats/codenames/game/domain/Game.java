@@ -29,4 +29,10 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Card> board;
 
+    @Column(name = "blue_score")
+    private Integer blueScore = 0;
+
+    @Column(name = "red_score")
+    private Integer redSCore = 0;
+
 }
