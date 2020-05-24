@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.game.domain;
 
+import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import lombok.AllArgsConstructor;

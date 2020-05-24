@@ -1,8 +1,9 @@
 package com.callbackcats.codenames.game.service;
 
+import com.callbackcats.codenames.game.card.dto.CardDetails;
 import com.callbackcats.codenames.game.card.service.CardService;
-import com.callbackcats.codenames.game.domain.Card;
-import com.callbackcats.codenames.game.domain.CardType;
+import com.callbackcats.codenames.game.card.domain.Card;
+import com.callbackcats.codenames.game.card.domain.CardType;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.repository.GameRepository;
@@ -50,29 +51,37 @@ public class GameService {
         return new GameDetails(game);
     }
 
-    public void processVotes(TeamVoteData teamVoteData) {
+    public GameStateData processVotes(TeamVoteData teamVoteData) {
         Map<CardVoteData, Integer> cardVoteMap = getCardVoteScores(teamVoteData);
         Integer maxScore = Collections.max(cardVoteMap.values());
-        List<CardVoteData> maxCardVote = cardVoteMap.entrySet()
+        List<CardVoteData> mostVotedCards = cardVoteMap.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().equals(maxScore))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+        log.info("Find most voted cards");
         Game game = findGameById(teamVoteData.getGameId());
 
-        boolean maxVotesNotShared = maxCardVote.size() == 1;
-        if (maxVotesNotShared) {
-            handleGameByGoodVote(teamVoteData, maxScore, maxCardVote, game);
-        } else if (maxCardVote.size() > 1) {
+        boolean mostVoteOnOneCard = mostVotedCards.size() == 1;
+        if (mostVoteOnOneCard) {
+            handleGameByGoodVote(teamVoteData, maxScore, mostVotedCards, game);
+        } else if (mostVotedCards.size() > 1) {
             game.setEndTurn(true);
         }
 
+        checkWinningCondition(game, teamVoteData);
         gameRepository.save(game);
+
+        return new GameStateData(game);
     }
 
     public void checkWinningCondition(Game game, TeamVoteData teamVoteData) {
         SideType currentSide = CardType.valueOf(teamVoteData.getVotingTeam()).getTeamColorValue();
-        int foundCardsBySide = (int) game.getBoard().stream().filter(card -> card.getType().getTeamColorValue().equals(currentSide)).map(Card::isFound).count();
+        int foundCardsBySide = (int) game.getBoard()
+                .stream()
+                .filter(card -> card.getType().getTeamColorValue().equals(currentSide))
+                .filter(Card::isFound)
+                .count();
         if (game.getStartingTeamColor().equals(currentSide) && foundCardsBySide == MAX_STARTING_TEAM_CARD) {
             game.setWinner(currentSide);
         } else if (foundCardsBySide == MAX_SECOND_TEAM_CARD) {
@@ -83,13 +92,14 @@ public class GameService {
     private void handleGameByGoodVote(TeamVoteData teamVoteData, Integer maxScore, List<CardVoteData> maxCardVote, Game game) {
         CardType votedCardType = CardType.valueOf(maxCardVote.get(0).getVotedCard().getType());
         if (votedCardType == CardType.ASSASSIN) {
-            setupEndGameByAssassin(teamVoteData, game);
+            setupGameEndByAssassin(teamVoteData, game);
+            log.info("Assassin found, and set");
         } else {
             updateGameByVotes(maxCardVote, maxScore, teamVoteData, game);
         }
     }
 
-    private void setupEndGameByAssassin(TeamVoteData teamVoteData, Game game) {
+    private void setupGameEndByAssassin(TeamVoteData teamVoteData, Game game) {
         game.setEndGameByAssassin(true);
         SideType currentTeam = SideType.valueOf(teamVoteData.getVotingTeam());
         if ((currentTeam == SideType.BLUE)) {
@@ -148,6 +158,7 @@ public class GameService {
             Integer score = countScore(teamVoteData.getGameId(), currentCardVote);
             cardVoteMap.put(currentCardVote, score);
         }
+        log.info("Finished counting votes for all voted cards");
         return cardVoteMap;
     }
 
@@ -156,7 +167,15 @@ public class GameService {
         Game game = findGameById(gameId);
         List<PlayerData> playersInGame = playerService.findPlayersByGame(game);
 
-        return (int) playersInGame.stream().map(PlayerData::getId).filter(cardVoteData.getVotedPlayersId()::contains).count();
+        Integer voteNumber = (int) playersInGame
+                .stream()
+                .map(PlayerData::getId)
+                .filter(cardVoteData.getVotedPlayersId()::contains)
+                .count();
+
+        log.info("Count votes for given card:\t" + cardVoteData.getVotedCard().getId());
+
+        return voteNumber;
     }
 
     private Game findGameById(Long id) {

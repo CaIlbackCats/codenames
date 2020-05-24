@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.game.card.repository;
 
-import com.callbackcats.codenames.game.domain.Card;
+import com.callbackcats.codenames.game.card.domain.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

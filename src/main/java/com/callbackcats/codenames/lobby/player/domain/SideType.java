@@ -1,7 +1,5 @@
 package com.callbackcats.codenames.lobby.player.domain;
 
-import com.callbackcats.codenames.game.domain.CardType;
-
 public enum SideType {
     BLUE,
     RED,

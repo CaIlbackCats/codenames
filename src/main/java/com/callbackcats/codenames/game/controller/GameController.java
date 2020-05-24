@@ -1,7 +1,9 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.game.dto.GameDetails;
+import com.callbackcats.codenames.game.dto.GameStateData;
 import com.callbackcats.codenames.game.dto.PayloadData;
+import com.callbackcats.codenames.game.dto.TeamVoteData;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.lobby.player.domain.ActionType;
 import com.callbackcats.codenames.lobby.player.dto.ActionData;
@@ -29,5 +31,14 @@ public class GameController {
         GameDetails gameDetails = gameService.createGame(payloadData.getLobbyId());
         ActionData actionData = new ActionData(ActionType.CREATE_GAME, gameDetails);
         simpMessagingTemplate.convertAndSend("/lobby/" + payloadData.getLobbyId(), actionData);
+    }
+
+    @MessageMapping("processVote")
+    public void processVote(@Payload TeamVoteData teamVoteData) {
+        log.info("Process vote requested");
+        GameStateData gameStateData = gameService.processVotes(teamVoteData);
+
+        //todo send gamestate to lobby/gameId
+
     }
 }

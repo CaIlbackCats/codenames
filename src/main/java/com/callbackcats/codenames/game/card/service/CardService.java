@@ -1,7 +1,7 @@
 package com.callbackcats.codenames.game.card.service;
 
 import com.callbackcats.codenames.game.card.repository.CardRepository;
-import com.callbackcats.codenames.game.domain.Card;
+import com.callbackcats.codenames.game.card.domain.Card;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
