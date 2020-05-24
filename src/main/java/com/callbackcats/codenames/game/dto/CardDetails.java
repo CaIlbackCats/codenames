@@ -10,11 +10,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CardDetails {
 
+    private Long id;
     private String word;
     private String type;
     private boolean isFound;
 
     public CardDetails(Card card) {
+        this.id = card.getId();
         this.word = card.getWord();
         this.type = card.getType().name();
         this.isFound = card.isFound();

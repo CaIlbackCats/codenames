@@ -14,6 +14,7 @@ public class GameDetails {
     private Long id;
     private List<CardDetails> board;
 
+
     public GameDetails(Game game) {
         this.id = game.getId();
         if(game.getBoard() != null && !game.getBoard().isEmpty()) {

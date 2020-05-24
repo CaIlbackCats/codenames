@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.domain;
 
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.player.domain.SideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,17 @@ public class Game {
 
     @Column(name = "red_score")
     private Integer redSCore = 0;
+
+    @Column(name = "is_end_game")
+    private Boolean endGame = false;
+
+    @Column(name = "is_end_turn")
+    private Boolean endTurn = false;
+
+    @Column(name = "winning_team")
+    private SideType winner;
+
+    @Column(name = "is_assassing_found")
+    private Boolean endGameByAssassin;
 
 }
