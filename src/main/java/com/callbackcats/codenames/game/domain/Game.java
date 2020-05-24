@@ -48,4 +48,7 @@ public class Game {
     @Column(name = "is_assassing_found")
     private Boolean endGameByAssassin;
 
+    @Column(name = "start_team_color")
+    private SideType startingTeamColor;
+
 }

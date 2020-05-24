@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.service;
 
 import com.callbackcats.codenames.game.card.service.CardService;
+import com.callbackcats.codenames.game.domain.Card;
 import com.callbackcats.codenames.game.domain.CardType;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.*;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameService {
 
+    private static final Integer MAX_STARTING_TEAM_CARD = 9;
+    private static final Integer MAX_SECOND_TEAM_CARD = 8;
+
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
     private final PlayerService playerService;
@@ -46,7 +50,7 @@ public class GameService {
         return new GameDetails(game);
     }
 
-    private void setCardScore(TeamVoteData teamVoteData) {
+    public void processVotes(TeamVoteData teamVoteData) {
         Map<CardVoteData, Integer> cardVoteMap = getCardVoteScores(teamVoteData);
         Integer maxScore = Collections.max(cardVoteMap.values());
         List<CardVoteData> maxCardVote = cardVoteMap.entrySet()
@@ -54,40 +58,58 @@ public class GameService {
                 .filter(entry -> entry.getValue().equals(maxScore))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-
-        Game updatedGame = updateGameByVotes(maxCardVote, maxScore, teamVoteData);
-
-
-
-        if (updatedGame.getEndGameByAssassin()) {
-            SideType currentTeam = SideType.valueOf(teamVoteData.getVotingTeam());
-            if ((currentTeam == SideType.BLUE)) {
-                updatedGame.setWinner(SideType.RED);
-            } else {
-                updatedGame.setWinner(SideType.RED);
-            }
-        }
-
-    }
-
-    private Game updateGameByVotes(List<CardVoteData> maxCardVote, Integer maxScore, TeamVoteData teamVoteData) {
         Game game = findGameById(teamVoteData.getGameId());
+
         boolean maxVotesNotShared = maxCardVote.size() == 1;
         if (maxVotesNotShared) {
-            String votingTeam = teamVoteData.getVotingTeam();
-            CardDetails mostVotedCard = maxCardVote.get(0).getVotedCard();
-            String votedCardColor = mostVotedCard.getType();
-
-            setGameByCardPick(mostVotedCard, maxScore, game);
-
-            cardService.setCardFound(mostVotedCard.getId(), true);
-
-            setGameEndTurnOnWrongPick(votingTeam, game, votedCardColor);
-        } else {
+            handleGameByGoodVote(teamVoteData, maxScore, maxCardVote, game);
+        } else if (maxCardVote.size() > 1) {
             game.setEndTurn(true);
         }
+
         gameRepository.save(game);
-        return game;
+    }
+
+    public void checkWinningCondition(Game game, TeamVoteData teamVoteData) {
+        SideType currentSide = CardType.valueOf(teamVoteData.getVotingTeam()).getTeamColorValue();
+        int foundCardsBySide = (int) game.getBoard().stream().filter(card -> card.getType().getTeamColorValue().equals(currentSide)).map(Card::isFound).count();
+        if (game.getStartingTeamColor().equals(currentSide) && foundCardsBySide == MAX_STARTING_TEAM_CARD) {
+            game.setWinner(currentSide);
+        } else if (foundCardsBySide == MAX_SECOND_TEAM_CARD) {
+            game.setWinner(currentSide);
+        }
+    }
+
+    private void handleGameByGoodVote(TeamVoteData teamVoteData, Integer maxScore, List<CardVoteData> maxCardVote, Game game) {
+        CardType votedCardType = CardType.valueOf(maxCardVote.get(0).getVotedCard().getType());
+        if (votedCardType == CardType.ASSASSIN) {
+            setupEndGameByAssassin(teamVoteData, game);
+        } else {
+            updateGameByVotes(maxCardVote, maxScore, teamVoteData, game);
+        }
+    }
+
+    private void setupEndGameByAssassin(TeamVoteData teamVoteData, Game game) {
+        game.setEndGameByAssassin(true);
+        SideType currentTeam = SideType.valueOf(teamVoteData.getVotingTeam());
+        if ((currentTeam == SideType.BLUE)) {
+            game.setWinner(SideType.RED);
+        } else {
+            game.setWinner(SideType.BLUE);
+        }
+    }
+
+    private void updateGameByVotes(List<CardVoteData> maxCardVote, Integer maxScore, TeamVoteData teamVoteData, Game game) {
+        String votingTeam = teamVoteData.getVotingTeam();
+        CardDetails mostVotedCard = maxCardVote.get(0).getVotedCard();
+        String votedCardColor = mostVotedCard.getType();
+
+        setGameByCardPick(mostVotedCard, maxScore, game);
+
+        cardService.setCardFound(mostVotedCard.getId(), true);
+
+        setGameEndTurnOnWrongPick(votingTeam, game, votedCardColor);
+
     }
 
     private void setGameEndTurnOnWrongPick(String votingTeam, Game game, String cardColor) {
@@ -109,9 +131,9 @@ public class GameService {
                 currentScore = game.getRedSCore() + maxScore;
                 game.setRedSCore(currentScore);
                 break;
-            case ASSASSIN:
-                game.setEndGameByAssassin(true);
-                break;
+//            case ASSASSIN:
+//                game.setEndGameByAssassin(true);
+//                break;
             case BYSTANDER:
                 game.setEndTurn(true);
                 break;
