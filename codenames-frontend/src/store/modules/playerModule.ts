@@ -11,6 +11,7 @@ import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 import {config} from "@/config";
 import {RdyModel} from "@/models/rdyModel";
 import {SelectionModel} from "@/models/selectionModel";
+import {PlayerCreationModel} from "@/models/playerCreationModel";
 
 
 interface CheckSelectedPlayerActionPayload {
@@ -31,7 +32,7 @@ export default class PlayerModule extends VuexModule {
         rdyState: false,
     };
 
-    private isPlayerSelected = false;
+    private playerSelected = false;
 
 
     private everyOneRdy = false;
@@ -43,11 +44,6 @@ export default class PlayerModule extends VuexModule {
     private redSpy = false;
 
     private roleSelected = false;
-
-    @Mutation
-    private SET_PLAYER_SELECTED(isPlayerSelected: boolean) {
-        this.isPlayerSelected = isPlayerSelected;
-    }
 
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
@@ -184,6 +180,11 @@ export default class PlayerModule extends VuexModule {
         websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selectionModel);
     }
 
+    @Action({rawError: true})
+    public sendPlayerCreation(playerCreationModel: PlayerCreationModel): void {
+        websocket.send(config.LOBBY_CREATE_PLAYER_PATH, playerCreationModel);
+    }
+
     get playersOrdered(): Array<PlayerModel> {
         const currentPlayerIndex: number = this.players.map(player => player.id).indexOf(this.currentPlayer.id);
         const temp: PlayerModel = this.players[0];
@@ -246,7 +247,7 @@ export default class PlayerModule extends VuexModule {
         return this.redSpy;
     }
 
-    get getPlayerSelected(): boolean {
-        return this.isPlayerSelected;
+    get isPlayerSelected(): boolean {
+        return this.currentPlayer.id !== -1;
     }
 }

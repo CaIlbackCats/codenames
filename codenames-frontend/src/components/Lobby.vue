@@ -5,28 +5,8 @@
         <div class="col-sm-12 col-xl-8 offset-xl-2"
              @mouseenter="isMouseInMiddle = true"
              @mouseleave="isMouseInMiddle = false">
-            <template v-if="!isPlayerSelected">
-                <div class="codenames-header">
-                    <b-img :src="logoUrl"></b-img>
-                </div>
-                <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4 offset-md-2 offset-lg-3 offset-xl-4">
-                    <b-input-group size="md">
-                        <b-form-input id="current-player"
-                                      type="text"
-                                      maxlength="10"
-                                      placeholder="Enter your name"
-                                      v-on:keyup.enter="createPlayer"
-                                      v-model="currentPlayerName">
-                        </b-form-input>
-                        <b-input-group-append>
-                            <b-button squared
-                                      type="submit"
-                                      @click="createPlayer">Ok
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-            </template>
+            <CreatePlayer v-if="!isPlayerSelected">
+            </CreatePlayer>
 
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
@@ -112,12 +92,12 @@
     import router from "@/router";
     import {config} from "@/config";
     import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+    import CreatePlayer from "@/components/CreatePlayer.vue";
 
     @Component({
-        components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
+        components: {CreatePlayer, RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
-        private logoUrl = require("../assets/semanedoc.png");
         private isMouseInMiddle = true;
 
         private path = "http://localhost:4200";
@@ -160,15 +140,6 @@
             this.$copyText(this.path);
         }
 
-        public createPlayer(): void {
-            this.$store.commit("SET_PLAYER_SELECTED", true);
-            const newPlayer: PlayerCreationModel = {
-                lobbyName: this.$route.params.lobbyId,
-                name: this.currentPlayerName,
-            }
-            websocket.send(config.LOBBY_CREATE_PLAYER_PATH, newPlayer);
-        }
-
         public initKickPlayer(playerToRemoveId: number): void {
             this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
         }
@@ -182,7 +153,7 @@
         }
 
         get isPlayerSelected(): boolean {
-            return this.$store.getters["getPlayerSelected"]
+            return this.$store.getters["isPlayerSelected"]
         }
 
         get lobbyId(): string {
