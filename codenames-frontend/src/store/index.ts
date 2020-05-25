@@ -4,6 +4,7 @@ import chatModule from "@/store/modules/chatModule";
 import playerModule from "@/store/modules/playerModule";
 import lobbyModule from '@/store/modules/lobbyModule'
 import gameModule from "@/store/modules/gameModule";
+import kickModule from "@/store/modules/kickModule";
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
         chatModule,
         playerModule,
         lobbyModule,
-        gameModule
+        gameModule,
+        kickModule,
     }
 });

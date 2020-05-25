@@ -54,12 +54,11 @@
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
                                 <font-awesome-icon v-if="player.name !== currentPlayer.name"
                                                    class="kick-btn"
-                                                   @click="initKickPlayer(player)"
+                                                   @click="initKickPlayer(player.id)"
                                                    icon="user-minus"/>
                             </div>
                         </div>
                         <KickPlayer
-                                :player-to-kick="playerToKick"
                         ></KickPlayer>
                         <div class="white-background-div"></div>
                     </div>
@@ -123,14 +122,6 @@
 
         private path = "http://localhost:4200";
         private currentPlayerName = "";
-        private playerToKick: PlayerModel = {
-            id: -1,
-            name: "",
-            lobbyOwner: false,
-            role: "",
-            side: "",
-            rdyState: false,
-        };
 
         @Watch("currentPlayer.id")
         private subscribeToPlayerChange() {
@@ -157,6 +148,7 @@
             await websocket.connect();
             this.path += this.$route.path;
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
+            await this.$store.dispatch("subscribeToKick");
             if (!joined) {
                 router.push('/')
             } else {
@@ -177,25 +169,8 @@
             websocket.send(config.LOBBY_CREATE_PLAYER_PATH, newPlayer);
         }
 
-        public initKickPlayer(player: PlayerModel): void {
-            this.playerToKick = player;
-            if (this.currentPlayer.lobbyOwner) {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "OWNER",
-                    ownerId: this.currentPlayer.id,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
-            } else {
-                const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "VOTE",
-                    ownerId: this.currentPlayer.id,
-                    votingPlayers: votingPlayers,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
-            }
+        public initKickPlayer(playerToRemoveId: number): void {
+            this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
         }
 
         get players(): Array<PlayerModel> {

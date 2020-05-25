@@ -3,7 +3,6 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import router from "@/router";
 import * as websocket from '@/services/websocket'
 import {PlayerModel} from "@/models/playerModel";
-import {RoomModel} from "@/models/roomModel";
 import {ActionModel} from "@/models/actionModel";
 import {PlayerRemovalModel} from "@/models/playerRemovalModel";
 import {LobbyModel} from "@/models/lobbyModel";
@@ -30,19 +29,11 @@ export default class PlayerModule extends VuexModule {
         rdyState: false,
     };
 
-    private playerRemovalInfo: PlayerRemovalModel = {
-        ownerId: -1,
-        vote: false,
-        playerToRemoveId: -1,
-        kickType: "",
-    };
-
     private isPlayerSelected = false;
 
 
     private everyOneRdy = false;
 
-    private initKickWindow = false;
 
     private blueSpymaster = false;
     private blueSpy = false;
@@ -59,11 +50,6 @@ export default class PlayerModule extends VuexModule {
         if (this.currentPlayer.id === -1) {
             this.currentPlayer = player;
         }
-    }
-
-    @Mutation
-    private SHOW_KICK_WINDOW(show: boolean): void {
-        this.initKickWindow = show;
     }
 
     @Mutation
@@ -88,22 +74,6 @@ export default class PlayerModule extends VuexModule {
             rdyState: false,
         }
         router.push({name: "Home"});
-    }
-
-    @Mutation
-    private SET_PLAYER_REMOVAL(playerRemoval: PlayerRemovalModel): void {
-        this.playerRemovalInfo = playerRemoval;
-    }
-
-    @Mutation
-    private UPDATE_PLAYER_REMOVAL_INFO(playerRemovalModel: PlayerRemovalModel): void {
-        if (this.playerRemovalInfo.ownerId == -1) {
-            this.playerRemovalInfo.ownerId = playerRemovalModel.ownerId;
-        }
-        if (this.playerRemovalInfo.playerToRemoveId == -1) {
-            this.playerRemovalInfo.playerToRemoveId = playerRemovalModel.playerToRemoveId;
-        }
-        this.playerRemovalInfo.vote = playerRemovalModel.vote;
     }
 
     @Mutation
@@ -154,10 +124,6 @@ export default class PlayerModule extends VuexModule {
     @Action
     public executePlayerChange(messageBody: ActionModel): void {
         switch (messageBody.actionToDo) {
-            case "INIT_KICK":
-                this.context.dispatch("showKickWindow", true);
-                this.context.dispatch("setPlayerRemoval", messageBody.playerRemoval)
-                break;
             case "GET_KICKED":
                 this.context.dispatch("executeGetKicked");
                 break;
@@ -168,7 +134,7 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public checkSelectedPlayer(payload: CheckSelectedPlayerActionPayload) {
+    public checkSelectedPlayer() {
         const currentPlayerId = localStorage.getItem('currentPlayerId');
         if (currentPlayerId) {
             this.context.commit("SET_PLAYER_SELECTED", true);
@@ -185,25 +151,10 @@ export default class PlayerModule extends VuexModule {
         return playerModel;
     }
 
-    @Action({commit: "SHOW_KICK_WINDOW", rawError: true})
-    public showKickWindow(show: boolean): boolean {
-        return show;
-    }
-
     @Action({commit: "REMOVE_CURRENT_PLAYER"})
     public executeGetKicked(): boolean {
         return true;
     }
-
-    @Action({commit: "SET_PLAYER_REMOVAL", rawError: true})
-    public setPlayerRemoval(playerRemoval: PlayerRemovalModel): PlayerRemovalModel {
-        return playerRemoval;
-    }
-
-    @Action({commit: "UPDATE_PLAYER_REMOVAL_INFO", rawError: true})
-    public updatePlayerRemovalInfo(playerRemovalModel: PlayerRemovalModel): PlayerRemovalModel {
-        return playerRemovalModel;
-    };
 
     get playersOrdered(): Array<PlayerModel> {
         const currentPlayerIndex: number = this.players.map(player => player.id).indexOf(this.currentPlayer.id);
@@ -218,20 +169,16 @@ export default class PlayerModule extends VuexModule {
         return this.currentPlayer;
     }
 
+    get isCurrentPlayerOwner(): boolean {
+        return this.currentPlayer.lobbyOwner;
+    }
+
     get currentPlayerId(): number {
         return this.currentPlayer.id;
     }
 
     get partySize(): number {
         return this.players.length;
-    }
-
-    get getInitKickWindow(): boolean {
-        return this.initKickWindow;
-    }
-
-    get getPlayerRemovalInfo(): PlayerRemovalModel {
-        return this.playerRemovalInfo;
     }
 
     get isEveryOneRdy(): boolean {

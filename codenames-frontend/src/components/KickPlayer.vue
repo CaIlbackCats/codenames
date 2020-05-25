@@ -6,7 +6,7 @@
              id="kick-modal"
              centered>
         <div class="text-center">
-            <p>Do you want to kick <span style="font-weight: bold">{{playerToKick.name}}</span>?</p>
+            <p>Do you want to kick <span style="font-weight: bold">{{playerToKickName}}</span>?</p>
             <button class="yes" @click="kickPlayer(true)">
                 <font-awesome-icon style="font-size: 2rem; margin-right: 2rem" icon="check"/>
             </button>
@@ -20,11 +20,7 @@
 
 <script lang="ts">
 
-    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-    import {PlayerModel} from "@/models/playerModel";
-    import {PlayerRemovalModel} from "@/models/playerRemovalModel";
-    import * as websocket from '@/services/websocket'
-    import {config} from "@/config";
+    import {Component, Vue, Watch} from "vue-property-decorator";
 
     const MAX_VOTE_TIME = 15;
     const MILISEC = 1000;
@@ -32,12 +28,9 @@
     @Component
     export default class KickPlayer extends Vue {
 
-        @Prop()
-        private playerToKick!: PlayerModel;
-
         private counter = MAX_VOTE_TIME;
 
-        private timer;
+        private timer! : number;
 
         @Watch("kickWindow")
         private showModal() {
@@ -55,8 +48,8 @@
         private sendMsg() {
             if (this.counter == 0) {
                 clearInterval(this.timer);
-                this.hidePopPup()
-                this.sendKickMsg();
+                this.hidePopPup();
+                this.$store.dispatch("sendKick");
             }
         }
 
@@ -64,40 +57,15 @@
             super();
         }
 
-        private sendKickMsg() {
-            this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, false).then(() => {
-                if (this.playerRemovalInfo.ownerId === this.currentPlayer.id) {
-                    websocket.send(config.PLAYER_KICK_PATH, this.playerRemovalInfo);
-                }
-            });
-        }
-
         public kickPlayer(vote: boolean): void {
-            if (this.playerRemovalInfo.ownerId == this.currentPlayer.id && this.currentPlayer.lobbyOwner) {
-                clearInterval(this.timer);
-                this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
-                    websocket.send(config.PLAYER_KICK_PATH, this.playerRemovalInfo);
-                });
-            } else {
-                this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
-                    websocket.send(config.PLAYER_COUNT_KICKS_PATH, this.playerRemovalInfo);
-                });
-            }
+            this.$store.dispatch("sendVote", vote);
+            clearInterval(this.timer);
             this.hidePopPup();
-        }
-
-        private async updatePlayerRemovalInfo(ownerId: number, playerToRemoveId: number, vote: boolean): Promise<void> {
-            const playerRemovalModel: PlayerRemovalModel = {
-                ownerId: ownerId,
-                playerToRemoveId: playerToRemoveId,
-                vote: vote,
-            }
-            return this.$store.dispatch("updatePlayerRemovalInfo", playerRemovalModel);
         }
 
         public hidePopPup(): void {
             if (this.kickWindow) {
-                this.$store.dispatch("showKickWindow", false);
+                this.$store.dispatch("setKickWindow", false);
             }
         }
 
@@ -108,16 +76,13 @@
         }
 
         get kickWindow(): boolean {
-            return this.$store.getters["getInitKickWindow"];
+            return this.$store.getters["isKickWindow"];
         }
 
-        get playerRemovalInfo(): PlayerRemovalModel {
-            return this.$store.getters["getPlayerRemovalInfo"];
+        get playerToKickName():string{
+          return this.$store.getters["playerToKickName"];
         }
 
-        get currentPlayer():PlayerModel{
-            return this.$store.getters["getCurrentPlayer"];
-        }
     }
 </script>
 
