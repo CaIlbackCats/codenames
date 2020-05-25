@@ -1,12 +1,12 @@
 package com.callbackcats.codenames.lobby.player.controller;
 
-import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.player.domain.ActionType;
 import com.callbackcats.codenames.lobby.player.domain.KickType;
 import com.callbackcats.codenames.lobby.player.dto.*;
 import com.callbackcats.codenames.lobby.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -70,35 +70,31 @@ public class PlayerController {
     @MessageMapping("/kickCount")
     public void countKickVotes(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Player kick count modification requested");
-        playerService.setPlayerKickScore(playerRemovalData);
+        playerService.processKickBeforeCountDown(playerRemovalData);
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
+
+        updateList(lobbyName);
     }
 
     @MessageMapping("/kick")
-    public ActionData kickPlayer(@Payload PlayerRemovalData playerRemovalData) {
+    public void kickPlayer(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Kicking player requested");
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
-        if (playerRemovalData.getKickType() == KickType.OWNER) {
-            setKickMsg(playerRemovalData, lobbyName, playerService.removePlayerByOwner(playerRemovalData));
-        } else {
-            setKickMsg(playerRemovalData, lobbyName, playerService.isPlayerRemovedByVote(playerRemovalData));
-        }
 
-        return updateList(lobbyName);
+        playerService.processKickAfterCountDown(playerRemovalData);
+
+        updateList(lobbyName);
     }
 
     @MessageMapping("/kickInit")
-    public ActionData initKick(@Payload PlayerRemovalData playerRemovalData) {
+    public void initKick(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Initiate kicking requested");
-        ActionData initializeKick = new ActionData(ActionType.INIT_KICK, playerRemovalData);
-        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
-        if (playerRemovalData.getKickType() == KickType.OWNER) {
-            setPlayerChangeMsg(lobbyName, playerRemovalData.getOwnerId(), initializeKick);
-        } else {
-            playerRemovalData.getVotingPlayers()
-                    .forEach(player -> setPlayerChangeMsg(lobbyName, player.getId(), initializeKick));
-        }
 
-        return initializeKick;
+        playerService.setPlayerRemoval(playerRemovalData);
+
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyName();
+
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/kick", playerRemovalData);
     }
 
     @MessageMapping("/rdy")
@@ -178,6 +174,5 @@ public class PlayerController {
             }
         }
     }
-
 
 }
