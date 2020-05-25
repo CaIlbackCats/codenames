@@ -16,6 +16,4 @@ public class TeamVoteData {
     private Long gameId;
     private String votingTeam;
     private List<CardVoteData> cardVotes;
-    private Integer currentPick;
-
 }
