@@ -60,7 +60,11 @@ export default class PlayerModule extends VuexModule {
         this.blueSpy = lobbyModel.blueSpy;
         this.redSpymaster = lobbyModel.redSpymaster;
         this.redSpy = lobbyModel.redSpy;
+    }
 
+    @Mutation
+    private SET_PLAYER_SELECTED(playerSelected: boolean): void {
+        this.playerSelected = playerSelected;
     }
 
     @Mutation
