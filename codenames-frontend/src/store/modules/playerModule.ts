@@ -9,6 +9,8 @@ import {LobbyModel} from "@/models/lobbyModel";
 import {LobbyTeamModel} from "@/models/lobbyTeamModel";
 import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 import {config} from "@/config";
+import {RdyModel} from "@/models/rdyModel";
+import {SelectionModel} from "@/models/selectionModel";
 
 
 interface CheckSelectedPlayerActionPayload {
@@ -39,6 +41,8 @@ export default class PlayerModule extends VuexModule {
     private blueSpy = false;
     private redSpymaster = false;
     private redSpy = false;
+
+    private roleSelected = false;
 
     @Mutation
     private SET_PLAYER_SELECTED(isPlayerSelected: boolean) {
@@ -156,6 +160,30 @@ export default class PlayerModule extends VuexModule {
         return true;
     }
 
+    @Action({rawError: true})
+    public sendReadyState(): void {
+        const readyModel: RdyModel = {
+            playerId: this.currentPlayer.id,
+            rdyState: !this.currentPlayer.rdyState,
+        }
+        websocket.send(config.PLAYER_SET_READY_PATH, readyModel);
+    }
+
+    @Action({rawError: true})
+    public sendSelection(side: string, role: string): void {
+        if (this.currentPlayer.role !== "NOT_SELECTED" && this.currentPlayer.side !== "NOT_SELECTED") {
+            side = "NOT_SELECTED";
+            role = "NOT_SELECTED";
+        }
+        const selectionModel: SelectionModel = {
+            playerId: this.currentPlayer.id,
+            side: side,
+            role: role,
+        }
+
+        websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selectionModel);
+    }
+
     get playersOrdered(): Array<PlayerModel> {
         const currentPlayerIndex: number = this.players.map(player => player.id).indexOf(this.currentPlayer.id);
         const temp: PlayerModel = this.players[0];
@@ -163,6 +191,10 @@ export default class PlayerModule extends VuexModule {
         this.players[currentPlayerIndex] = temp;
 
         return this.players;
+    }
+
+    get isRoleSelected(): boolean {
+        return this.currentPlayer.role === "NOT_SELECTED";
     }
 
     get getCurrentPlayer(): PlayerModel {
@@ -176,6 +208,19 @@ export default class PlayerModule extends VuexModule {
     get currentPlayerId(): number {
         return this.currentPlayer.id;
     }
+
+    get currentPlayerName(): string {
+        return this.currentPlayer.name;
+    }
+
+    get currentPlayerRole(): string {
+        return this.currentPlayer.role;
+    }
+
+    get currentPlayerSide(): string {
+        return this.currentPlayer.side;
+    }
+
 
     get partySize(): number {
         return this.players.length;

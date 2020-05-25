@@ -1,7 +1,7 @@
 <template>
     <div class="role-picker-div">
         <div class="role-picker">
-            <div v-if="roleSelected">
+            <div v-if="isRoleSelected">
                 <font-awesome-icon
                         title="blue spymaster"
                         style="color: dodgerblue"
@@ -59,35 +59,16 @@
     @Component
     export default class RolePick extends Vue {
 
-        private roleSelected = false;
-
-        @Watch("getCurrentPlayer.role")
-        private roleChange(): void {
-            this.roleSelected = this.getCurrentPlayer.role === "NOT_SELECTED";
-        }
-
         public sendSelection(side: string, role: string): void {
-            if (this.getCurrentPlayer.role === "NOT_SELECTED" && this.getCurrentPlayer.side === "NOT_SELECTED") {
-                const selection: SelectionModel = {
-                    playerId: this.getCurrentPlayer.id,
-                    side: side,
-                    role: role,
-                }
-                websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selection);
-                this.roleSelected = true;
-            } else {
-                const selection: SelectionModel = {
-                    playerId: this.getCurrentPlayer.id,
-                    side: "NOT_SELECTED",
-                    role: "NOT_SELECTED",
-                }
-                websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selection);
-                this.roleSelected = false;
-            }
+            this.$store.dispatch("sendSelection", {side, role});
         }
 
-        get getCurrentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get isRoleSelected(): boolean {
+            return this.$store.getters["isRoleSelected"];
+        }
+
+        get currentPlayerId(): number {
+            return this.$store.getters["currentPlayerId"];
         }
 
         get isBlueSpymasterFull(): boolean {

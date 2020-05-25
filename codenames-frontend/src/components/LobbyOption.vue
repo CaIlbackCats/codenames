@@ -37,11 +37,11 @@
         }
 
         public randomizeRoles(): void {
-            websocket.send(config.LOBBY_ROLE_PATH, {lobbyId: this.lobbyId});
+            this.$store.dispatch("sendRandomizeRole");
         }
 
         public randomizeSide(): void {
-            websocket.send(config.LOBBY_SIDE_PATH, {lobbyId: this.lobbyId});
+            this.$store.dispatch("sendRandomizeSide");
         }
 
         get getEveryOneRdy(): boolean {

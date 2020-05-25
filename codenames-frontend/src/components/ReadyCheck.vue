@@ -21,11 +21,7 @@
         private player!: PlayerModel;
 
         sendRdyState() {
-            const rdyModel: RdyModel = {
-                playerId: this.currentPlayer.id,
-                rdyState: !this.currentPlayer.rdyState,
-            }
-            websocket.send(config.PLAYER_SET_READY_PATH, rdyModel);
+            this.$store.dispatch("sendReadyState");
         }
 
         get currentPlayer(): PlayerModel {
