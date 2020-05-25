@@ -150,7 +150,7 @@
                 id: this.currentPlayer.id,
                 lobbyName: this.lobbyId,
             }
-            websocket.send(config.HIDE_PLAYER, playerDetails);
+            websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
         }
 
         async mounted() {
@@ -174,7 +174,7 @@
                 lobbyName: this.$route.params.lobbyId,
                 name: this.currentPlayerName,
             }
-            websocket.send(process.env.VUE_APP_OPTIONS_CREATE, newPlayer);
+            websocket.send(config.LOBBY_CREATE_PLAYER_PATH, newPlayer);
         }
 
         public initKickPlayer(player: PlayerModel): void {
@@ -185,7 +185,7 @@
                     ownerId: this.currentPlayer.id,
                     playerToRemoveId: player.id,
                 }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
+                websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
             } else {
                 const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
                 const playerRemovalModel: PlayerRemovalModel = {
@@ -194,7 +194,7 @@
                     votingPlayers: votingPlayers,
                     playerToRemoveId: player.id,
                 }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
+                websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
             }
         }
 

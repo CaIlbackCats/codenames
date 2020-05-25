@@ -54,6 +54,7 @@
     import {PlayerModel} from "@/models/playerModel";
     import {SelectionModel} from "@/models/selectionModel";
     import * as websocket from '@/services/websocket'
+    import {config} from "@/config";
 
     @Component
     export default class RolePick extends Vue {
@@ -72,7 +73,7 @@
                     side: side,
                     role: role,
                 }
-                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
+                websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selection);
                 this.roleSelected = true;
             } else {
                 const selection: SelectionModel = {
@@ -80,7 +81,7 @@
                     side: "NOT_SELECTED",
                     role: "NOT_SELECTED",
                 }
-                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
+                websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selection);
                 this.roleSelected = false;
             }
         }

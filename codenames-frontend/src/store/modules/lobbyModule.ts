@@ -58,7 +58,7 @@ export default class LobbyModule extends VuexModule {
     @Action({rawError: true})
     public async subscribeToLobby() : Promise<void> {
       await websocket.subscribe(
-            `${config.wsLobbyPath}${this.lobby.id}`,
+            `${config.LOBBY_SUBSCRIPTION_PATH}${this.lobby.id}`,
             body => {
                 if (body) {
                     this.context.dispatch("executeLobbyChange", body, {root: true});

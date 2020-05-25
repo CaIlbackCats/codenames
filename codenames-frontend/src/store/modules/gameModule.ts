@@ -22,7 +22,7 @@ export default class GameModule extends VuexModule {
     @Action({rawError: true})
     public subscribeToGame() {
         const lobbyId: string = this.context.getters["lobbyId"];
-        const gamePath: string = config.LOBBY + lobbyId + "/" + this.gameId;
+        const gamePath: string = config.LOBBY_SUBSCRIPTION_PATH + lobbyId + "/" + this.gameId;
         websocket.subscribe(gamePath, (body) => {
                 if (body) {
                     this.context.commit("UPDATE_GAME", body);
@@ -33,12 +33,12 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public createGame(): void {
-        websocket.send(config.CREATE_GAME, {lobbyId: this.context.getters['lobbyId']})
+        websocket.send(config.CREATE_GAME_PATH, {lobbyId: this.context.getters['lobbyId']})
     }
 
     @Action({rawError: true})
     public sendGameState(teamVoteModel: TeamVoteModel): void {
-        websocket.send(config.GAME_STATE_UPDATE, teamVoteModel);
+        websocket.send(config.GAME_STATE_UPDATE_PATH, teamVoteModel);
     }
 
     @Mutation

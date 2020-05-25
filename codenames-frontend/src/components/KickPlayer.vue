@@ -24,6 +24,7 @@
     import {PlayerModel} from "@/models/playerModel";
     import {PlayerRemovalModel} from "@/models/playerRemovalModel";
     import * as websocket from '@/services/websocket'
+    import {config} from "@/config";
 
     const MAX_VOTE_TIME = 15;
     const MILISEC = 1000;
@@ -66,7 +67,7 @@
         private sendKickMsg() {
             this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, false).then(() => {
                 if (this.playerRemovalInfo.ownerId === this.currentPlayer.id) {
-                    websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
+                    websocket.send(config.PLAYER_KICK_PATH, this.playerRemovalInfo);
                 }
             });
         }
@@ -75,11 +76,11 @@
             if (this.playerRemovalInfo.ownerId == this.currentPlayer.id && this.currentPlayer.lobbyOwner) {
                 clearInterval(this.timer);
                 this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
-                    websocket.send(process.env.VUE_APP_PLAYER_KICK, this.playerRemovalInfo);
+                    websocket.send(config.PLAYER_KICK_PATH, this.playerRemovalInfo);
                 });
             } else {
                 this.updatePlayerRemovalInfo(this.currentPlayer.id, this.playerToKick.id, vote).then(() => {
-                    websocket.send(process.env.VUE_APP_PLAYER_KICK_COUNT, this.playerRemovalInfo);
+                    websocket.send(config.PLAYER_COUNT_KICKS_PATH, this.playerRemovalInfo);
                 });
             }
             this.hidePopPup();

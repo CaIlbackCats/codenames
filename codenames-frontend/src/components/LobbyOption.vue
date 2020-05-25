@@ -14,6 +14,7 @@
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
+    import {config} from "@/config";
 
     @Component
     export default class LobbyOption extends Vue {
@@ -36,11 +37,11 @@
         }
 
         public randomizeRoles(): void {
-            websocket.send(process.env.VUE_APP_OPTIONS_ROLE_CHANGE, {lobbyId: this.lobbyId});
+            websocket.send(config.LOBBY_ROLE_PATH, {lobbyId: this.lobbyId});
         }
 
         public randomizeSide(): void {
-            websocket.send(process.env.VUE_APP_OPTIONS_SIDE_CHANGE, {lobbyId: this.lobbyId});
+            websocket.send(config.LOBBY_SIDE_PATH, {lobbyId: this.lobbyId});
         }
 
         get getEveryOneRdy(): boolean {

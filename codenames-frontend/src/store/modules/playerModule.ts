@@ -143,7 +143,7 @@ export default class PlayerModule extends VuexModule {
     @Action({rawError: true})
     public subscribeToPlayerChange(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
-        websocket.subscribe(process.env.VUE_APP_PLAYER_CHANGE + lobbyId + "/" + this.currentPlayer.id,
+        websocket.subscribe(config.PLAYER_SUBSCRIPTION_PATH + lobbyId + "/" + this.currentPlayer.id,
             messageBody => {
                 if (messageBody) {
                     this.context.dispatch("executePlayerChange", messageBody);
@@ -176,7 +176,7 @@ export default class PlayerModule extends VuexModule {
                 lobbyName: this.context.getters["lobbyId"],
                 id: Number(currentPlayerId),
             }
-            websocket.send(config.wsFetchPlayerPath, existingPlayer);
+            websocket.send(config.PLAYER_FETCH_PATH, existingPlayer);
         }
     }
 

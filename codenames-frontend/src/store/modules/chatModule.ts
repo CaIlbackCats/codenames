@@ -20,7 +20,7 @@ export default class ChatModule extends VuexModule {
 
     @Action({rawError: true})
     public subscribeToChat(lobbyId:string) {
-        const path = `${config.wsChatSubscribePath}${lobbyId}`
+        const path = `${config.CHAT_SUBSCRIPTION_PATH}${lobbyId}`
         return websocket.subscribe(path, (message) => {
             if (message) this.context.commit("ADD_MESSAGE", message);
         });
@@ -28,6 +28,6 @@ export default class ChatModule extends VuexModule {
 
     @Action
     public sendChatMessage(messageModel: MessageModel) {
-        return websocket.send(config.wsChatPublishPath, messageModel)
+        return websocket.send(config.CHAT_SEND_MSG_PATH, messageModel)
     }
 }

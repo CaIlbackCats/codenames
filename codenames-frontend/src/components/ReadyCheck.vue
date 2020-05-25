@@ -13,6 +13,7 @@
     import {PlayerModel} from "@/models/playerModel";
     import {RdyModel} from "@/models/rdyModel";
     import * as websocket from '@/services/websocket'
+    import {config} from "@/config";
 
     @Component
     export default class ReadyCheck extends Vue {
@@ -24,7 +25,7 @@
                 playerId: this.currentPlayer.id,
                 rdyState: !this.currentPlayer.rdyState,
             }
-            websocket.send(process.env.VUE_APP_PLAYER_RDY, rdyModel);
+            websocket.send(config.PLAYER_SET_READY_PATH, rdyModel);
         }
 
         get currentPlayer(): PlayerModel {
