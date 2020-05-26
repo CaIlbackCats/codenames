@@ -22,7 +22,7 @@ public class Lobby {
 
     private String name;
 
-    @OneToMany(mappedBy = "lobby")
+    @OneToMany(mappedBy = "lobby",fetch = FetchType.EAGER)
     private List<Player> playerList;
 
     @OneToMany(mappedBy = "lobby")

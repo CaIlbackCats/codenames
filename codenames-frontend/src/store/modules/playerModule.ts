@@ -1,27 +1,21 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
-import router from "@/router";
 import * as websocket from '@/services/websocket'
 import {PlayerModel} from "@/models/playerModel";
 import {ActionModel} from "@/models/actionModel";
-import {PlayerRemovalModel} from "@/models/playerRemovalModel";
-import {LobbyModel} from "@/models/lobbyModel";
 import {LobbyTeamModel} from "@/models/lobbyTeamModel";
 import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 import {config} from "@/config";
 import {RdyModel} from "@/models/rdyModel";
 import {SelectionModel} from "@/models/selectionModel";
 import {PlayerCreationModel} from "@/models/playerCreationModel";
+import axios from 'axios';
+import {LobbyModel} from "@/models/lobbyModel";
 
-
-interface CheckSelectedPlayerActionPayload {
-    lobbyId: string;
-}
 
 @Module
 export default class PlayerModule extends VuexModule {
 
-    private players: Array<PlayerModel> = [];
 
     private currentPlayer: PlayerModel = {
         id: -1,
@@ -36,14 +30,11 @@ export default class PlayerModule extends VuexModule {
 
 
     private everyOneRdy = false;
-
-
     private blueSpymaster = false;
     private blueSpy = false;
     private redSpymaster = false;
     private redSpy = false;
 
-    private roleSelected = false;
 
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
@@ -53,31 +44,16 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Mutation
-    private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
-        this.players = lobbyModel.players;
-        this.everyOneRdy = lobbyModel.everyOneRdy;
-        this.blueSpymaster = lobbyModel.blueSpymaster;
-        this.blueSpy = lobbyModel.blueSpy;
-        this.redSpymaster = lobbyModel.redSpymaster;
-        this.redSpy = lobbyModel.redSpy;
-    }
-
-    @Mutation
-    private SET_PLAYER_SELECTED(playerSelected: boolean): void {
-        this.playerSelected = playerSelected;
-    }
-
-    @Mutation
     private REMOVE_CURRENT_PLAYER(): void {
         this.currentPlayer = {
             id: -1,
-            name: "",
-            lobbyOwner: false,
             role: "",
             side: "",
             rdyState: false,
+            name: "",
+            lobbyOwner: false,
         }
-        router.push({name: "Home"});
+        this.playerSelected = false;
     }
 
     @Mutation
@@ -99,15 +75,6 @@ export default class PlayerModule extends VuexModule {
             case "CREATE_PLAYER":
                 this.context.commit("ADD_PLAYER", messageBody.currentPlayer)
                 break;
-            case "UPDATE_LOBBY":
-                this.context.commit("UPDATE_LOBBY", messageBody.lobbyDetails)
-                break;
-            case "SET_PREVIOUS_PLAYER":
-                this.context.commit("UPDATE_PLAYER", messageBody.currentPlayer)
-                break;
-            case "DELETE_PREV_PLAYER":
-                this.context.commit("SET_PLAYER_SELECTED", false)
-                break;
             case "CREATE_GAME":
                 this.context.commit("SET_GAME", messageBody.gameDetails)
                 break;
@@ -120,22 +87,10 @@ export default class PlayerModule extends VuexModule {
         websocket.subscribe(config.PLAYER_SUBSCRIPTION_PATH + lobbyId + "/" + this.currentPlayer.id,
             messageBody => {
                 if (messageBody) {
-                    this.context.dispatch("executePlayerChange", messageBody);
+                    this.context.commit("UPDATE_PLAYER", messageBody);
                 }
             });
     };
-
-    @Action
-    public executePlayerChange(messageBody: ActionModel): void {
-        switch (messageBody.actionToDo) {
-            case "GET_KICKED":
-                this.context.dispatch("executeGetKicked");
-                break;
-            case "UPDATE_PLAYER":
-                this.context.dispatch("executePlayerUpdate", messageBody.currentPlayer);
-                break;
-        }
-    }
 
     @Action({rawError: true})
     public checkSelectedPlayer() {
@@ -148,16 +103,6 @@ export default class PlayerModule extends VuexModule {
             }
             websocket.send(config.PLAYER_FETCH_PATH, existingPlayer);
         }
-    }
-
-    @Action({commit: "UPDATE_PLAYER", rawError: true})
-    public executePlayerUpdate(playerModel: PlayerModel) {
-        return playerModel;
-    }
-
-    @Action({commit: "REMOVE_CURRENT_PLAYER"})
-    public executeGetKicked(): boolean {
-        return true;
     }
 
     @Action({rawError: true})
@@ -185,24 +130,27 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public sendPlayerCreation(playerCreationModel: PlayerCreationModel): void {
-        websocket.send(config.LOBBY_CREATE_PLAYER_PATH, playerCreationModel);
-    }
+    public async sendPlayerCreation(playerCreationModel: PlayerCreationModel) {
+        const resp = await axios.post(process.env.VUE_APP_BASE_URL + "/createPlayer", playerCreationModel);
+        if (resp.status === 201) {
+            const player: PlayerModel = resp.data;
+            this.context.commit("UPDATE_PLAYER", player);
 
-    get playersOrdered(): Array<PlayerModel> {
-        const currentPlayerIndex: number = this.players.map(player => player.id).indexOf(this.currentPlayer.id);
-        const temp: PlayerModel = this.players[0];
-        this.players[0] = this.currentPlayer;
-        this.players[currentPlayerIndex] = temp;
-
-        return this.players;
+        }
+        const lobbyModel: LobbyModel = {
+            id: playerCreationModel.lobbyName,
+            everyoneRdy: false,
+            players: [],
+        }
+        websocket.send(config.LOBBY_FETCH_PATH, lobbyModel);
+        //  websocket.send(config.LOBBY_CREATE_PLAYER_PATH, playerCreationModel);
     }
 
     get isRoleSelected(): boolean {
         return this.currentPlayer.role === "NOT_SELECTED";
     }
 
-    get getCurrentPlayer(): PlayerModel {
+    get player(): PlayerModel {
         return this.currentPlayer;
     }
 
@@ -226,29 +174,8 @@ export default class PlayerModule extends VuexModule {
         return this.currentPlayer.side;
     }
 
-
-    get partySize(): number {
-        return this.players.length;
-    }
-
     get isEveryOneRdy(): boolean {
         return this.everyOneRdy;
-    }
-
-    get isBlueSpymasterFull(): boolean {
-        return this.blueSpymaster;
-    }
-
-    get isBlueSpyFull(): boolean {
-        return this.blueSpy;
-    }
-
-    get isRedSpymasterFull(): boolean {
-        return this.redSpymaster;
-    }
-
-    get isRedSpyFull(): boolean {
-        return this.redSpy;
     }
 
     get isPlayerSelected(): boolean {

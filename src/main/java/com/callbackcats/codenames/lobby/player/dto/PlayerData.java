@@ -24,7 +24,7 @@ public class PlayerData {
 
     private String side;
 
-    private String lobbyName;
+    private String lobbyId;
 
     private Boolean rdyState;
 
@@ -35,7 +35,7 @@ public class PlayerData {
         this.role = player.getRole().toString();
         this.side = player.getSide().toString();
         if (player.getLobby() != null) {
-            this.lobbyName = player.getLobby().getId();
+            this.lobbyId = player.getLobby().getId();
         }
         this.rdyState = player.getRdyState();
     }

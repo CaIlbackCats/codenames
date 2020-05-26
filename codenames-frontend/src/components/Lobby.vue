@@ -23,7 +23,7 @@
                             <div class="m-2" v-for="player in players"
                                  :key="player.id">
                                 <ReadyCheck :player="player"></ReadyCheck>
-                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
+                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayerId"
                                                    icon="user-secret"/>
                                 <font-awesome-icon v-if="player.role === 'SPYMASTER'"
                                                    :icon="['fas', 'briefcase']"
@@ -32,7 +32,7 @@
                                 <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
                                                         player.side === 'RED' ? 'color: indianred' : 'color: #87194B' ">
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                                <font-awesome-icon v-if="player.name !== currentPlayer.name"
+                                <font-awesome-icon v-if="player.name !== currentPlayerName"
                                                    class="kick-btn"
                                                    @click="initKickPlayer(player.id)"
                                                    icon="user-minus"/>
@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
-                        <LobbyOption v-if="currentPlayer.lobbyOwner"
+                        <LobbyOption v-if="isCurrentPlayerLobbyOwner"
                         ></LobbyOption>
                     </div>
 
@@ -101,12 +101,11 @@
         private isMouseInMiddle = true;
 
         private path = "http://localhost:4200";
-        private currentPlayerName = "";
 
-        @Watch("currentPlayer.id")
+        @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
-            if (this.currentPlayer.id !== -1) {
-                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
+            if (this.currentPlayerId !== -1) {
+               // localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
                 this.$store.dispatch("subscribeToPlayerChange");
             }
         }
@@ -118,7 +117,7 @@
 
         private hideLeftPlayer(): void {
             const playerDetails: PlayerDetailsModel = {
-                id: this.currentPlayer.id,
+                id: this.currentPlayerId,
                 lobbyName: this.lobbyId,
             }
             websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
@@ -148,12 +147,20 @@
             return this.$store.getters["playersOrdered"];
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerId():number{
+            return this.$store.getters["currentPlayerId"];
         }
 
         get isPlayerSelected(): boolean {
             return this.$store.getters["isPlayerSelected"]
+        }
+
+        get isCurrentPlayerLobbyOwner():boolean{
+            return this.$store.getters["isCurrentPlayerOwner"];
+        }
+
+        get currentPlayerName():string{
+            return this.$store.getters["currentPlayerName"]
         }
 
         get lobbyId(): string {

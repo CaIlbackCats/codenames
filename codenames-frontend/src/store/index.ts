@@ -16,10 +16,10 @@ export default new Vuex.Store({
     actions: {},
     modules: {
         chatModule,
-        playerModule,
-        lobbyModule,
         gameModule,
         kickModule,
+        lobbyModule,
         optionModule,
+        playerModule,
     }
 });

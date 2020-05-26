@@ -1,7 +1,7 @@
 <template>
     <button
             @click="sendRdyState"
-            :disabled="player.name!==currentPlayer.name"
+            :disabled="player.name!==currentPlayerName"
             :pressed.sync="player.rdyState"
             :class="['rdy-btn mr-2', player.rdyState ? 'is-ready' : '']"
     ><font-awesome-icon icon="check"/>
@@ -24,8 +24,8 @@
             this.$store.dispatch("sendReadyState");
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerName(): string {
+            return this.$store.getters["currentPlayerName"];
         }
     }
 </script>

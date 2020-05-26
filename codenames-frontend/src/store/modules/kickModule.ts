@@ -81,8 +81,8 @@ export default class KickModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public sendKick() {
-        websocket.send(config.PLAYER_KICK_PATH, this.playerRemovalModel);
+    public getPlayersInLobby() {
+        websocket.send(config.LOBBY_GET_PLAYERS_PATH, this.playerRemovalModel);
     }
 
 

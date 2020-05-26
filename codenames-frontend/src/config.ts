@@ -15,9 +15,11 @@ export const config = {
     PLAYER_SUBSCRIPTION_PATH: "/player/",
     PLAYER_FETCH_PATH: "/player/getPlayer",
     PLAYER_INIT_KICK_PATH: "/player/kickInit",
-    PLAYER_KICK_PATH: "/player/kick",
+    LOBBY_GET_PLAYERS_PATH: "/lobby/getPlayers",
     PLAYER_COUNT_KICKS_PATH: "/player/kickCount",
     PLAYER_SET_READY_PATH: "/player/rdy",
     PLAYER_ROLE_SELECTION_PATH: "/player/selection",
+    LOBBY_ROLE_DATA_SUBSCRIPTION_PATH:"/roleData",
+    LOBBY_FETCH_PATH:"/player/fetchLobby",
 
 }

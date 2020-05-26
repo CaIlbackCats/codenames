@@ -3,7 +3,6 @@ package com.callbackcats.codenames.lobby.player.service;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.lobby.player.domain.KickType;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.RoleType;
@@ -11,15 +10,14 @@ import com.callbackcats.codenames.lobby.player.domain.SideType;
 import com.callbackcats.codenames.lobby.player.dto.*;
 import com.callbackcats.codenames.lobby.player.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,12 +27,16 @@ public class PlayerService {
 
     private static final int MAX_SPYMASTER = 2;
     private static final int MIN_PLAYERS = 4;
+    private static final int VOTING_PHASE_TIME = 15;
+
     private final PlayerRepository playerRepository;
     private final LobbyRepository lobbyRepository;
+    private final ScheduledExecutorService scheduler;
 
-    public PlayerService(PlayerRepository playerRepository, LobbyRepository lobbyRepository) {
+    public PlayerService(PlayerRepository playerRepository, LobbyRepository lobbyRepository, ScheduledExecutorService scheduler) {
         this.playerRepository = playerRepository;
         this.lobbyRepository = lobbyRepository;
+        this.scheduler = scheduler;
     }
 
     public PlayerData savePlayer(PlayerCreationData playerCreationData) {
@@ -120,21 +122,6 @@ public class PlayerService {
         return players.stream().anyMatch(Player::getLobbyOwner);
     }
 
-    public void processKickAfterCountDown(PlayerRemovalData playerRemovalData) {
-        Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
-        if (!kickInitPlayer.getLobbyOwner()) {
-            Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
-            int playersInLobby = playerToRemove.getLobby().getPlayerList().size();
-            if (playerToRemove.getKickVoteCount() > playersInLobby / 2) {
-                removePlayer(playerToRemove);
-                log.info("Remove playerToRemove:\t" + playerToRemove.getId() + "\tby vote:\t" + playerToRemove.getKickVoteCount());
-            } else {
-                playerToRemove.setKickVoteCount(0);
-                playerRepository.save(playerToRemove);
-            }
-        }
-    }
-
     public void processKickBeforeCountDown(PlayerRemovalData playerRemovalData) {
         if (playerRemovalData.getVote()) {
             Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
@@ -199,7 +186,8 @@ public class PlayerService {
         return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
-    public void getTeamsByRoles(String lobbyName, LobbyDetails lobbyDetails) {
+    public RemainingRoleData getRemainingRoleData(String lobbyName) {
+        RemainingRoleData remainingRoleData = new RemainingRoleData();
         List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
 
         long blueSpymaster = playersInLobby
@@ -224,19 +212,39 @@ public class PlayerService {
         boolean redSpymasterFull = redSpymaster == 1;
         boolean redSpyFull = playersInLobby.size() / 2 - redSpy == 0;
 
-        lobbyDetails.setBlueSpymaster(blueSpymasterFull);
-        lobbyDetails.setBlueSpy(blueSpyFull);
-        lobbyDetails.setRedSpymaster(redSpymasterFull);
-        lobbyDetails.setRedSpy(redSpyFull);
+        remainingRoleData.setBlueSpymaster(blueSpymasterFull);
+        remainingRoleData.setBlueSpy(blueSpyFull);
+        remainingRoleData.setRedSpymaster(redSpymasterFull);
+        remainingRoleData.setRedSpy(redSpyFull);
 
-        //  return lobbyDetails;
+        return remainingRoleData;
     }
 
     public void setPlayerRemoval(PlayerRemovalData playerRemovalData) {
+        PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
+        playerRemovalData.setPlayerToRemove(playerToKick);
+    }
+
+    public ScheduledFuture<?> isVotingFinished(PlayerRemovalData playerRemovalData) {
+        PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
         Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
-        if (kickInitPlayer.getLobbyOwner()) {
-            PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
-            playerRemovalData.setPlayerToRemove(playerToKick);
+        ScheduledFuture<?> schedule = null;
+        if (!kickInitPlayer.getLobbyOwner()) {
+            schedule = scheduler.schedule(() -> processVotes(playerToKick.getId()), VOTING_PHASE_TIME, TimeUnit.SECONDS);
+        }
+        return schedule;
+    }
+
+    // @Async()
+    public void processVotes(Long playerToKickId) {
+        log.info("Process votes for player id:\t" + playerToKickId);
+        Player playerToKick = findPlayerById(playerToKickId);
+        int playersInLobby = playerToKick.getLobby().getPlayerList().size();
+        if (playerToKick.getKickVoteCount() > playersInLobby / 2) {
+            removePlayer(playerToKick);
+        } else {
+            playerToKick.setKickVoteCount(0);
+            playerRepository.save(playerToKick);
         }
     }
 

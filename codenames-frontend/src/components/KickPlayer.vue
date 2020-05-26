@@ -30,7 +30,7 @@
 
         private counter = MAX_VOTE_TIME;
 
-        private timer! : number;
+        private timer!: number;
 
         @Watch("kickWindow")
         private showModal() {
@@ -49,7 +49,7 @@
             if (this.counter == 0) {
                 clearInterval(this.timer);
                 this.hidePopPup();
-                this.$store.dispatch("sendKick");
+                this.$store.dispatch("getPlayersInLobby");
             }
         }
 
@@ -79,8 +79,8 @@
             return this.$store.getters["isKickWindow"];
         }
 
-        get playerToKickName():string{
-          return this.$store.getters["playerToKickName"];
+        get playerToKickName(): string {
+            return this.$store.getters["playerToKickName"];
         }
 
     }

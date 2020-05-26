@@ -1,9 +1,15 @@
-import {Action, Module, VuexModule} from "vuex-module-decorators";
+import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 
 @Module
 export default class OptionModule extends VuexModule {
+
+
+
+    private everyoneReady = false;
+
+
 
     @Action({rawError: true})
     public sendRandomizeRole(): void {
@@ -15,5 +21,9 @@ export default class OptionModule extends VuexModule {
     public sendRandomizeSide(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
         websocket.send(config.LOBBY_SIDE_PATH, lobbyId);
+    }
+
+    get isEveryoneReady(): boolean {
+        return this.everyoneReady;
     }
 }

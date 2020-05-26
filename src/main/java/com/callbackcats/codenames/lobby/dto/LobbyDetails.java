@@ -17,21 +17,9 @@ public class LobbyDetails {
 
     private List<PlayerData> players;
 
-    private Boolean everyOneRdy;
-
-    private Boolean blueSpymaster;
-
-    private Boolean blueSpy;
-
-    private Boolean redSpymaster;
-
-    private Boolean redSpy;
+    private Boolean everyoneRdy;
 
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();
-    }
-
-    public LobbyDetails(Boolean everyOneRdy) {
-        this.everyOneRdy = everyOneRdy;
     }
 }
