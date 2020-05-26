@@ -39,14 +39,13 @@
                 <div class="col-sm-12 col-lg-4">
                     <div class="white-backgrounded-div text-left row mx-0 mb-3">
                         <div class="content-div">
-                            <PlayerList :is-in-lobby="true"></PlayerList>
+                            <player-list :is-in-lobby="true"></player-list>
                         </div>
                         <div class="background-div"></div>
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
-                        <LobbyOption v-if="currentPlayer.lobbyOwner"
-                        ></LobbyOption>
+                        <LobbyOption v-if="currentPlayer.lobbyOwner"></LobbyOption>
                     </div>
 
                 </div>
@@ -253,8 +252,6 @@
         max-width: 75%;
         margin-bottom: 15vh;
     }
-
-
 
     button {
         background-color: rgb(135, 25, 75);
