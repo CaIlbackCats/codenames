@@ -27,13 +27,13 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Component, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/messageModel";
     import {PlayerModel} from "@/models/playerModel";
 
 
     @Component
-    export default class LobbyChat extends Vue {
+    export default class Chat extends Vue {
 
         private chatMessageToSend = "";
 

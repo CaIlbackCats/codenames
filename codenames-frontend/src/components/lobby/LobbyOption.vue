@@ -11,7 +11,7 @@
 
 <script lang="ts">
 
-    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
 

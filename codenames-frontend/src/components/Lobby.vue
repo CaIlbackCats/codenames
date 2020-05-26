@@ -30,38 +30,18 @@
 
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
-                    <lobby-chat
-                    ></lobby-chat>
+                    <chat></chat>
                     <div class="col-sm-12 mb-3">
                         <RolePick></RolePick>
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-lg-4">
-                    <div class="players-div text-left row mx-0 mb-3">
-                        <div class="list-div">
-                            <div class="m-2" v-for="player in players"
-                                 :key="player.id">
-                                <ReadyCheck :player="player"></ReadyCheck>
-                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
-                                                   icon="user-secret"/>
-                                <font-awesome-icon v-if="player.role === 'SPYMASTER'"
-                                                   :icon="['fas', 'briefcase']"
-                                                   :class="[ 'mr-2', player.side === 'BLUE' ? 'blue-spymaster': 'red-spymaster'] "
-                                ></font-awesome-icon>
-                                <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
-                                                        player.side === 'RED' ? 'color: indianred' : 'color: #87194B' ">
-                                    {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                                <font-awesome-icon v-if="player.name !== currentPlayer.name"
-                                                   class="kick-btn"
-                                                   @click="initKickPlayer(player)"
-                                                   icon="user-minus"/>
-                            </div>
+                    <div class="white-backgrounded-div text-left row mx-0 mb-3">
+                        <div class="content-div">
+                            <PlayerList :is-in-lobby="true"></PlayerList>
                         </div>
-                        <KickPlayer
-                                :player-to-kick="playerToKick"
-                        ></KickPlayer>
-                        <div class="white-background-div"></div>
+                        <div class="background-div"></div>
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
@@ -100,22 +80,21 @@
 
 <script lang="ts">
     import {Component, Vue, Watch} from "vue-property-decorator";
-    import LobbyChat from "@/components/LobbyChat.vue";
-    import LobbyOption from "@/components/LobbyOption.vue";
+    import Chat from "@/components/chat/Chat.vue";
+    import LobbyOption from "@/components/lobby/LobbyOption.vue";
     import {PlayerCreationModel} from "@/models/playerCreationModel";
     import {PlayerModel} from "@/models/playerModel";
-    import {RoomModel} from "@/models/roomModel";
-    import KickPlayer from "@/components/KickPlayer.vue";
-    import {PlayerRemovalModel} from "@/models/playerRemovalModel";
-    import ReadyCheck from "@/components/ReadyCheck.vue";
-    import RolePick from "@/components/RolePick.vue";
+    import KickPlayer from "@/components/player/KickPlayer.vue";
+    import ReadyCheck from "@/components/player/ReadyCheck.vue";
+    import RolePick from "@/components/player/RolePick.vue";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
     import {config} from "@/config";
     import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+    import PlayerList from "@/components/player/PlayerList.vue";
 
     @Component({
-        components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
+        components: {Chat, PlayerList, RolePick, ReadyCheck, KickPlayer, LobbyOption}
     })
     export default class Lobby extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
@@ -123,14 +102,7 @@
 
         private path = "http://localhost:4200";
         private currentPlayerName = "";
-        private playerToKick: PlayerModel = {
-            id: -1,
-            name: "",
-            lobbyOwner: false,
-            role: "",
-            side: "",
-            rdyState: false,
-        };
+
 
         @Watch("currentPlayer.id")
         private subscribeToPlayerChange() {
@@ -177,31 +149,6 @@
             websocket.send(process.env.VUE_APP_OPTIONS_CREATE, newPlayer);
         }
 
-        public initKickPlayer(player: PlayerModel): void {
-            this.playerToKick = player;
-            if (this.currentPlayer.lobbyOwner) {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "OWNER",
-                    ownerId: this.currentPlayer.id,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            } else {
-                const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "VOTE",
-                    ownerId: this.currentPlayer.id,
-                    votingPlayers: votingPlayers,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            }
-        }
-
-        get players(): Array<PlayerModel> {
-            return this.$store.getters["playersOrdered"];
-        }
-
         get currentPlayer(): PlayerModel {
             return this.$store.getters["getCurrentPlayer"];
         }
@@ -218,19 +165,7 @@
 
 <style scoped>
 
-    svg {
-        color: rgb(135, 25, 75);
-    }
-
-    .blue-spymaster {
-        color: dodgerblue;
-    }
-
-    .red-spymaster {
-        color: indianred;
-    }
-
-    .white-background-div {
+    .background-div {
         height: 100%;
         width: 100%;
         background-color: white;
@@ -238,11 +173,11 @@
         opacity: 0.6;
     }
 
-    .players-div {
+    .white-backgrounded-div {
         height: 60vh;
     }
 
-    .list-div {
+    .content-div {
         max-height: 60vh;
         overflow-y: scroll;
         position: absolute;
@@ -250,7 +185,7 @@
         -ms-overflow-style: none;
     }
 
-    .list-div::-webkit-scrollbar {
+    .content-div::-webkit-scrollbar {
         display: none;
     }
 
@@ -319,13 +254,7 @@
         margin-bottom: 15vh;
     }
 
-    .kick-btn {
-        opacity: 0.2;
-    }
 
-    .kick-btn:hover {
-        opacity: 0.8;
-    }
 
     button {
         background-color: rgb(135, 25, 75);

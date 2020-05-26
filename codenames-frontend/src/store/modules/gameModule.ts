@@ -7,7 +7,12 @@ import {GameCreationModel} from "@/models/gameCreationModel";
 export default class GameModule extends VuexModule {
     private game: GameCreationModel = {
         id: -1,
-        board: []
+        board: [],
+        blueScore: 0,
+        redScore: 0,
+        civiliansFoundByBlueTeam: 0,
+        civiliansFoundByRedTeam: 0,
+        rounds: 0
     }
 
     @Action
@@ -18,6 +23,26 @@ export default class GameModule extends VuexModule {
     @Mutation
     private SET_GAME(gameCreationModel: GameCreationModel): void {
         this.game = gameCreationModel;
+    }
+
+    get rounds(): number {
+        return this.game.rounds;
+    }
+
+    get civiliansFoundByBlueTeam(): number {
+        return this.game.civiliansFoundByBlueTeam;
+    }
+
+    get civiliansFoundByRedTeam(): number {
+        return this.game.civiliansFoundByRedTeam;
+    }
+
+    get blueScore(): number {
+        return this.game.blueScore;
+    }
+
+    get redScore(): number {
+        return this.game.redScore;
     }
 
     get gameId(): number {
