@@ -1,15 +1,12 @@
 <template>
     <div class="text-left">
         <div class="chat-div col-sm-12">
-            <div class="message-window">
-                <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
-                    <font-awesome-icon class="ml-2" v-if="chatMessage.name === currentPlayer.name" icon="user-secret"/>
-                    <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
-                </div>
+            <div :key="chatMessage.id" v-for="chatMessage in chatMessages">
+                <font-awesome-icon class="ml-2" icon="user-secret" v-if="chatMessage.name === currentPlayer.name"/>
+                <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
             </div>
-            <div class="message-window-background-div"></div>
         </div>
-        <div class="col-sm-12 my-3">
+        <div class="my-3">
             <b-input-group size="sm">
                 <b-form-input id="chat-message"
                               type="text"
@@ -67,11 +64,11 @@
 </script>
 
 <style scoped>
-    input{
+    input {
         opacity: 0.6;
     }
 
-    input:focus{
+    input:focus {
         opacity: 1;
         outline: none;
         box-shadow: none;
@@ -84,31 +81,16 @@
 
     .chat-div {
         height: 60vh;
-        position: relative;
-    }
-
-    .message-window-background-div {
-        height: 100%;
-        width: 100%;
-        background-color: white;
-        position: relative;
-        opacity: 0.6;
-    }
-
-    .message-window {
-        height: 100%;
-        width: 100%;
+        background-color: rgba(255, 255, 255, 0.6);
         overflow-y: scroll;
         overflow-x: hidden;
-        position: absolute;
-        z-index: 1;
     }
 
-    .message-window::-webkit-scrollbar {
+    .chat-div::-webkit-scrollbar {
         display: none;
     }
 
-    .message-window {
+    .chat-div {
         -ms-overflow-style: none;
     }
 
@@ -116,12 +98,12 @@
         color: rgb(135, 25, 75);
     }
 
+
     button {
         background-color: rgb(135, 25, 75);
         border: 0 solid;
         box-shadow: inset 0 0 20px rgba(250, 230, 15, 0);
-        outline: 1px solid;
-        outline-color: rgba(135, 25, 75, .5);
+        outline: rgba(135, 25, 75, .5) solid 1px;
         outline-offset: 0px;
         text-shadow: none;
         transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);

@@ -37,15 +37,17 @@
     button {
         all: unset;
     }
-    button:disabled{
+    button:disabled {
         all: unset;
         pointer-events: none;
         opacity: .4;
     }
-    button:active, button:hover, button:focus{
+
+    button:active, button:hover, button:focus {
         all: unset;
     }
-    .rdy-btn{
+
+    .rdy-btn {
         all: unset;
         cursor: pointer;
     }

@@ -17,8 +17,7 @@
             </b-button>
             <b-button squared
                       @mouseover="isOverRandom = true"
-                      @mouseleave="isOverRandom = false"
-            >
+                      @mouseleave="isOverRandom = false">
                 Random room
             </b-button>
         </div>

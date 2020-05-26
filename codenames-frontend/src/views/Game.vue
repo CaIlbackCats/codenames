@@ -1,40 +1,35 @@
 <template>
     <div class="game row m-0">
-        <div class="col-sm-12 col-lg-8 col-xl-9 pl-lg-4">
+        <div class="col-sm-12 col-lg-8 col-xl-9">
             <div class="row mx-0">
                 <div class="col-lg-4 p-0">
                     <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <div class="game-header content-div">
-                            <game-counters></game-counters>
-                        </div>
-                        <div class="background-div"></div>
+                        <game-counters></game-counters>
                     </div>
                 </div>
 
                 <div class="col-lg-8 pr-0 pl-lg-4">
                     <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <div class="game-header content-div">
-                            <puzzle></puzzle>
-                        </div>
-                        <div class="background-div"></div>
+                        <puzzle></puzzle>
                     </div>
                 </div>
             </div>
 
-            <div class="game-map white-backgrounded-div">
-                <div class="game-map content-div">
-                    <game-map></game-map>
+            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 pr-0">
+                <game-map></game-map>
+            </div>
+
+            <div class="game-options-decor">
+                <img :src="spyGameUrl" alt="spy">
+                <div class="game-options white-backgrounded-div mb-sm-2 mb-lg-4">
+                    <game-options :is-spy-master="isSpyMaster"></game-options>
                 </div>
-                <div class="background-div"></div>
             </div>
         </div>
 
-        <div class="col-sm-12 col-lg-4 col-xl-3 pl-0">
+        <div class="col-sm-12 col-lg-4 col-xl-3">
             <div class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4">
-                <div class="player-list content-div">
-                    <player-list :is-in-lobby="false"></player-list>
-                </div>
-                <div class="background-div"></div>
+                <player-list :is-in-lobby="false"></player-list>
             </div>
             <chat></chat>
         </div>
@@ -48,11 +43,15 @@
     import Chat from "@/components/chat/Chat.vue";
     import PlayerList from "@/components/player/PlayerList.vue";
     import Puzzle from "@/components/game/Puzzle.vue";
+    import GameOptions from "@/components/game/GameOptions.vue";
 
     @Component({
-        components: {Puzzle, PlayerList, Chat, GameMap, GameCounters}
+        components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
+        private spyGameUrl = require("../assets/spy_game.png");
+        private isSpyMaster = false;
+
     }
 </script>
 
@@ -66,47 +65,51 @@
         min-width: 100vw;
     }
 
-    .game-header.white-backgrounded-div {
+    .game-header {
         height: 7vh;
     }
 
-    .game-header.content-div {
-        max-height: 7vh;
-    }
-
-    .game-map.white-backgrounded-div {
+    .game-map {
         height: 80vh;
     }
 
-    .game-map.content-div {
-        max-height: 80vh;
+    .player-list {
+        height: 21vh;
     }
 
-    .player-list.white-backgrounded-div {
-        height: 20vh;
+    .game-options {
+        height: 14vh;
     }
 
-    .player-list.content-div {
-        max-height: 20vh;
-    }
-
-    .content-div {
+    .white-backgrounded-div {
         width: 100%;
+        background-color: rgba(255, 255, 255, 0.6);
         overflow-y: scroll;
-        position: absolute;
-        z-index: 2;
+        overflow-x: hidden;
         -ms-overflow-style: none;
     }
 
-    .background-div {
-        height: 100%;
-        width: 100%;
-        background-color: white;
-        position: relative;
-        opacity: 0.6;
-    }
-
-    .content-div::-webkit-scrollbar {
+    .white-backgrounded-div::-webkit-scrollbar {
         display: none;
     }
+
+    .white-backgrounded-div {
+        -ms-overflow-style: none;
+    }
+
+    .game-options.white-backgrounded-div {
+        background-color: black;
+    }
+
+    .game-options-decor {
+        position: absolute;
+        bottom: 0;
+        left: -7vw;
+    }
+
+
+    .game-options-decor img {
+        width: 25vw;
+    }
+
 </style>

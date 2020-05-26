@@ -257,8 +257,7 @@
         background-color: rgb(135, 25, 75);
         border: 0 solid;
         box-shadow: inset 0 0 20px rgba(250, 230, 15, 0);
-        outline: 1px solid;
-        outline-color: rgba(135, 25, 75, .5);
+        outline: rgba(135, 25, 75, .5) solid 1px;
         outline-offset: 0px;
         text-shadow: none;
         transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
