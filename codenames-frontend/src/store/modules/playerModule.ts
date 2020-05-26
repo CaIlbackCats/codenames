@@ -115,16 +115,7 @@ export default class PlayerModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public sendSelection(side: string, role: string): void {
-        if (this.currentPlayer.role !== "NOT_SELECTED" && this.currentPlayer.side !== "NOT_SELECTED") {
-            side = "NOT_SELECTED";
-            role = "NOT_SELECTED";
-        }
-        const selectionModel: SelectionModel = {
-            playerId: this.currentPlayer.id,
-            side: side,
-            role: role,
-        }
+    public sendSelection(selectionModel: SelectionModel): void {
 
         websocket.send(config.PLAYER_ROLE_SELECTION_PATH, selectionModel);
     }

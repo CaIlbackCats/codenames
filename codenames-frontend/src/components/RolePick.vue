@@ -60,8 +60,26 @@
     export default class RolePick extends Vue {
 
         public sendSelection(side: string, role: string): void {
-            this.$store.dispatch("sendSelection", {side, role});
+            if (this.currentPlayerRole !== "NOT_SELECTED" && this.currentPlayerSide !== "NOT_SELECTED") {
+                side = "NOT_SELECTED";
+                role = "NOT_SELECTED";
+            }
+            const selectionModel: SelectionModel = {
+                playerId: this.currentPlayerId,
+                side: side,
+                role: role,
+            }
+            this.$store.dispatch("sendSelection", selectionModel);
         }
+
+        get currentPlayerRole(): string {
+            return this.$store.getters["currentPlayerRole"]
+        }
+
+        get currentPlayerSide(): string {
+            return this.$store.getters["currentPlayerSide"]
+        }
+
 
         get isRoleSelected(): boolean {
             return this.$store.getters["isRoleSelected"];
