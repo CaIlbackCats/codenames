@@ -170,8 +170,8 @@ public class PlayerController {
         lobbyDetails.setId(lobbyName);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, lobbyDetails);
 
-//        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyName);
-//        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/roleData", remainingRoleData);
+        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyName);
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/roleData", remainingRoleData);
 
 
     }

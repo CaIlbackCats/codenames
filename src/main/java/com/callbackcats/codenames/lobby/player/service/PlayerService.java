@@ -242,6 +242,10 @@ public class PlayerService {
         int playersInLobby = playerToKick.getLobby().getPlayerList().size();
         if (playerToKick.getKickVoteCount() > playersInLobby / 2) {
             removePlayer(playerToKick);
+            String lobbyId = playerToKick.getLobby().getId();
+            if (!isLobbyOwnerInLobby(lobbyId)) {
+                reassignLobbyOwner(lobbyId);
+            }
         } else {
             playerToKick.setKickVoteCount(0);
             playerRepository.save(playerToKick);

@@ -5,12 +5,6 @@ import {config} from "@/config";
 @Module
 export default class OptionModule extends VuexModule {
 
-
-
-    private everyoneReady = false;
-
-
-
     @Action({rawError: true})
     public sendRandomizeRole(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
@@ -21,9 +15,5 @@ export default class OptionModule extends VuexModule {
     public sendRandomizeSide(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
         websocket.send(config.LOBBY_SIDE_PATH, lobbyId);
-    }
-
-    get isEveryoneReady(): boolean {
-        return this.everyoneReady;
     }
 }

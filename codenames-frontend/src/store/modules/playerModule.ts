@@ -29,7 +29,6 @@ export default class PlayerModule extends VuexModule {
     private playerSelected = false;
 
 
-    private everyOneRdy = false;
     private blueSpymaster = false;
     private blueSpy = false;
     private redSpymaster = false;
@@ -163,10 +162,6 @@ export default class PlayerModule extends VuexModule {
 
     get currentPlayerSide(): string {
         return this.currentPlayer.side;
-    }
-
-    get isEveryOneRdy(): boolean {
-        return this.everyOneRdy;
     }
 
     get isPlayerSelected(): boolean {

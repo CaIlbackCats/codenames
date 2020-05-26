@@ -151,4 +151,8 @@ export default class LobbyModule extends VuexModule {
     get isRedSpymasterFull(): boolean {
         return this.remainingRoleModel.redSpymaster;
     }
+
+    get isEveryoneReady(): boolean {
+        return this.lobby.everyoneRdy;
+    }
 }

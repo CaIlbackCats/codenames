@@ -4,8 +4,8 @@
                   size="sm" block squared @click="randomizeRoles" :disabled="partySize<MIN_PARTY_SIZE">Random role</b-button>
         <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
                   size="sm" block squared @click="randomizeSide" :disabled="partySize<MIN_PARTY_SIZE">Random side</b-button>
-        <b-button :title="getEveryOneRdy ? '' : '' "
-                size="md" block squared :disabled="!getEveryOneRdy" @click="createGame" class="mt-3">Start The Game!</b-button>
+        <b-button :title="isEveryoneReady ? '' : '' "
+                size="md" block squared :disabled="!isEveryoneReady" @click="createGame" class="mt-3">Start The Game!</b-button>
     </div>
 </template>
 
@@ -44,8 +44,8 @@
             this.$store.dispatch("sendRandomizeSide");
         }
 
-        get getEveryOneRdy(): boolean {
-            return this.$store.getters["isEveryOneRdy"];
+        get isEveryoneReady(): boolean {
+            return this.$store.getters["isEveryoneReady"];
         }
 
         get lobbyId(): string {
