@@ -4,8 +4,8 @@ const lineReader = require('line-reader');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'ChatApp2019!',
-    database: 'codenames'
+    password: '',
+    database: ''
 });
 
 connection.connect(function(err) {
