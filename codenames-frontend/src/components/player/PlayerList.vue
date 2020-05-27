@@ -38,15 +38,6 @@
         @Prop()
         private isInLobby!: boolean;
 
-        private playerToKick: PlayerModel = {
-            id: -1,
-            name: "",
-            lobbyOwner: false,
-            role: "",
-            side: "",
-            rdyState: false,
-        };
-
         get players(): Array<PlayerModel> {
             return this.$store.getters["playersOrdered"];
         }
