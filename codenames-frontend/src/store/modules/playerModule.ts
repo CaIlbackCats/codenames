@@ -7,7 +7,7 @@ import {config} from "@/config";
 import {RdyModel} from "@/models/rdyModel";
 import {SelectionModel} from "@/models/selectionModel";
 import {PlayerCreationModel} from "@/models/playerCreationModel";
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {LobbyModel} from "@/models/lobbyModel";
 
 
@@ -26,14 +26,6 @@ export default class PlayerModule extends VuexModule {
 
     private playerSelected = false;
 
-
-    @Mutation
-    private ADD_PLAYER(player: PlayerModel): void {
-        if (this.currentPlayer.id === -1) {
-            this.currentPlayer = player;
-        }
-    }
-
     @Mutation
     private REMOVE_CURRENT_PLAYER(): void {
         this.currentPlayer = {
@@ -45,13 +37,18 @@ export default class PlayerModule extends VuexModule {
             lobbyOwner: false,
         }
         this.playerSelected = false;
-
     }
 
     @Mutation
     private UPDATE_PLAYER(playerModel: PlayerModel): void {
         this.currentPlayer = playerModel;
     }
+
+    @Mutation
+    private SET_PLAYER_SELECTED(playerSelected: boolean): void {
+        this.playerSelected = playerSelected;
+    }
+
     @Action({rawError: true})
     public subscribeToPlayerChange(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
@@ -64,15 +61,24 @@ export default class PlayerModule extends VuexModule {
     };
 
     @Action({rawError: true})
-    public checkSelectedPlayer() {
+    public async checkSelectedPlayer() {
         const currentPlayerId = localStorage.getItem('currentPlayerId');
         if (currentPlayerId) {
-            this.context.commit("SET_PLAYER_SELECTED", true);
             const existingPlayer: PlayerDetailsModel = {
                 lobbyName: this.context.getters["lobbyId"],
                 id: Number(currentPlayerId),
             }
-            websocket.send(config.PLAYER_FETCH_PATH, existingPlayer);
+            this.context.dispatch("setReturningPlayer",existingPlayer);
+        }
+    }
+
+    @Action({rawError: true})
+    public async setReturningPlayer(returnPlayer: PlayerDetailsModel) {
+        const resp: AxiosResponse = await axios.post(process.env.VUE_APP_BASE_URL + "/updateVisiblePlayer", returnPlayer);
+        if (resp.status === 200) {
+            this.context.commit("SET_PLAYER_SELECTED", true);
+            this.context.commit("UPDATE_PLAYER", resp.data);
+            this.context.dispatch("updateLobby");
         }
     }
 
@@ -97,16 +103,8 @@ export default class PlayerModule extends VuexModule {
         if (resp.status === 201) {
             const player: PlayerModel = resp.data;
             this.context.commit("UPDATE_PLAYER", player);
-
         }
-        const lobbyModel: LobbyModel = {
-            id: playerCreationModel.lobbyName,
-            everyoneRdy: false,
-            players: [],
-            currentGameId:-1
-        }
-        websocket.send(config.LOBBY_FETCH_PATH, lobbyModel);
-        //  websocket.send(config.LOBBY_CREATE_PLAYER_PATH, playerCreationModel);
+        await this.context.dispatch("updateLobby");
     }
 
     get isRoleSelected(): boolean {

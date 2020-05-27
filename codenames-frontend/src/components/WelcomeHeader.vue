@@ -36,6 +36,7 @@
         private isOverRandom = false;
 
         public async createLobby() {
+            localStorage.clear();
             const created: boolean = await this.$store.dispatch("createLobby");
             if (created) {
                 router.push({name: "Lobby", params: {lobbyId: this.lobbyId}});

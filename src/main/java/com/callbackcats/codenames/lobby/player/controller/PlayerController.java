@@ -34,9 +34,19 @@ public class PlayerController {
     @ResponseBody
     @PostMapping("/api/createPlayer")
     public ResponseEntity<PlayerData> createPlayer(@RequestBody PlayerCreationData playerCreationData) {
+        log.info("Player Creation requested");
         PlayerData savedPlayer = playerService.savePlayer(playerCreationData);
 
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
+    }
+
+    @ResponseBody
+    @PostMapping("/api/updateVisiblePlayer")
+    public ResponseEntity<PlayerData> updatePlayerVisibility(@RequestBody PlayerDetailsData playerDetailsData) {
+        log.info("Player visibility change requested");
+        PlayerData playerData = playerService.setPlayerVisible(playerDetailsData);
+
+        return new ResponseEntity<>(playerData, HttpStatus.OK);
     }
 
     @MessageMapping("/role")

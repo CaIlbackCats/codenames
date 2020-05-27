@@ -65,7 +65,7 @@ export default class LobbyModule extends VuexModule {
             const playersContainCurrent: Array<number> = this.lobby.players.map(player => player.id).filter(id => id === currentPlayerId)
             if (playersContainCurrent.length === 0) {
                 this.context.commit("REMOVE_CURRENT_PLAYER")
-               // router.push('/')
+                // router.push('/')
             }
         }
     }
@@ -77,7 +77,7 @@ export default class LobbyModule extends VuexModule {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
             await this.context.dispatch("subscribeToLobby");
-            // await this.context.dispatch("checkSelectedPlayer", {root: true});
+            await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
         }
         return false;
@@ -112,6 +112,11 @@ export default class LobbyModule extends VuexModule {
             lobbyName: this.lobbyId,
         }
         websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
+    }
+
+    @Action({rawError: true})
+    public updateLobby(): void {
+        websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
     }
 
     get playersOrdered(): Array<PlayerModel> {

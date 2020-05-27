@@ -248,6 +248,14 @@ public class PlayerService {
         }
     }
 
+    public PlayerData setPlayerVisible(PlayerDetailsData playerDetailsData) {
+        Player player = findPlayerById(playerDetailsData.getId());
+        player.setVisible(true);
+        playerRepository.save(player);
+        log.info("Visibility changed on player id:\t" + player.getId());
+        return new PlayerData(player);
+    }
+
     private void removePlayer(Player player) {
         player.setLobby(null);
         playerRepository.delete(player);
