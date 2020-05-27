@@ -7,6 +7,7 @@ import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -24,8 +25,12 @@ public class LobbyService {
         this.lobbyRepository.save(lobby);
     }
 
-    public Optional<Lobby> getLobbyById(String id) {
-        return this.lobbyRepository.findById(id);
+    public LobbyDetails getLobbyDetailsById(String id) {
+        return new LobbyDetails(findLobbyById(id));
+    }
+
+    public Lobby findLobbyById(String id) {
+        return this.lobbyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Lobby not found by given id:\t" + id));
     }
 
     public void addGame(Lobby lobby, Game game) {

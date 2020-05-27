@@ -4,6 +4,10 @@ import {config} from "@/config";
 import {GameCreationModel} from "@/models/gameCreationModel";
 import {GameStateModel} from "@/models/gameStateModel";
 import {TeamVoteModel} from "@/models/teamVoteModel";
+import axios, {AxiosResponse} from 'axios';
+import {LobbyModel} from "@/models/lobbyModel";
+
+const BASE_URL = process.env.VUE_APP_BASE_URL;
 
 @Module
 export default class GameModule extends VuexModule {
@@ -32,9 +36,29 @@ export default class GameModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public createGame(): void {
-        websocket.send(config.CREATE_GAME_PATH, {lobbyId: this.context.getters['lobbyId']})
+    public async createGame(): Promise<void> {
+        const resp: AxiosResponse = await axios.post(BASE_URL + "/game", {lobbyId: this.context.getters["lobbyId"]});
+        if (resp.status === 201) {
+            const gameModel: GameCreationModel = resp.data;
+            this.context.commit("SET_GAME", gameModel);
+        }
     }
+
+    @Action({rawError: true})
+    public fetchActiveGame(): void {
+        const lobbyModel: LobbyModel = {
+            id: this.context.getters["lobbyId"],
+            currentGameId: -1,
+            players: [],
+            everyoneRdy: false,
+        }
+        websocket.send(config.FETCH_GAME_PATH, lobbyModel)
+    }
+
+    // @Action({rawError: true})
+    // public createGame(): void {
+    //     websocket.send(config.CREATE_GAME_PATH, {lobbyId: this.context.getters['lobbyId']})
+    // }
 
     @Action({rawError: true})
     public sendGameState(teamVoteModel: TeamVoteModel): void {

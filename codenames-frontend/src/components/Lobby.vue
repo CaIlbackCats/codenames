@@ -129,11 +129,12 @@
             await websocket.connect();
             this.path += this.$route.path;
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
-            await this.$store.dispatch("subscribeToKick");
             if (!joined) {
                 router.push('/')
             } else {
                 this.$store.dispatch("chatModule/subscribeToChat", this.$route.params.lobbyId);
+                await this.$store.dispatch("subscribeToLobbyRoleData");
+                await this.$store.dispatch("subscribeToKick");
             }
         };
 

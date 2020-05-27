@@ -2,8 +2,6 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
 import * as websocket from '@/services/websocket'
 import {PlayerModel} from "@/models/playerModel";
-import {ActionModel} from "@/models/actionModel";
-import {LobbyTeamModel} from "@/models/lobbyTeamModel";
 import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 import {config} from "@/config";
 import {RdyModel} from "@/models/rdyModel";
@@ -38,7 +36,6 @@ export default class PlayerModule extends VuexModule {
 
     @Mutation
     private REMOVE_CURRENT_PLAYER(): void {
-        console.log("currentPlayerREmoved")
         this.currentPlayer = {
             id: -1,
             role: "",
@@ -106,6 +103,7 @@ export default class PlayerModule extends VuexModule {
             id: playerCreationModel.lobbyName,
             everyoneRdy: false,
             players: [],
+            currentGameId:-1
         }
         websocket.send(config.LOBBY_FETCH_PATH, lobbyModel);
         //  websocket.send(config.LOBBY_CREATE_PLAYER_PATH, playerCreationModel);

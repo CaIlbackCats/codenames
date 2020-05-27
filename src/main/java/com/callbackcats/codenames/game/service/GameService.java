@@ -8,6 +8,7 @@ import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import com.callbackcats.codenames.lobby.player.dto.CardVoteData;
 import com.callbackcats.codenames.lobby.player.dto.PlayerData;
@@ -43,7 +44,7 @@ public class GameService {
 
 
     public GameDetails createGame(String lobbyId) {
-        Lobby lobby = this.lobbyService.getLobbyById(lobbyId).orElseThrow(() -> new EntityNotFoundException("Lobby not found"));
+        Lobby lobby = this.lobbyService.findLobbyById(lobbyId);
         Game game = new Game();
         this.gameRepository.save(game);
         lobbyService.addGame(lobby, game);

@@ -39,21 +39,6 @@ public class PlayerController {
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
-    @MessageMapping("/create")
-    public void registerNewPlayer(@Payload PlayerCreationData playerCreationData) {
-        log.info("Player creation requested");
-        PlayerData playerData = playerService.savePlayer(playerCreationData);
-        String lobbyName = playerCreationData.getLobbyName();
-        ActionData actionData = new ActionData(ActionType.CREATE_PLAYER, playerData);
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, actionData);
-
-//        Boolean everyOneRdy = playerService.isEveryOneRdy(lobbyName);
-//        LobbyDetails lobbyDetails = new LobbyDetails(everyOneRdy);
-//        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, new ActionData(ActionType.UPDATE_LOBBY, lobbyDetails));
-
-        updateList(lobbyName);
-    }
-
     @MessageMapping("/role")
     public void setPlayerRole(@Payload RoleSelectionData roleSelectionData) {
         log.info("Player random role setting requested");

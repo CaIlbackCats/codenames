@@ -23,12 +23,8 @@ public class LobbyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String id) {
-        Optional<Lobby> maybeLobby = this.lobbyService.getLobbyById(id);
-        if (maybeLobby.isPresent()) {
-            LobbyDetails lobbyDetails = new LobbyDetails(maybeLobby.get());
-            return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        LobbyDetails lobbyDetails = this.lobbyService.getLobbyDetailsById(id);
+        return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
     }
 
     @PostMapping
@@ -37,6 +33,6 @@ public class LobbyController {
         this.lobbyService.saveNewLobby(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
         log.info("New lobby generation requested");
-        return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
+        return new ResponseEntity<>(lobbyDetails, HttpStatus.CREATED);
     }
 }

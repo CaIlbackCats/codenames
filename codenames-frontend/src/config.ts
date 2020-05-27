@@ -1,6 +1,6 @@
 export const config = {
     HIDE_PLAYER_PATH: "/player/hidePlayer",
-    CREATE_GAME_PATH: "/game/createGame",
+    FETCH_GAME_PATH: "/game/fetchGame",
     LOBBY_SUBSCRIPTION_PATH: "/lobby/",
     GAME_STATE_UPDATE_PATH: "/game/processVote",
     CHAT_SUBSCRIPTION_PATH: "/chat/",

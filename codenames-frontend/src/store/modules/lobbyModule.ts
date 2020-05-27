@@ -4,7 +4,6 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import {LobbyModel} from "@/models/lobbyModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
-import {LobbyOptionsModel} from "@/models/lobbyOptionsModel";
 import {RemainingRoleModel} from "@/models/remainingRoleModel";
 import router from "@/router";
 import {PlayerModel} from "@/models/playerModel";
@@ -22,6 +21,7 @@ export default class LobbyModule extends VuexModule {
         id: "",
         players: [],
         everyoneRdy: false,
+        currentGameId: -1,
     }
     private remainingRoleModel: RemainingRoleModel = {
         blueSpy: false,
@@ -29,6 +29,7 @@ export default class LobbyModule extends VuexModule {
         redSpy: false,
         redSpymaster: false,
     }
+
 
     @Mutation
     private SET_LOBBY(lobbyModel: LobbyModel): void {
@@ -48,7 +49,7 @@ export default class LobbyModule extends VuexModule {
     @Action({rawError: true})
     public async createLobby(): Promise<boolean> {
         const response = await axios.post(BASE_URL + "/lobby")
-        if (response.status === 200) {
+        if (response.status === 201) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
             return true;
@@ -61,11 +62,6 @@ export default class LobbyModule extends VuexModule {
         const currentPlayerId: number = this.context.getters["currentPlayerId"];
         if (this.lobby.players) {
             const playersContainCurrent: Array<number> = this.lobby.players.map(player => player.id).filter(id => id === currentPlayerId)
-            console.log("-----------------------")
-            console.log(playersContainCurrent)
-            console.log(this.lobby.players)
-            console.log("-----------------------")
-
             if (playersContainCurrent.length === 0) {
                 this.context.commit("REMOVE_CURRENT_PLAYER")
                 router.push('/')
@@ -75,14 +71,11 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public async joinLobby(payload: JoinActionPayload): Promise<boolean> {
-        // check that the lobby exists
         const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
         if (response.status === 200) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
-            // subscribe player to lobby
             await this.context.dispatch("subscribeToLobby");
-            await this.context.dispatch("subscribeToLobbyRoleData");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
         }
@@ -110,12 +103,6 @@ export default class LobbyModule extends VuexModule {
                 }
             });
     }
-
-    @Action({rawError: true})
-    public sendInitLobbyRequest() {
-        console.log("")
-    }
-
 
     get playersOrdered(): Array<PlayerModel> {
         if (this.lobby.players) {
