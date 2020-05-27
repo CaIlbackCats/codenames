@@ -61,6 +61,11 @@ export default class LobbyModule extends VuexModule {
         const currentPlayerId: number = this.context.getters["currentPlayerId"];
         if (this.lobby.players) {
             const playersContainCurrent: Array<number> = this.lobby.players.map(player => player.id).filter(id => id === currentPlayerId)
+            console.log("-----------------------")
+            console.log(playersContainCurrent)
+            console.log(this.lobby.players)
+            console.log("-----------------------")
+
             if (playersContainCurrent.length === 0) {
                 this.context.commit("REMOVE_CURRENT_PLAYER")
                 router.push('/')
@@ -78,7 +83,6 @@ export default class LobbyModule extends VuexModule {
             // subscribe player to lobby
             await this.context.dispatch("subscribeToLobby");
             await this.context.dispatch("subscribeToLobbyRoleData");
-            this.context.dispatch("checkRemovablePlayer");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
         }
@@ -102,6 +106,7 @@ export default class LobbyModule extends VuexModule {
             body => {
                 if (body) {
                     this.context.commit("UPDATE_LOBBY", body);
+                    this.context.dispatch("checkRemovablePlayer");
                 }
             });
     }
@@ -116,9 +121,12 @@ export default class LobbyModule extends VuexModule {
         if (this.lobby.players) {
             const currentPlayer: PlayerModel = this.context.getters["player"]
             const currentPlayerIndex: number = this.lobby.players.map(player => player.id).indexOf(currentPlayer.id);
-            const temp: PlayerModel = this.lobby.players[0];
-            this.lobby.players[0] = currentPlayer;
-            this.lobby.players[currentPlayerIndex] = temp;
+            if (currentPlayerIndex !== -1) {
+                const temp: PlayerModel = this.lobby.players[0];
+                this.lobby.players[0] = currentPlayer;
+                this.lobby.players[currentPlayerIndex] = temp;
+            }
+
         }
 
         return this.lobby.players;

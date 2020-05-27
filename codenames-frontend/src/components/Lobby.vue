@@ -105,8 +105,10 @@
         @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
             if (this.currentPlayerId !== -1) {
-               // localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
+                // localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
                 this.$store.dispatch("subscribeToPlayerChange");
+            } else if (this.currentPlayerId === -1) {
+                router.push("/");
             }
         }
 
@@ -147,7 +149,7 @@
             return this.$store.getters["playersOrdered"];
         }
 
-        get currentPlayerId():number{
+        get currentPlayerId(): number {
             return this.$store.getters["currentPlayerId"];
         }
 
@@ -155,11 +157,11 @@
             return this.$store.getters["isPlayerSelected"]
         }
 
-        get isCurrentPlayerLobbyOwner():boolean{
+        get isCurrentPlayerLobbyOwner(): boolean {
             return this.$store.getters["isCurrentPlayerOwner"];
         }
 
-        get currentPlayerName():string{
+        get currentPlayerName(): string {
             return this.$store.getters["currentPlayerName"]
         }
 

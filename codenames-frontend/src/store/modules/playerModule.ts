@@ -29,12 +29,6 @@ export default class PlayerModule extends VuexModule {
     private playerSelected = false;
 
 
-    private blueSpymaster = false;
-    private blueSpy = false;
-    private redSpymaster = false;
-    private redSpy = false;
-
-
     @Mutation
     private ADD_PLAYER(player: PlayerModel): void {
         if (this.currentPlayer.id === -1) {
@@ -44,6 +38,7 @@ export default class PlayerModule extends VuexModule {
 
     @Mutation
     private REMOVE_CURRENT_PLAYER(): void {
+        console.log("currentPlayerREmoved")
         this.currentPlayer = {
             id: -1,
             role: "",
@@ -53,33 +48,13 @@ export default class PlayerModule extends VuexModule {
             lobbyOwner: false,
         }
         this.playerSelected = false;
+
     }
 
     @Mutation
     private UPDATE_PLAYER(playerModel: PlayerModel): void {
         this.currentPlayer = playerModel;
     }
-
-    @Mutation
-    private UPDATE_LOBBY_TEAM(lobbyTeam: LobbyTeamModel): void {
-        this.blueSpymaster = lobbyTeam.blueSpymaster;
-        this.blueSpy = lobbyTeam.blueSpy;
-        this.redSpymaster = lobbyTeam.redSpymaster;
-        this.redSpy = lobbyTeam.redSpy;
-    }
-
-    @Action({rawError: true})
-    public executeLobbyChange(messageBody: ActionModel): void {
-        switch (messageBody.actionToDo) {
-            case "CREATE_PLAYER":
-                this.context.commit("ADD_PLAYER", messageBody.currentPlayer)
-                break;
-            case "CREATE_GAME":
-                this.context.commit("SET_GAME", messageBody.gameDetails)
-                break;
-        }
-    }
-
     @Action({rawError: true})
     public subscribeToPlayerChange(): void {
         const lobbyId: string = this.context.getters["lobbyId"];

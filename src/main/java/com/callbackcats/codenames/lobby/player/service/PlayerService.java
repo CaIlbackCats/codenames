@@ -239,13 +239,9 @@ public class PlayerService {
     public void processVotes(Long playerToKickId) {
         log.info("Process votes for player id:\t" + playerToKickId);
         Player playerToKick = findPlayerById(playerToKickId);
-        int playersInLobby = playerToKick.getLobby().getPlayerList().size();
+        int playersInLobby = (int) playerToKick.getLobby().getPlayerList().stream().filter(Player::getVisible).count();
         if (playerToKick.getKickVoteCount() > playersInLobby / 2) {
             removePlayer(playerToKick);
-            String lobbyId = playerToKick.getLobby().getId();
-            if (!isLobbyOwnerInLobby(lobbyId)) {
-                reassignLobbyOwner(lobbyId);
-            }
         } else {
             playerToKick.setKickVoteCount(0);
             playerRepository.save(playerToKick);

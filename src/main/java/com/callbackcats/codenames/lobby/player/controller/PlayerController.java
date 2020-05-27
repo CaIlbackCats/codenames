@@ -109,6 +109,12 @@ public class PlayerController {
         try {
             ScheduledFuture<?> votingFinished = playerService.isVotingFinished(playerRemovalData);
             votingFinished.get();
+
+            if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
+                PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyName);
+                updatePlayer(lobbyName, newLobbyOwner.getId(), newLobbyOwner);
+            }
+
             updateList(lobbyName);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
