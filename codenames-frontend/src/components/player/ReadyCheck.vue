@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+    import {Component, Prop, Vue} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
     import {RdyModel} from "@/models/rdyModel";
     import * as websocket from '@/services/websocket'
@@ -34,15 +34,17 @@
     button {
         all: unset;
     }
-    button:disabled{
+    button:disabled {
         all: unset;
         pointer-events: none;
         opacity: .4;
     }
-    button:active, button:hover, button:focus{
+
+    button:active, button:hover, button:focus {
         all: unset;
     }
-    .rdy-btn{
+
+    .rdy-btn {
         all: unset;
         cursor: pointer;
     }

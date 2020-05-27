@@ -10,42 +10,19 @@
 
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
-                    <lobby-chat
-                    ></lobby-chat>
-                    <div class="col-sm-12 mb-3">
+                    <chat></chat>
+                    <div class="mb-3">
                         <RolePick></RolePick>
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-lg-4">
-                    <div class="players-div text-left row mx-0 mb-3">
-                        <div class="list-div">
-                            <div class="m-2" v-for="player in players"
-                                 :key="player.id">
-                                <ReadyCheck :player="player"></ReadyCheck>
-                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayerId"
-                                                   icon="user-secret"/>
-                                <font-awesome-icon v-if="player.role === 'SPYMASTER'"
-                                                   :icon="['fas', 'briefcase']"
-                                                   :class="[ 'mr-2', player.side === 'BLUE' ? 'blue-spymaster': 'red-spymaster'] "
-                                ></font-awesome-icon>
-                                <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
-                                                        player.side === 'RED' ? 'color: indianred' : 'color: #87194B' ">
-                                    {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                                <font-awesome-icon v-if="player.name !== currentPlayerName"
-                                                   class="kick-btn"
-                                                   @click="initKickPlayer(player.id)"
-                                                   icon="user-minus"/>
-                            </div>
-                        </div>
-                        <KickPlayer
-                        ></KickPlayer>
-                        <div class="white-background-div"></div>
+                    <div class="player-list white-backgrounded-div text-left row mx-0 mb-3">
+                        <player-list :is-in-lobby="true"></player-list>
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
-                        <LobbyOption v-if="isCurrentPlayerLobbyOwner"
-                        ></LobbyOption>
+                        <LobbyOption v-if="isCurrentPlayerLobbyOwner"></LobbyOption>
                     </div>
 
                 </div>
@@ -79,23 +56,22 @@
 
 <script lang="ts">
     import {Component, Vue, Watch} from "vue-property-decorator";
-    import LobbyChat from "@/components/LobbyChat.vue";
-    import LobbyOption from "@/components/LobbyOption.vue";
+    import Chat from "@/components/chat/Chat.vue";
+    import LobbyOption from "@/components/lobby/LobbyOption.vue";
     import {PlayerCreationModel} from "@/models/playerCreationModel";
     import {PlayerModel} from "@/models/playerModel";
-    import {RoomModel} from "@/models/roomModel";
-    import KickPlayer from "@/components/KickPlayer.vue";
-    import {PlayerRemovalModel} from "@/models/playerRemovalModel";
-    import ReadyCheck from "@/components/ReadyCheck.vue";
-    import RolePick from "@/components/RolePick.vue";
+    import KickPlayer from "@/components/player/KickPlayer.vue";
+    import ReadyCheck from "@/components/player/ReadyCheck.vue";
+    import RolePick from "@/components/player/RolePick.vue";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
     import {config} from "@/config";
     import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+    import PlayerList from "@/components/player/PlayerList.vue";
     import CreatePlayer from "@/components/CreatePlayer.vue";
 
     @Component({
-        components: {CreatePlayer, RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
+        components: {CreatePlayer,Chat, PlayerList, RolePick, ReadyCheck, KickPlayer, LobbyOption}
     })
     export default class Lobby extends Vue {
         private isMouseInMiddle = true;
@@ -171,19 +147,7 @@
 
 <style scoped>
 
-    svg {
-        color: rgb(135, 25, 75);
-    }
-
-    .blue-spymaster {
-        color: dodgerblue;
-    }
-
-    .red-spymaster {
-        color: indianred;
-    }
-
-    .white-background-div {
+    .background-div {
         height: 100%;
         width: 100%;
         background-color: white;
@@ -191,20 +155,24 @@
         opacity: 0.6;
     }
 
-    .players-div {
+    .player-list {
         height: 60vh;
     }
 
-    .list-div {
-        max-height: 60vh;
+    .white-backgrounded-div {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.6);
         overflow-y: scroll;
-        position: absolute;
-        z-index: 2;
+        overflow-x: hidden;
         -ms-overflow-style: none;
     }
 
-    .list-div::-webkit-scrollbar {
+    .white-backgrounded-div::-webkit-scrollbar {
         display: none;
+    }
+
+    .white-backgrounded-div {
+        -ms-overflow-style: none;
     }
 
     .lobby-options-div {
@@ -272,20 +240,11 @@
         margin-bottom: 15vh;
     }
 
-    .kick-btn {
-        opacity: 0.2;
-    }
-
-    .kick-btn:hover {
-        opacity: 0.8;
-    }
-
     button {
         background-color: rgb(135, 25, 75);
         border: 0 solid;
         box-shadow: inset 0 0 20px rgba(250, 230, 15, 0);
-        outline: 1px solid;
-        outline-color: rgba(135, 25, 75, .5);
+        outline: rgba(135, 25, 75, .5) solid 1px;
         outline-offset: 0px;
         text-shadow: none;
         transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
@@ -300,11 +259,11 @@
         text-shadow: 1px 1px 2px #427388;
     }
 
-    input {
+    input:read-only {
         opacity: 0.6;
     }
 
-    input:read-only {
+    input {
         opacity: 0.6;
     }
 

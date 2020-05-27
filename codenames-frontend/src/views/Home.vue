@@ -12,6 +12,6 @@
     @Component({
         components: {WelcomeHeader}
     })
-    export default class About extends Vue {
+    export default class Home extends Vue {
     }
 </script>

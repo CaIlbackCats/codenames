@@ -50,7 +50,7 @@
 
 <script lang="ts">
 
-    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import {PlayerModel} from "@/models/playerModel";
     import {SelectionModel} from "@/models/selectionModel";
     import * as websocket from '@/services/websocket'

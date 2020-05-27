@@ -16,6 +16,10 @@ export default class GameModule extends VuexModule {
         board: [],
         blueScore: 0,
         redScore: 0,
+        civiliansFoundByBlueTeam: 0,
+        civiliansFoundByRedTeam: 0,
+        rounds: 0
+        board: [],
         endGame: false,
         endTurn: false,
         winnerTeam: "",
@@ -55,11 +59,6 @@ export default class GameModule extends VuexModule {
         websocket.send(config.FETCH_GAME_PATH, lobbyModel)
     }
 
-    // @Action({rawError: true})
-    // public createGame(): void {
-    //     websocket.send(config.CREATE_GAME_PATH, {lobbyId: this.context.getters['lobbyId']})
-    // }
-
     @Action({rawError: true})
     public sendGameState(teamVoteModel: TeamVoteModel): void {
         websocket.send(config.GAME_STATE_UPDATE_PATH, teamVoteModel);
@@ -74,6 +73,26 @@ export default class GameModule extends VuexModule {
     private SET_GAME(gameCreationModel: GameCreationModel): void {
         this.game.id = gameCreationModel.id;
         this.game.board = gameCreationModel.board;
+    }
+
+    get rounds(): number {
+        return this.game.rounds;
+    }
+
+    get civiliansFoundByBlueTeam(): number {
+        return this.game.civiliansFoundByBlueTeam;
+    }
+
+    get civiliansFoundByRedTeam(): number {
+        return this.game.civiliansFoundByRedTeam;
+    }
+
+    get blueScore(): number {
+        return this.game.blueScore;
+    }
+
+    get redScore(): number {
+        return this.game.redScore;
     }
 
     get gameId(): number {

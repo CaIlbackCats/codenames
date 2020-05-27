@@ -1,9 +1,8 @@
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
-import axios from 'axios'
+import VueRouter, {RouteConfig} from "vue-router";
 import Home from "../views/Home.vue";
 import Lobby from "@/components/Lobby.vue";
-import WelcomeHeader from "@/components/WelcomeHeader.vue";
+import Game from "@/views/Game.vue";
 
 Vue.use(VueRouter);
 
@@ -21,7 +20,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/lobby/:lobbyId/:gameId",
     name: "Game",
-    component: WelcomeHeader
+    component: Game
   },
   {
     path: "/about",
