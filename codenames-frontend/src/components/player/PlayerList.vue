@@ -13,11 +13,11 @@
                                                         player.side === 'RED' ? 'color: indianred' : 'color: #87194B' "
                    class="mr-2">
                 {{player.name}}</label>
-            <font-awesome-icon @click="initKickPlayer(player)"
+            <font-awesome-icon @click="initKickPlayer(player.id)"
                                class="kick-btn"
                                icon="user-minus"
                                v-if="player.name !== currentPlayerName"/>
-            <KickPlayer :player-to-kick="playerToKick"></KickPlayer>
+            <KickPlayer></KickPlayer>
         </div>
     </div>
 </template>
