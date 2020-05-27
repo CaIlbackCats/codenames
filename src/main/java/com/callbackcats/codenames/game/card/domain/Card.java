@@ -25,4 +25,6 @@ public class Card {
 
     @ManyToOne
     private Game game;
+
+    private Integer vote;
 }

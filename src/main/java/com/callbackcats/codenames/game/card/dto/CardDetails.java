@@ -14,11 +14,13 @@ public class CardDetails {
     private String word;
     private String type;
     private boolean isFound;
+    private Integer vote;
 
     public CardDetails(Card card) {
         this.id = card.getId();
         this.word = card.getWord();
         this.type = card.getType().name();
         this.isFound = card.isFound();
+        this.vote=card.getVote();
     }
 }

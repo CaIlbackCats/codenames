@@ -51,6 +51,8 @@ public class GameService {
         return new GameDetails(game);
     }
 
+
+
     public GameStateData processVotes(TeamVoteData teamVoteData) {
         Map<CardVoteData, Integer> cardVoteMap = getCardVoteScores(teamVoteData);
         Integer maxScore = Collections.max(cardVoteMap.values());

@@ -39,6 +39,7 @@
 
         mounted() {
             // TODO: can we get types for action payloads? use action creators?
+            this.$store.dispatch("chatModule/subscribeToChat", this.lobbyId);
         }
 
         public sendChatMessage(): void {
