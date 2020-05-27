@@ -1,7 +1,7 @@
 <template>
     <button
             @click="sendRdyState"
-            :disabled="player.name!==currentPlayer.name"
+            :disabled="player.name!==currentPlayerName"
             :pressed.sync="player.rdyState"
             :class="['rdy-btn mr-2', player.rdyState ? 'is-ready' : '']"
     ><font-awesome-icon icon="check"/>
@@ -13,6 +13,7 @@
     import {PlayerModel} from "@/models/playerModel";
     import {RdyModel} from "@/models/rdyModel";
     import * as websocket from '@/services/websocket'
+    import {config} from "@/config";
 
     @Component
     export default class ReadyCheck extends Vue {
@@ -20,15 +21,11 @@
         private player!: PlayerModel;
 
         sendRdyState() {
-            const rdyModel: RdyModel = {
-                playerId: this.currentPlayer.id,
-                rdyState: !this.currentPlayer.rdyState,
-            }
-            websocket.send(process.env.VUE_APP_PLAYER_RDY, rdyModel);
+            this.$store.dispatch("sendReadyState");
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerName(): string {
+            return this.$store.getters["currentPlayerName"];
         }
     }
 </script>

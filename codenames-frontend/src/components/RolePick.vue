@@ -1,7 +1,7 @@
 <template>
     <div class="role-picker-div">
         <div class="role-picker">
-            <div v-if="roleSelected">
+            <div v-if="isRoleSelected">
                 <font-awesome-icon
                         title="blue spymaster"
                         style="color: dodgerblue"
@@ -54,39 +54,39 @@
     import {PlayerModel} from "@/models/playerModel";
     import {SelectionModel} from "@/models/selectionModel";
     import * as websocket from '@/services/websocket'
+    import {config} from "@/config";
 
     @Component
     export default class RolePick extends Vue {
 
-        private roleSelected = false;
-
-        @Watch("getCurrentPlayer.role")
-        private roleChange(): void {
-            this.roleSelected = this.getCurrentPlayer.role === "NOT_SELECTED";
-        }
-
         public sendSelection(side: string, role: string): void {
-            if (this.getCurrentPlayer.role === "NOT_SELECTED" && this.getCurrentPlayer.side === "NOT_SELECTED") {
-                const selection: SelectionModel = {
-                    playerId: this.getCurrentPlayer.id,
-                    side: side,
-                    role: role,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
-                this.roleSelected = true;
-            } else {
-                const selection: SelectionModel = {
-                    playerId: this.getCurrentPlayer.id,
-                    side: "NOT_SELECTED",
-                    role: "NOT_SELECTED",
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_SELECTION, selection);
-                this.roleSelected = false;
+            if (this.currentPlayerRole !== "NOT_SELECTED" && this.currentPlayerSide !== "NOT_SELECTED") {
+                side = "NOT_SELECTED";
+                role = "NOT_SELECTED";
             }
+            const selectionModel: SelectionModel = {
+                playerId: this.currentPlayerId,
+                side: side,
+                role: role,
+            }
+            this.$store.dispatch("sendSelection", selectionModel);
         }
 
-        get getCurrentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerRole(): string {
+            return this.$store.getters["currentPlayerRole"]
+        }
+
+        get currentPlayerSide(): string {
+            return this.$store.getters["currentPlayerSide"]
+        }
+
+
+        get isRoleSelected(): boolean {
+            return this.$store.getters["isRoleSelected"];
+        }
+
+        get currentPlayerId(): number {
+            return this.$store.getters["currentPlayerId"];
         }
 
         get isBlueSpymasterFull(): boolean {

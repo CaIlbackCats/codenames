@@ -5,6 +5,8 @@ import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -22,9 +24,11 @@ public class Lobby {
 
     private String name;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "lobby")
     private List<Player> playerList;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "lobby")
     private List<Game> games;
 

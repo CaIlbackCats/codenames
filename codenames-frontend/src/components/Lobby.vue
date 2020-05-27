@@ -5,28 +5,8 @@
         <div class="col-sm-12 col-xl-8 offset-xl-2"
              @mouseenter="isMouseInMiddle = true"
              @mouseleave="isMouseInMiddle = false">
-            <template v-if="!isPlayerSelected">
-                <div class="codenames-header">
-                    <b-img :src="logoUrl"></b-img>
-                </div>
-                <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4 offset-md-2 offset-lg-3 offset-xl-4">
-                    <b-input-group size="md">
-                        <b-form-input id="current-player"
-                                      type="text"
-                                      maxlength="10"
-                                      placeholder="Enter your name"
-                                      v-on:keyup.enter="createPlayer"
-                                      v-model="currentPlayerName">
-                        </b-form-input>
-                        <b-input-group-append>
-                            <b-button squared
-                                      type="submit"
-                                      @click="createPlayer">Ok
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-            </template>
+            <CreatePlayer v-if="!isPlayerSelected">
+            </CreatePlayer>
 
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
@@ -43,7 +23,7 @@
                             <div class="m-2" v-for="player in players"
                                  :key="player.id">
                                 <ReadyCheck :player="player"></ReadyCheck>
-                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayer.id"
+                                <font-awesome-icon class="mr-2" v-if="player.id === currentPlayerId"
                                                    icon="user-secret"/>
                                 <font-awesome-icon v-if="player.role === 'SPYMASTER'"
                                                    :icon="['fas', 'briefcase']"
@@ -52,20 +32,19 @@
                                 <label class="mr-2" :style="player.side === 'BLUE' ? 'color: dodgerblue':
                                                         player.side === 'RED' ? 'color: indianred' : 'color: #87194B' ">
                                     {{player.name}}</label> <!---{{player.role}}-{{player.side}} -->
-                                <font-awesome-icon v-if="player.name !== currentPlayer.name"
+                                <font-awesome-icon v-if="player.name !== currentPlayerName"
                                                    class="kick-btn"
-                                                   @click="initKickPlayer(player)"
+                                                   @click="initKickPlayer(player.id)"
                                                    icon="user-minus"/>
                             </div>
                         </div>
                         <KickPlayer
-                                :player-to-kick="playerToKick"
                         ></KickPlayer>
                         <div class="white-background-div"></div>
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
-                        <LobbyOption v-if="currentPlayer.lobbyOwner"
+                        <LobbyOption v-if="isCurrentPlayerLobbyOwner"
                         ></LobbyOption>
                     </div>
 
@@ -113,101 +92,75 @@
     import router from "@/router";
     import {config} from "@/config";
     import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+    import CreatePlayer from "@/components/CreatePlayer.vue";
 
     @Component({
-        components: {RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
+        components: {CreatePlayer, RolePick, ReadyCheck, KickPlayer, LobbyOption, LobbyChat}
     })
     export default class Lobby extends Vue {
-        private logoUrl = require("../assets/semanedoc.png");
         private isMouseInMiddle = true;
+        private path="";
 
-        private path = "http://localhost:4200";
-        private currentPlayerName = "";
-        private playerToKick: PlayerModel = {
-            id: -1,
-            name: "",
-            lobbyOwner: false,
-            role: "",
-            side: "",
-            rdyState: false,
-        };
 
-        @Watch("currentPlayer.id")
+        @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
-            if (this.currentPlayer.id !== -1) {
-                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayer.id));
+            if (this.currentPlayerId !== -1) {
+                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
                 this.$store.dispatch("subscribeToPlayerChange");
+            } else if (this.currentPlayerId === -1) {
+                router.push("/");
             }
         }
 
         constructor() {
             super();
+
             window.addEventListener('beforeunload', this.hideLeftPlayer);
         }
 
-        private hideLeftPlayer(): void {
-            const playerDetails: PlayerDetailsModel = {
-                id: this.currentPlayer.id,
-                lobbyName: this.lobbyId,
-            }
-            websocket.send(config.HIDE_PLAYER, playerDetails);
-        }
-
         async mounted() {
+            this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
             await websocket.connect();
-            this.path += this.$route.path;
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
             if (!joined) {
                 router.push('/')
             } else {
                 this.$store.dispatch("chatModule/subscribeToChat", this.$route.params.lobbyId);
+                await this.$store.dispatch("subscribeToLobbyRoleData");
+                await this.$store.dispatch("subscribeToKick");
             }
         };
+
+        private hideLeftPlayer(): void {
+            this.$store.dispatch("hideLeftPlayer");
+        }
 
         public copyPath(): void {
             this.$copyText(this.path);
         }
 
-        public createPlayer(): void {
-            this.$store.commit("SET_PLAYER_SELECTED", true);
-            const newPlayer: PlayerCreationModel = {
-                lobbyName: this.$route.params.lobbyId,
-                name: this.currentPlayerName,
-            }
-            websocket.send(process.env.VUE_APP_OPTIONS_CREATE, newPlayer);
-        }
-
-        public initKickPlayer(player: PlayerModel): void {
-            this.playerToKick = player;
-            if (this.currentPlayer.lobbyOwner) {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "OWNER",
-                    ownerId: this.currentPlayer.id,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            } else {
-                const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "VOTE",
-                    ownerId: this.currentPlayer.id,
-                    votingPlayers: votingPlayers,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            }
+        public initKickPlayer(playerToRemoveId: number): void {
+            this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
         }
 
         get players(): Array<PlayerModel> {
             return this.$store.getters["playersOrdered"];
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerId(): number {
+            return this.$store.getters["currentPlayerId"];
         }
 
         get isPlayerSelected(): boolean {
-            return this.$store.getters["getPlayerSelected"]
+            return this.$store.getters["isPlayerSelected"]
+        }
+
+        get isCurrentPlayerLobbyOwner(): boolean {
+            return this.$store.getters["isCurrentPlayerOwner"];
+        }
+
+        get currentPlayerName(): string {
+            return this.$store.getters["currentPlayerName"]
         }
 
         get lobbyId(): string {

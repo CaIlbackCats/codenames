@@ -3,7 +3,7 @@
         <div class="chat-div col-sm-12">
             <div class="message-window">
                 <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
-                    <font-awesome-icon class="ml-2" v-if="chatMessage.name === currentPlayer.name" icon="user-secret"/>
+                    <font-awesome-icon class="ml-2" v-if="chatMessage.name === currentPlayerName" icon="user-secret"/>
                     <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
                 </div>
             </div>
@@ -43,7 +43,7 @@
 
         public sendChatMessage(): void {
             const msgModel: MessageModel = {
-                name: this.currentPlayer.name,
+                name: this.currentPlayerName,
                 message: this.chatMessageToSend,
                 lobbyName: this.lobbyId,
             }
@@ -55,8 +55,8 @@
             return this.$store.getters["chatModule/messages"];
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"]
+        get currentPlayerName(): string {
+            return this.$store.getters["currentPlayerName"];
         }
 
         get lobbyId(): string {
@@ -67,11 +67,11 @@
 </script>
 
 <style scoped>
-    input{
+    input {
         opacity: 0.6;
     }
 
-    input:focus{
+    input:focus {
         opacity: 1;
         outline: none;
         box-shadow: none;
