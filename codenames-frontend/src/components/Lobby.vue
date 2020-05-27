@@ -273,11 +273,11 @@
         text-shadow: 1px 1px 2px #427388;
     }
 
-    input {
+    input:read-only {
         opacity: 0.6;
     }
 
-    input:read-only {
+    input {
         opacity: 0.6;
     }
 

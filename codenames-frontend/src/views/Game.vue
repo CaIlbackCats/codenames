@@ -19,9 +19,9 @@
                 <game-map></game-map>
             </div>
 
-            <div class="game-options-decor">
-                <game-options :is-spy-master="isSpyMaster"
-                              :is-spy-turn="isSpyTurn"></game-options>
+            <div :class="['game-options-decor',
+                      {'move-right':turn}]">
+                <game-options :spy-master="spyMaster"></game-options>
                 <img :src="spyGameUrl" alt="spy">
             </div>
         </div>
@@ -49,8 +49,8 @@
     })
     export default class Game extends Vue {
         private spyGameUrl = require("../assets/spy_game.png");
-        private isSpyMaster = false;
-        private isSpyTurn = false;
+        private spyMaster = true;
+        private turn = true;
 
     }
 </script>
@@ -100,7 +100,8 @@
     .game-options-decor {
         position: absolute;
         bottom: 0;
-        left: -7vw;
+        left: -30vw;
+        transition: 1s;
     }
 
 
@@ -108,4 +109,8 @@
         width: 25vw;
     }
 
+    .game-options-decor.move-right {
+        transform: translateX(95%);
+        -webkit-transform: translateX(95%);
+    }
 </style>
