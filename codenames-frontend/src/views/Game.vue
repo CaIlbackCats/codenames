@@ -20,10 +20,9 @@
             </div>
 
             <div class="game-options-decor">
+                <game-options :is-spy-master="isSpyMaster"
+                              :is-spy-turn="isSpyTurn"></game-options>
                 <img :src="spyGameUrl" alt="spy">
-                <div class="game-options white-backgrounded-div mb-sm-2 mb-lg-4">
-                    <game-options :is-spy-master="isSpyMaster"></game-options>
-                </div>
             </div>
         </div>
 
@@ -51,6 +50,7 @@
     export default class Game extends Vue {
         private spyGameUrl = require("../assets/spy_game.png");
         private isSpyMaster = false;
+        private isSpyTurn = false;
 
     }
 </script>
@@ -95,10 +95,6 @@
 
     .white-backgrounded-div {
         -ms-overflow-style: none;
-    }
-
-    .game-options.white-backgrounded-div {
-        background-color: black;
     }
 
     .game-options-decor {

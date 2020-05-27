@@ -31,17 +31,14 @@
             <div v-else class="row pt-5 m-0 p-4">
                 <div class="col-sm-12 col-lg-8">
                     <chat></chat>
-                    <div class="col-sm-12 mb-3">
+                    <div class="mb-3">
                         <RolePick></RolePick>
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-lg-4">
-                    <div class="white-backgrounded-div text-left row mx-0 mb-3">
-                        <div class="content-div">
-                            <player-list :is-in-lobby="true"></player-list>
-                        </div>
-                        <div class="background-div"></div>
+                    <div class="player-list white-backgrounded-div text-left row mx-0 mb-3">
+                        <player-list :is-in-lobby="true"></player-list>
                     </div>
 
                     <div class="lobby-options-div col-sm-12">
@@ -172,20 +169,24 @@
         opacity: 0.6;
     }
 
-    .white-backgrounded-div {
+    .player-list {
         height: 60vh;
     }
 
-    .content-div {
-        max-height: 60vh;
+    .white-backgrounded-div {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.6);
         overflow-y: scroll;
-        position: absolute;
-        z-index: 2;
+        overflow-x: hidden;
         -ms-overflow-style: none;
     }
 
-    .content-div::-webkit-scrollbar {
+    .white-backgrounded-div::-webkit-scrollbar {
         display: none;
+    }
+
+    .white-backgrounded-div {
+        -ms-overflow-style: none;
     }
 
     .lobby-options-div {

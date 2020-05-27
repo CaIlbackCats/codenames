@@ -1,6 +1,6 @@
 <template>
     <div class="game-options">
-        <b-button squared>No Vote</b-button>
+        <b-button :disabled="!isSpyTurn" squared>No Vote</b-button>
     </div>
 </template>
 
@@ -12,6 +12,9 @@
 
         @Prop()
         private isSpyMaster!: boolean;
+
+        @Prop()
+        private isSpyTurn!: boolean;
     }
 </script>
 
