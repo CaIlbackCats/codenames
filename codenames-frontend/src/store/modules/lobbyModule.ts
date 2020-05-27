@@ -7,6 +7,7 @@ import {config} from "@/config";
 import {RemainingRoleModel} from "@/models/remainingRoleModel";
 import router from "@/router";
 import {PlayerModel} from "@/models/playerModel";
+import {PlayerDetailsModel} from "@/models/playerDetailsModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -64,7 +65,7 @@ export default class LobbyModule extends VuexModule {
             const playersContainCurrent: Array<number> = this.lobby.players.map(player => player.id).filter(id => id === currentPlayerId)
             if (playersContainCurrent.length === 0) {
                 this.context.commit("REMOVE_CURRENT_PLAYER")
-                router.push('/')
+               // router.push('/')
             }
         }
     }
@@ -102,6 +103,15 @@ export default class LobbyModule extends VuexModule {
                     this.context.dispatch("checkRemovablePlayer");
                 }
             });
+    }
+
+    @Action({rawError: true})
+    public hideLeftPlayer(): void {
+        const playerDetails: PlayerDetailsModel = {
+            id: this.context.getters["currentPlayerId"],
+            lobbyName: this.lobbyId,
+        }
+        websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
     }
 
     get playersOrdered(): Array<PlayerModel> {

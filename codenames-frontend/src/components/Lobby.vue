@@ -118,11 +118,7 @@
         }
 
         private hideLeftPlayer(): void {
-            const playerDetails: PlayerDetailsModel = {
-                id: this.currentPlayerId,
-                lobbyName: this.lobbyId,
-            }
-            websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
+            this.$store.dispatch("hideLeftPlayer");
         }
 
         async mounted() {
