@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.card.domain;
 
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.domain.Word;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +18,9 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String word;
+    @OneToOne(mappedBy = "card")
+    @JoinColumn(name = "word_id")
+    private Word word;
 
     private CardType type;
 
@@ -27,4 +30,9 @@ public class Card {
     private Game game;
 
     private Integer vote;
+
+    public Card(Word word, CardType cardType) {
+        this.word=word;
+        this.type=cardType;
+    }
 }

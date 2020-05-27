@@ -12,4 +12,8 @@ export interface GameStateModel {
     gameEndByAssassin: boolean,
     startingTeamColor: string,
     lobbyId?: string,
+    civiliansFoundByBlueTeam: number,
+    civiliansFoundByRedTeam: number,
+    rounds: number
+
 }

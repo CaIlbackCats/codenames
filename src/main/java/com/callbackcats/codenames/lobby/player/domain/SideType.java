@@ -9,4 +9,6 @@ public enum SideType {
         int randomIndex = (int) Math.floor(Math.random() * (SideType.values().length - 1));
         return SideType.values()[randomIndex];
     }
+
+
 }

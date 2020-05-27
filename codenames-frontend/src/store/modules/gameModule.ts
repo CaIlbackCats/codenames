@@ -18,8 +18,7 @@ export default class GameModule extends VuexModule {
         redScore: 0,
         civiliansFoundByBlueTeam: 0,
         civiliansFoundByRedTeam: 0,
-        rounds: 0
-        board: [],
+        rounds: 0,
         endGame: false,
         endTurn: false,
         winnerTeam: "",
