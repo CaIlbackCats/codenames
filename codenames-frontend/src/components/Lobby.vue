@@ -115,14 +115,6 @@
             this.$copyText(this.path);
         }
 
-        public initKickPlayer(playerToRemoveId: number): void {
-            this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
-        }
-
-        get players(): Array<PlayerModel> {
-            return this.$store.getters["playersOrdered"];
-        }
-
         get currentPlayerId(): number {
             return this.$store.getters["currentPlayerId"];
         }
@@ -133,10 +125,6 @@
 
         get isCurrentPlayerLobbyOwner(): boolean {
             return this.$store.getters["isCurrentPlayerOwner"];
-        }
-
-        get currentPlayerName(): string {
-            return this.$store.getters["currentPlayerName"]
         }
 
         get lobbyId(): string {
@@ -264,6 +252,10 @@
     }
 
     input {
+        opacity: 0.6;
+    }
+
+    input:read-only {
         opacity: 0.6;
     }
 

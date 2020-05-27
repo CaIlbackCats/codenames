@@ -6,6 +6,7 @@ import {GameStateModel} from "@/models/gameStateModel";
 import {TeamVoteModel} from "@/models/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
 import {LobbyModel} from "@/models/lobbyModel";
+import {CardDetailsModel} from "@/models/cardDetailsModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -96,5 +97,9 @@ export default class GameModule extends VuexModule {
 
     get gameId(): number {
         return this.game.id;
+    }
+
+    get board(): Array<CardDetailsModel> {
+        return this.game.board;
     }
 }

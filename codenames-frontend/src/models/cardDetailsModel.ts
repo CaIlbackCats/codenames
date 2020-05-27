@@ -1,5 +1,8 @@
+import {WordDetailModel} from "@/models/wordDetailModel";
+
 export interface CardDetailsModel {
-    word: string,
+    id:number,
+    word: WordDetailModel,
     type: string,
     isFound: boolean
 }

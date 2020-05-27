@@ -52,6 +52,10 @@
         private spyMaster = true;
         private turn = true;
 
+        mounted(){
+            this.$store.dispatch("subscribeToGame")
+        }
+
     }
 </script>
 

@@ -4,7 +4,7 @@
              v-for="player in players">
             <ReadyCheck :player="player" v-if="isInLobby"></ReadyCheck>
             <font-awesome-icon class="mr-2" icon="user-secret"
-                               v-if="player.id === currentPlayer.id"/>
+                               v-if="player.id === currentPlayerId"/>
             <font-awesome-icon :class="[ 'mr-2', player.side === 'BLUE' ? 'blue-spymaster': 'red-spymaster'] "
                                :icon="['fas', 'briefcase']"
                                v-if="player.role === 'SPYMASTER'"
@@ -16,7 +16,7 @@
             <font-awesome-icon @click="initKickPlayer(player)"
                                class="kick-btn"
                                icon="user-minus"
-                               v-if="player.name !== currentPlayer.name"/>
+                               v-if="player.name !== currentPlayerName"/>
             <KickPlayer :player-to-kick="playerToKick"></KickPlayer>
         </div>
     </div>
@@ -51,30 +51,19 @@
             return this.$store.getters["playersOrdered"];
         }
 
-        get currentPlayer(): PlayerModel {
-            return this.$store.getters["getCurrentPlayer"];
+        get currentPlayerId() : number{
+            return this.$store.getters["currentPlayerId"];
         }
 
-        public initKickPlayer(player: PlayerModel): void {
-            this.playerToKick = player;
-            if (this.currentPlayer.lobbyOwner) {
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "OWNER",
-                    ownerId: this.currentPlayer.id,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            } else {
-                const votingPlayers = this.players.filter(player => player.name !== this.playerToKick.name);
-                const playerRemovalModel: PlayerRemovalModel = {
-                    kickType: "VOTE",
-                    ownerId: this.currentPlayer.id,
-                    votingPlayers: votingPlayers,
-                    playerToRemoveId: player.id,
-                }
-                websocket.send(process.env.VUE_APP_PLAYER_KICK_INIT, playerRemovalModel);
-            }
+
+        get currentPlayerName(): string {
+            return this.$store.getters["currentPlayerName"]
         }
+
+        public initKickPlayer(playerToRemoveId: number): void {
+            this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
+        }
+
     }
 </script>
 
