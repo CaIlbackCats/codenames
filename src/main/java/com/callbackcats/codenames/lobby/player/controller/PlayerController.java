@@ -1,7 +1,6 @@
 package com.callbackcats.codenames.lobby.player.controller;
 
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.lobby.player.domain.ActionType;
 import com.callbackcats.codenames.lobby.player.dto.*;
 import com.callbackcats.codenames.lobby.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;

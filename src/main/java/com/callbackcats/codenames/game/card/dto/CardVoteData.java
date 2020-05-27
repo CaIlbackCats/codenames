@@ -1,4 +1,4 @@
-package com.callbackcats.codenames.lobby.player.dto;
+package com.callbackcats.codenames.game.card.dto;
 
 import com.callbackcats.codenames.game.card.dto.CardDetails;
 import lombok.AllArgsConstructor;
