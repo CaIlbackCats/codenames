@@ -99,8 +99,8 @@
     })
     export default class Lobby extends Vue {
         private isMouseInMiddle = true;
+        private path="";
 
-        private path = "http://localhost:4200";
 
         @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
@@ -114,16 +114,13 @@
 
         constructor() {
             super();
+
             window.addEventListener('beforeunload', this.hideLeftPlayer);
         }
 
-        private hideLeftPlayer(): void {
-            this.$store.dispatch("hideLeftPlayer");
-        }
-
         async mounted() {
+            this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
             await websocket.connect();
-            this.path += this.$route.path;
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
             if (!joined) {
                 router.push('/')
@@ -133,6 +130,10 @@
                 await this.$store.dispatch("subscribeToKick");
             }
         };
+
+        private hideLeftPlayer(): void {
+            this.$store.dispatch("hideLeftPlayer");
+        }
 
         public copyPath(): void {
             this.$copyText(this.path);
