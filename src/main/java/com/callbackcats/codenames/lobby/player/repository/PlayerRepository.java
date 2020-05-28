@@ -2,6 +2,7 @@ package com.callbackcats.codenames.lobby.player.repository;
 
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.player.domain.Player;
+import com.callbackcats.codenames.lobby.player.domain.SideType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     @Query("select p from Player p join p.lobby l where :game member of l.games")
     List<Player> findAllPlayersByGame(@Param("game") Game game);
+
+    @Query("select p from Player p join p.lobby l join l.games g where p.visible= true and l.id= :lobbyId and g.active = true and g.currentTurn= p.side")
+    List<Player> findVisiblePlayersByLobbyInActiveGame(@Param("lobbyId") String lobbyId);
 }
