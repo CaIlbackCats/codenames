@@ -1,13 +1,12 @@
 import axios from 'axios';
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
-import {LobbyModel} from "@/models/lobbyModel";
+import {LobbyModel} from "@/models/lobby/lobbyModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
-import {RemainingRoleModel} from "@/models/remainingRoleModel";
-import router from "@/router";
-import {PlayerModel} from "@/models/playerModel";
-import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+import {RemainingRoleModel} from "@/models/lobby/remainingRoleModel";
+import {PlayerModel} from "@/models/player/playerModel";
+import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 

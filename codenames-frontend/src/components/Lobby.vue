@@ -58,15 +58,11 @@
     import {Component, Vue, Watch} from "vue-property-decorator";
     import Chat from "@/components/chat/Chat.vue";
     import LobbyOption from "@/components/lobby/LobbyOption.vue";
-    import {PlayerCreationModel} from "@/models/playerCreationModel";
-    import {PlayerModel} from "@/models/playerModel";
     import KickPlayer from "@/components/player/KickPlayer.vue";
     import ReadyCheck from "@/components/player/ReadyCheck.vue";
     import RolePick from "@/components/player/RolePick.vue";
     import * as websocket from '@/services/websocket'
     import router from "@/router";
-    import {config} from "@/config";
-    import {PlayerDetailsModel} from "@/models/playerDetailsModel";
     import PlayerList from "@/components/player/PlayerList.vue";
     import CreatePlayer from "@/components/CreatePlayer.vue";
 

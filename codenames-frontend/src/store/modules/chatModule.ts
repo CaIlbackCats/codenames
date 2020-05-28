@@ -1,6 +1,6 @@
-import {Action, Module, Mutation, MutationAction, VuexModule} from "vuex-module-decorators";
+import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
-import {MessageModel} from "@/models/messageModel";
+import {MessageModel} from "@/models/chat/messageModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 

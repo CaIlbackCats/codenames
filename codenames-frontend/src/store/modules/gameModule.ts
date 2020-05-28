@@ -1,12 +1,12 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import * as websocket from '@/services/websocket';
 import {config} from "@/config";
-import {GameCreationModel} from "@/models/gameCreationModel";
-import {GameStateModel} from "@/models/gameStateModel";
-import {TeamVoteModel} from "@/models/teamVoteModel";
+import {GameCreationModel} from "@/models/game/gameCreationModel";
+import {GameStateModel} from "@/models/game/gameStateModel";
+import {TeamVoteModel} from "@/models/game/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
-import {LobbyModel} from "@/models/lobbyModel";
-import {CardDetailsModel} from "@/models/cardDetailsModel";
+import {LobbyModel} from "@/models/lobby/lobbyModel";
+import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 

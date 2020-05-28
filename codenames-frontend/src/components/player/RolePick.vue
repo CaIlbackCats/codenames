@@ -50,11 +50,8 @@
 
 <script lang="ts">
 
-    import {Component, Vue, Watch} from "vue-property-decorator";
-    import {PlayerModel} from "@/models/playerModel";
-    import {SelectionModel} from "@/models/selectionModel";
-    import * as websocket from '@/services/websocket'
-    import {config} from "@/config";
+    import {Component, Vue} from "vue-property-decorator";
+    import {SelectionModel} from "@/models/lobby/selectionModel";
 
     @Component
     export default class RolePick extends Vue {

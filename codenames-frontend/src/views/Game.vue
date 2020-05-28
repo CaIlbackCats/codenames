@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 pr-0">
+            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
                 <game-map></game-map>
             </div>
 
@@ -43,6 +43,8 @@
     import PlayerList from "@/components/player/PlayerList.vue";
     import Puzzle from "@/components/game/Puzzle.vue";
     import GameOptions from "@/components/game/GameOptions.vue";
+    import * as websocket from '@/services/websocket'
+
 
     @Component({
         components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
@@ -52,8 +54,9 @@
         private spyMaster = true;
         private turn = true;
 
-        mounted(){
-            this.$store.dispatch("subscribeToGame")
+        async mounted() {
+            await websocket.connect();
+            await this.$store.dispatch("subscribeToGame")
         }
 
     }

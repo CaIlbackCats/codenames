@@ -1,4 +1,4 @@
-import {CardVoteModel} from "@/models/cardVoteModel";
+import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 
 export interface TeamVoteModel {
     gameId: number,

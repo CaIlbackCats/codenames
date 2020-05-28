@@ -1,4 +1,4 @@
-import {CardDetailsModel} from "@/models/cardDetailsModel";
+import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 
 export interface CardVoteModel {
 

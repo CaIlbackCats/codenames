@@ -10,10 +10,7 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
-    import {PlayerModel} from "@/models/playerModel";
-    import {RdyModel} from "@/models/rdyModel";
-    import * as websocket from '@/services/websocket'
-    import {config} from "@/config";
+    import {PlayerModel} from "@/models/player/playerModel";
 
     @Component
     export default class ReadyCheck extends Vue {
