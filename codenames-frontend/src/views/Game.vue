@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 pr-0">
+            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
                 <game-map></game-map>
             </div>
 

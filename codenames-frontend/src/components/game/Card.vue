@@ -3,6 +3,7 @@
         isRed ? 'red-card' : '',
         isBlack ? 'black-card' : '',
         isGold ? 'gold-card': '',
+        card.isFound ? 'found' : '',
         'card']">
         <label class="m-0">{{card.word.word}} </label>
         <div class="card-line"></div>
@@ -60,6 +61,11 @@
         text-transform: uppercase;
         font-size: 1.3rem;
         padding-top: 3vh;
+        opacity: 0.4;
+    }
+
+    .found {
+        opacity: 1;
     }
 
     .blue-card {
