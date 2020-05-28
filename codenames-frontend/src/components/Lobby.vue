@@ -130,6 +130,7 @@
         get lobbyId(): string {
             return this.$store.getters["lobbyId"];
         }
+
     }
 </script>
 

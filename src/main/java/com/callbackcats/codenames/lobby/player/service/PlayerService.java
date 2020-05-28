@@ -2,15 +2,13 @@ package com.callbackcats.codenames.lobby.player.service;
 
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
-import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.RoleType;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import com.callbackcats.codenames.lobby.player.dto.*;
 import com.callbackcats.codenames.lobby.player.repository.PlayerRepository;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,18 +28,18 @@ public class PlayerService {
     private static final int VOTING_PHASE_TIME = 15;
 
     private final PlayerRepository playerRepository;
-    private final LobbyRepository lobbyRepository;
+    private final LobbyService lobbyService;
     private final ScheduledExecutorService scheduler;
 
-    public PlayerService(PlayerRepository playerRepository, LobbyRepository lobbyRepository, ScheduledExecutorService scheduler) {
+    public PlayerService(PlayerRepository playerRepository, LobbyService lobbyService, ScheduledExecutorService scheduler) {
         this.playerRepository = playerRepository;
-        this.lobbyRepository = lobbyRepository;
+        this.lobbyService = lobbyService;
         this.scheduler = scheduler;
     }
 
     public PlayerData savePlayer(PlayerCreationData playerCreationData) {
         Player player = new Player(playerCreationData);
-        Lobby lobby = lobbyRepository.findLobbyByName(playerCreationData.getLobbyName());
+        Lobby lobby = lobbyService.findLobbyById(playerCreationData.getLobbyName());
         if (lobby.getPlayerList().isEmpty()) {
             player.setLobbyOwner(true);
         } else {
@@ -225,7 +223,7 @@ public class PlayerService {
         playerRemovalData.setPlayerToRemove(playerToKick);
     }
 
-    public ScheduledFuture<?> isVotingFinished(PlayerRemovalData playerRemovalData) {
+    public ScheduledFuture<?> initVotingPhase(PlayerRemovalData playerRemovalData) {
         PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
         Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
         ScheduledFuture<?> schedule = null;

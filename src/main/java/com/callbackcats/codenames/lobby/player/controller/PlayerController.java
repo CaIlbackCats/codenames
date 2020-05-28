@@ -3,6 +3,7 @@ package com.callbackcats.codenames.lobby.player.controller;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.player.dto.*;
 import com.callbackcats.codenames.lobby.player.service.PlayerService;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,12 @@ public class PlayerController {
 
     private final PlayerService playerService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final LobbyService lobbyService;
 
-    public PlayerController(PlayerService playerService, SimpMessagingTemplate simpMessagingTemplate) {
+    public PlayerController(PlayerService playerService, SimpMessagingTemplate simpMessagingTemplate, LobbyService lobbyService) {
         this.playerService = playerService;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.lobbyService = lobbyService;
     }
 
     @ResponseBody
@@ -57,7 +60,7 @@ public class PlayerController {
         players.forEach(player -> {
             updatePlayer(lobbyId, player.getId(), player);
         });
-        updateList(lobbyId);
+        updateLobbyState(lobbyId);
     }
 
     @MessageMapping("/side")
@@ -69,7 +72,7 @@ public class PlayerController {
         players.forEach(player -> {
             updatePlayer(lobbyId, player.getId(), player);
         });
-        updateList(lobbyId);
+        updateLobbyState(lobbyId);
     }
 
     @MessageMapping("/kickCount")
@@ -78,7 +81,7 @@ public class PlayerController {
         playerService.processKickBeforeCountDown(playerRemovalData);
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
 
-        updateList(lobbyName);
+        updateLobbyState(lobbyName);
     }
 
     @MessageMapping("/getPlayers")
@@ -86,7 +89,7 @@ public class PlayerController {
         log.info("Kicking player requested");
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
 
-        updateList(lobbyName);
+        updateLobbyState(lobbyName);
     }
 
     @MessageMapping("/kickInit")
@@ -99,17 +102,19 @@ public class PlayerController {
         String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
 
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/kick", playerRemovalData);
+        updateLobbyState(lobbyName);
 
         try {
-            ScheduledFuture<?> votingFinished = playerService.isVotingFinished(playerRemovalData);
+            lobbyService.setKickPhase(lobbyName, true);
+            ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
             votingFinished.get();
 
             if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
                 PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyName);
                 updatePlayer(lobbyName, newLobbyOwner.getId(), newLobbyOwner);
             }
-
-            updateList(lobbyName);
+            lobbyService.setKickPhase(lobbyName, false);
+            updateLobbyState(lobbyName);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
@@ -122,7 +127,7 @@ public class PlayerController {
         String lobbyName = playerData.getLobbyId();
         updatePlayer(lobbyName, playerData.getId(), playerData);
 
-        updateList(lobbyName);
+        updateLobbyState(lobbyName);
     }
 
     @MessageMapping("/selection")
@@ -132,7 +137,7 @@ public class PlayerController {
         String lobbyName = modifiedPlayer.getLobbyId();
         updatePlayer(lobbyName, modifiedPlayer.getId(), modifiedPlayer);
 
-        updateList(lobbyName);
+        updateLobbyState(lobbyName);
     }
 
     @MessageMapping("/getPlayer")
@@ -143,7 +148,7 @@ public class PlayerController {
             PlayerData player = playerService.showPlayer(playerDetailsData.getId());
             updatePlayer(lobbyName, player.getId(), player);
 
-            updateList(playerDetailsData.getLobbyName());
+            updateLobbyState(playerDetailsData.getLobbyName());
         }
     }
 
@@ -151,23 +156,20 @@ public class PlayerController {
     public void fetchLobby(@Payload LobbyDetails lobbyDetails) {
         log.info("Lobby fetch requested");
 
-        updateList(lobbyDetails.getId());
+        updateLobbyState(lobbyDetails.getId());
     }
 
     @MessageMapping("/hidePlayer")
     public void hidePlayer(@Payload PlayerDetailsData playerDetailsData) {
         playerService.hidePlayer(playerDetailsData.getId());
 
-        updateList(playerDetailsData.getLobbyName());
+        updateLobbyState(playerDetailsData.getLobbyName());
     }
 
-    private void updateList(String lobbyName) {
-        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyName);
-        LobbyDetails lobbyDetails = new LobbyDetails();
+    private void updateLobbyState(String lobbyName) {
 
+        LobbyDetails lobbyDetails = lobbyService.getLobbyDetailsById(lobbyName);
         lobbyDetails.setEveryoneRdy(playerService.isEveryOneRdy(lobbyName));
-        lobbyDetails.setPlayers(players);
-        lobbyDetails.setId(lobbyName);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName, lobbyDetails);
 
         RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyName);

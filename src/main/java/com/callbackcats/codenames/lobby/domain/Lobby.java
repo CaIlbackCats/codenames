@@ -22,8 +22,6 @@ public class Lobby {
     @Id
     private String id = UUID.randomUUID().toString();
 
-    private String name;
-
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "lobby")
     private List<Player> playerList;
@@ -31,5 +29,8 @@ public class Lobby {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "lobby")
     private List<Game> games;
+
+    @Column(name = "is_kicking_phase")
+    private Boolean kickingPhase = false;
 
 }
