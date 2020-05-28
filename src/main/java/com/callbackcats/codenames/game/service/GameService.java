@@ -62,6 +62,7 @@ public class GameService {
         return new GameDetails(game);
     }
 
+
     List<Card> generateMap(SideType startingTeamColor) {
         Set<Word> words = new HashSet<>();
         List<Word> allWords = wordRepository.findAll();
@@ -109,6 +110,11 @@ public class GameService {
         return words.get(randomIndex);
     }
 
+    public void countScore(){
+
+    }
+
+
 
     public GameStateData processVotes(TeamVoteData teamVoteData) {
         Map<CardVoteData, Integer> cardVoteMap = getCardVoteScores(teamVoteData);
@@ -123,7 +129,7 @@ public class GameService {
 
         boolean mostVoteOnOneCard = mostVotedCards.size() == 1;
         if (mostVoteOnOneCard) {
-            handleGameByGoodVote(teamVoteData, maxScore, mostVotedCards, game);
+         //   handleGameByGoodVote(teamVoteData, maxScore, mostVotedCards, game);
         } else if (mostVotedCards.size() > 1) {
             game.setEndTurn(true);
         }
@@ -148,38 +154,38 @@ public class GameService {
         }
     }
 
-    private void handleGameByGoodVote(TeamVoteData teamVoteData, Integer maxScore, List<CardVoteData> maxCardVote, Game game) {
-        CardType votedCardType = CardType.valueOf(maxCardVote.get(0).getVotedCard().getType());
-        if (votedCardType == CardType.ASSASSIN) {
-            setupGameEndByAssassin(teamVoteData, game);
-            log.info("Assassin found, and set");
-        } else {
-            updateGameByVotes(maxCardVote, maxScore, teamVoteData, game);
-        }
-    }
-
-    private void setupGameEndByAssassin(TeamVoteData teamVoteData, Game game) {
-        game.setEndGameByAssassin(true);
-        SideType currentTeam = SideType.valueOf(teamVoteData.getVotingTeam());
-        if ((currentTeam == SideType.BLUE)) {
-            game.setWinner(SideType.RED);
-        } else {
-            game.setWinner(SideType.BLUE);
-        }
-    }
-
-    private void updateGameByVotes(List<CardVoteData> maxCardVote, Integer maxScore, TeamVoteData teamVoteData, Game game) {
-        String votingTeam = teamVoteData.getVotingTeam();
-        CardDetails mostVotedCard = maxCardVote.get(0).getVotedCard();
-        String votedCardColor = mostVotedCard.getType();
-
-        setGameByCardPick(mostVotedCard, maxScore, game);
-
-        cardService.setCardFound(mostVotedCard.getId(), true);
-
-        setGameEndTurnOnWrongPick(votingTeam, game, votedCardColor);
-
-    }
+//    private void handleGameByGoodVote(TeamVoteData teamVoteData, Integer maxScore, List<CardVoteData> maxCardVote, Game game) {
+//        CardType votedCardType = CardType.valueOf(maxCardVote.get(0).getVotedCardId().getType());
+//        if (votedCardType == CardType.ASSASSIN) {
+//            setupGameEndByAssassin(teamVoteData, game);
+//            log.info("Assassin found, and set");
+//        } else {
+//            updateGameByVotes(maxCardVote, maxScore, teamVoteData, game);
+//        }
+//    }
+//
+//    private void setupGameEndByAssassin(TeamVoteData teamVoteData, Game game) {
+//        game.setEndGameByAssassin(true);
+//        SideType currentTeam = SideType.valueOf(teamVoteData.getVotingTeam());
+//        if ((currentTeam == SideType.BLUE)) {
+//            game.setWinner(SideType.RED);
+//        } else {
+//            game.setWinner(SideType.BLUE);
+//        }
+//    }
+//
+//    private void updateGameByVotes(List<CardVoteData> maxCardVote, Integer maxScore, TeamVoteData teamVoteData, Game game) {
+//        String votingTeam = teamVoteData.getVotingTeam();
+//        CardDetails mostVotedCard = maxCardVote.get(0).getVotedCardId();
+//        String votedCardColor = mostVotedCard.getType();
+//
+//        setGameByCardPick(mostVotedCard, maxScore, game);
+//
+//        cardService.setCardFound(mostVotedCard.getId(), true);
+//
+//        setGameEndTurnOnWrongPick(votingTeam, game, votedCardColor);
+//
+//    }
 
     private void setGameEndTurnOnWrongPick(String votingTeam, Game game, String cardColor) {
         SideType votingTeamColor = SideType.valueOf(votingTeam);
@@ -229,10 +235,10 @@ public class GameService {
         Integer voteNumber = (int) playersInGame
                 .stream()
                 .map(PlayerData::getId)
-                .filter(cardVoteData.getVotedPlayersId()::contains)
+                .filter(cardVoteData.getVotedPlayersId()::equals)
                 .count();
 
-        log.info("Count votes for given card:\t" + cardVoteData.getVotedCard().getId());
+        log.info("Count votes for given card:\t" + cardVoteData.getVotedCardId());
 
         return voteNumber;
     }

@@ -2,6 +2,7 @@ package com.callbackcats.codenames.game.card.domain;
 
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.domain.Word;
+import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,8 +32,11 @@ public class Card {
 
     private Integer vote;
 
+    @OneToOne
+    private Player player;
+
     public Card(Word word, CardType cardType) {
-        this.word=word;
-        this.type=cardType;
+        this.word = word;
+        this.type = cardType;
     }
 }

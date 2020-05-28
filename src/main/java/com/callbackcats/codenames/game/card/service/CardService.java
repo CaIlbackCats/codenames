@@ -23,7 +23,7 @@ public class CardService {
         cardRepository.save(card);
     }
 
-    private Card findCardById(Long id) {
+    public Card findCardById(Long id) {
         return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found by given ID:\t" + id));
     }
 }

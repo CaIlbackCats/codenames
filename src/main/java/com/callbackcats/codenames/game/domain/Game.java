@@ -52,6 +52,9 @@ public class Game {
     @Column(name = "start_team_color")
     private SideType startingTeamColor;
 
+    @Column(name = "current_turn")
+    private SideType currentTurn;
+
     @Column(name = "is_active")
     private Boolean active = true;
 
