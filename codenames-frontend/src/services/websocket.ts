@@ -5,15 +5,14 @@ import SockJS from "sockjs-client";
 
 let client: Client;
 
-// TODO: rewrite this using class syntax
 export const connect = async () => {
     const socket = new SockJS(process.env.VUE_APP_BASE_URL);
     client = webstomp.over(socket);
     return new Promise((resolve, reject) => {
-        //  kikapcsolja a loggolást
-        //   client.debug = () => {
-        //       null
-        //   };
+       //  kikapcsolja a loggolást
+          client.debug = () => {
+              null
+          };
         client.connect({}, () => {
             resolve()
         });

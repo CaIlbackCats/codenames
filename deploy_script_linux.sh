@@ -7,7 +7,7 @@ set -v
 #------------- UPDATE ALWAYS CORRESPONDINGLY!
 # pom.xml Artifact id must be 'project'
 #remote_address=54.229.84.224
-remote_address=18.157.79.124
+remote_address=35.158.134.255
 frontend_folder_name=codenames-frontend
 frontend_source_location=./$frontend_folder_name/dist/*
 backend_source_location=./target/project-0.0.1-SNAPSHOT.jar
@@ -26,7 +26,7 @@ mvn clean package -DskipTests=true
 
 #COPY LOCAL FILES TO SERVER
 scp  -o $ssh_options -i $pem_file_full_path -r $frontend_source_location ubuntu@$remote_address:$frontend_remote_location
-scp  -o $ssh_options -i $pem_file_full_path $backend_source_location ubuntu@$remote_address:$backend_remote_location/project-1.0-SNAPSHOT.jar.new
+scp  -o $ssh_options -i $pem_file_full_path $backend_source_location ubuntu@$remote_address:$backend_remote_location/project-0.0.1-SNAPSHOT.jar.new
 
 #UPDATE .JAR WITH NEW, AND RESTART
 ssh -o $ssh_options -i $pem_file_full_path ubuntu@$remote_address './shutdown.sh'
