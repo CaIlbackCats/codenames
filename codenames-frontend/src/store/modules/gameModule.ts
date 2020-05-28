@@ -55,6 +55,7 @@ export default class GameModule extends VuexModule {
             currentGameId: -1,
             players: [],
             everyoneRdy: false,
+            kickingPhase: false,
         }
         websocket.send(config.FETCH_GAME_PATH, lobbyModel)
     }

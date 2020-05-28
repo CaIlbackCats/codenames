@@ -4,5 +4,6 @@ export interface LobbyModel {
     id: string,
     everyoneRdy: boolean,
     players: Array<PlayerModel>,
-    currentGameId:number,
+    currentGameId: number,
+    kickingPhase: boolean,
 }

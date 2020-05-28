@@ -40,7 +40,7 @@
             return this.$store.getters["playersOrdered"];
         }
 
-        get currentPlayerId() : number{
+        get currentPlayerId(): number {
             return this.$store.getters["currentPlayerId"];
         }
 
@@ -50,7 +50,14 @@
         }
 
         public initKickPlayer(playerToRemoveId: number): void {
-            this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
+            //todo :disabled to fontawesome icon
+            if (!this.isKickingPhase) {
+                this.$store.dispatch("sendKickWindowInit", playerToRemoveId);
+            }
+        }
+
+        get isKickingPhase(): boolean {
+            return this.$store.getters["isKickingPhase"];
         }
 
     }

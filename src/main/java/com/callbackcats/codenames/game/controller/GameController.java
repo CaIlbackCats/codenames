@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class GameController {
 
-    private GameService gameService;
+    private final GameService gameService;
     private final LobbyService lobbyService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 

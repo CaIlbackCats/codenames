@@ -22,6 +22,8 @@ export default class LobbyModule extends VuexModule {
         players: [],
         everyoneRdy: false,
         currentGameId: -1,
+        kickingPhase: false,
+
     }
     private remainingRoleModel: RemainingRoleModel = {
         blueSpy: false,
@@ -139,6 +141,10 @@ export default class LobbyModule extends VuexModule {
         } else {
             return -1;
         }
+    }
+
+    get isKickingPhase(): boolean {
+        return this.lobby.kickingPhase;
     }
 
     get lobbyId(): string {

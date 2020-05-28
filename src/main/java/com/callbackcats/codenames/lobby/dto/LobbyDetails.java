@@ -23,20 +23,23 @@ public class LobbyDetails {
 
     private Long currentGameId;
 
+    private Boolean kickingPhase;
+
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();
-        if (lobby.getPlayerList()!=null && !lobby.getPlayerList().isEmpty()){
+        if (lobby.getPlayerList() != null && !lobby.getPlayerList().isEmpty()) {
             this.players = lobby.getPlayerList()
                     .stream()
                     .map(PlayerData::new)
                     .collect(Collectors.toList());
         }
-        if (lobby.getGames()!=null && !lobby.getGames().isEmpty()){
+        if (lobby.getGames() != null && !lobby.getGames().isEmpty()) {
             this.currentGameId = lobby.getGames()
                     .stream()
                     .filter(Game::getActive)
-                    .findFirst().orElse(new Game())
+                    .findFirst().orElseThrow(() -> new RuntimeException("No active game exists"))
                     .getId();
         }
+        this.kickingPhase = lobby.getKickingPhase();
     }
 }
