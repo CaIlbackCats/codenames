@@ -1,14 +1,13 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
 import * as websocket from '@/services/websocket'
-import {PlayerModel} from "@/models/playerModel";
-import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+import {PlayerModel} from "@/models/player/playerModel";
+import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {config} from "@/config";
-import {RdyModel} from "@/models/rdyModel";
-import {SelectionModel} from "@/models/selectionModel";
-import {PlayerCreationModel} from "@/models/playerCreationModel";
+import {RdyModel} from "@/models/player/rdyModel";
+import {SelectionModel} from "@/models/lobby/selectionModel";
+import {PlayerCreationModel} from "@/models/player/playerCreationModel";
 import axios, {AxiosResponse} from 'axios';
-import {LobbyModel} from "@/models/lobbyModel";
 
 
 @Module

@@ -8,7 +8,7 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    import {CardDetailsModel} from "@/models/cardDetailsModel";
+    import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 
     @Component
     export default class GameMap extends Vue {

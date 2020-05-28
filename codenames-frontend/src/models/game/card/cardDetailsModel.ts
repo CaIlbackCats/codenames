@@ -1,4 +1,4 @@
-import {WordDetailModel} from "@/models/wordDetailModel";
+import {WordDetailModel} from "@/models/game/card/wordDetailModel";
 
 export interface CardDetailsModel {
     id:number,

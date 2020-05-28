@@ -1,4 +1,4 @@
-import {PlayerModel} from "@/models/playerModel";
+import {PlayerModel} from "@/models/player/playerModel";
 
 export interface PlayerRemovalModel {
     ownerId?: number,

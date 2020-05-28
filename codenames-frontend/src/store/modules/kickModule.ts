@@ -1,6 +1,6 @@
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
-import {PlayerModel} from "@/models/playerModel";
-import {PlayerRemovalModel} from "@/models/playerRemovalModel";
+import {PlayerModel} from "@/models/player/playerModel";
+import {PlayerRemovalModel} from "@/models/player/kick/playerRemovalModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 

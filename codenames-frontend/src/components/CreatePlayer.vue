@@ -26,7 +26,7 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    import {PlayerCreationModel} from "@/models/playerCreationModel";
+    import {PlayerCreationModel} from "@/models/player/playerCreationModel";
 
     @Component
     export default class CreatePlayer extends Vue {

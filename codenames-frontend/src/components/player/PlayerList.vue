@@ -25,9 +25,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
     import KickPlayer from "@/components/player/KickPlayer.vue";
-    import {PlayerModel} from "@/models/playerModel";
-    import {PlayerRemovalModel} from "@/models/playerRemovalModel";
-    import * as websocket from "@/services/websocket";
+    import {PlayerModel} from "@/models/player/playerModel";
     import ReadyCheck from "@/components/player/ReadyCheck.vue";
 
     @Component({

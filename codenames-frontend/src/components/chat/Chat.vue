@@ -2,7 +2,7 @@
     <div class="text-left">
         <div class="chat-div col-sm-12">
             <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
-                <font-awesome-icon class="ml-2" icon="user-secret" v-if="chatMessage.name === currentPlayer.name"/>
+                <font-awesome-icon class="ml-2" icon="user-secret" v-if="chatMessage.name === currentPlayerName"/>
                 <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
             </div>
         </div>
@@ -25,8 +25,7 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    import {MessageModel} from "@/models/messageModel";
-    import {PlayerModel} from "@/models/playerModel";
+    import {MessageModel} from "@/models/chat/messageModel";
 
 
     @Component
