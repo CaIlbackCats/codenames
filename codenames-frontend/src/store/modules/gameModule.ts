@@ -114,4 +114,8 @@ export default class GameModule extends VuexModule {
     get board(): Array<CardDetailsModel> {
         return this.game.board;
     }
+
+    get currentTeam(): string {
+        return this.game.currentTeam;
+    }
 }
