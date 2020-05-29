@@ -47,6 +47,22 @@
 </script>
 
 <style scoped>
+
+    input {
+        text-align: center;
+        opacity: 0.6;
+        outline: none;
+        box-shadow: none;
+        border: none;
+    }
+
+    input:focus {
+        opacity: 1;
+        outline: none;
+        box-shadow: none;
+        border: none;
+    }
+
     img {
         margin-top: 60px;
         max-width: 75%;
