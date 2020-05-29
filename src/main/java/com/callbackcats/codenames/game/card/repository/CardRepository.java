@@ -2,9 +2,15 @@ package com.callbackcats.codenames.game.card.repository;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface CardRepository extends JpaRepository<Card,Long> {
+import java.util.List;
 
+@Repository
+public interface CardRepository extends JpaRepository<Card, Long> {
+
+    @Query("select c from Card c where c.game.id= :gameId")
+    List<Card> findCardsByGameId(@Param("gameId") Long gameId);
 }

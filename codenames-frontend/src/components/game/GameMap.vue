@@ -15,12 +15,20 @@
     })
     export default class GameMap extends Vue {
 
-        public sendVote():void{
-            this.$store.dispatch("sendGameState");
+        public sendVote(cardId: number): void {
+            this.$store.dispatch("sendCardVote", cardId);
         }
 
         get board(): Array<CardDetailsModel> {
             return this.$store.getters["board"];
+        }
+
+        get currentPlayerSide(): string {
+            return this.$store.getters["currentPlayerSide"];
+        }
+
+        get currentTeam(): string {
+            return this.$store.getters["currentTeam"];
         }
     }
 </script>

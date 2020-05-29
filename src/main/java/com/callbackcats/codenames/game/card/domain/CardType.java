@@ -32,8 +32,6 @@ public enum CardType {
         return Arrays.stream(CardType.values())
                 .filter(card -> card.getTeamColorValue().equals(sideType))
                 .findFirst().orElseThrow(() -> new RuntimeException("CardTyoe not found"));
-
-
     }
 
     public static CardType selectOpposite(SideType sideType) {

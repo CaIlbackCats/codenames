@@ -6,17 +6,20 @@ import SockJS from "sockjs-client";
 let client: Client;
 
 export const connect = async () => {
-    const socket = new SockJS(process.env.VUE_APP_BASE_URL);
-    client = webstomp.over(socket);
-    return new Promise((resolve, reject) => {
-       //  kikapcsolja a loggolást
-          client.debug = () => {
-              null
-          };
-        client.connect({}, () => {
-            resolve()
+    if (!client){
+        const socket = new SockJS(process.env.VUE_APP_BASE_URL);
+        client = webstomp.over(socket);
+        return new Promise((resolve, reject) => {
+            //  kikapcsolja a loggolást
+            //   client.debug = () => {
+            //       null
+            //   };
+            client.connect({}, () => {
+                resolve()
+            });
         });
-    })
+    }
+
 }
 
 export const send = async (path, body): Promise<void> => {

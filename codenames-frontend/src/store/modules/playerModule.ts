@@ -137,4 +137,5 @@ export default class PlayerModule extends VuexModule {
     get isPlayerSelected(): boolean {
         return this.currentPlayer.id !== -1;
     }
+
 }

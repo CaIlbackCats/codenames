@@ -19,10 +19,11 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "word_id")
     private Word word;
 
+    @Enumerated(EnumType.STRING)
     private CardType type;
 
     private boolean isFound;
@@ -35,9 +36,10 @@ public class Card {
     @OneToOne(mappedBy = "votedCard")
     private Player player;
 
-    public Card(Word word, CardType cardType) {
+    public Card(Word word, CardType cardType, Game game) {
         this.word = word;
         this.type = cardType;
+        this.game = game;
     }
 
     @Override

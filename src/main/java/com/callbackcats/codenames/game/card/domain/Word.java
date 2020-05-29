@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "word")
@@ -21,14 +22,6 @@ public class Word {
 
     private String word;
 
-    @OneToOne(mappedBy = "word")
-    private Card card;
-
-    @Enumerated(EnumType.STRING)
-    private GameLanguage language;
-
-    public Word(String word, GameLanguage gameLanguage) {
-        this.word = word;
-        this.language = gameLanguage;
-    }
+    @OneToMany(mappedBy = "word")
+    private List<Card> cards;
 }

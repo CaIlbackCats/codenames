@@ -10,5 +10,9 @@ public enum SideType {
         return SideType.values()[randomIndex];
     }
 
+    public static SideType getOppositeSide(SideType sideType) {
+        return (sideType == SideType.BLUE) ? SideType.RED : SideType.BLUE;
+    }
+
 
 }

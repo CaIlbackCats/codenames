@@ -8,10 +8,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("select t from Team t join t.game g where g.active=true and t.side= :side and g.id= :gameId")
-    Team findCurrentTeamByGameIdBySide(@Param("gameId") Long id, @Param("side") SideType side);
+    Optional<Team> findCurrentTeamByGameIdBySide(@Param("gameId") Long id, @Param("side") SideType side);
+
+    @Query("select t from Team t where t.game.id= :gameId")
+    List<Team> findTeamsByGameId(@Param("gameId") Long gameId);
 }

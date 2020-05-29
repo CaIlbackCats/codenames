@@ -1,11 +1,13 @@
-package com.callbackcats.codenames.game.service;
+package com.callbackcats.codenames.game.card.service;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
 import com.callbackcats.codenames.game.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.card.domain.Word;
 import com.callbackcats.codenames.game.card.service.CardService;
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,15 +22,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @Transactional
 @Rollback
-public class GameServiceTest {
+public class CardServiceTest {
 
     @Autowired
     private CardService cardService;
 
+    private Game game;
+
+
+    @BeforeEach
+    public void init() {
+        this.game = new Game();
+    }
+
     @Test
     public void testGenerateMap_containsOnlyHungarianWords() {
 
-        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN);
+        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN, game);
 
         assertTrue(cards.stream()
                 .map(Card::getWord)
@@ -39,7 +49,7 @@ public class GameServiceTest {
 
     @Test
     public void testGenerateMap_containsOnlyEnglishWords() {
-        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.ENGLISH);
+        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.ENGLISH,game);
 
         assertTrue(cards.stream()
                 .map(Card::getWord)
@@ -50,7 +60,7 @@ public class GameServiceTest {
     @Test
     public void testGenerateMap_returnsCorrectSize() {
 
-        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN);
+        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN,game);
 
         assertEquals(25, cards.size());
 
@@ -59,7 +69,7 @@ public class GameServiceTest {
     @Test
     public void testGenerateMap() {
 
-        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN);
+        List<Card> cards = cardService.generateMap(SideType.RED, GameLanguage.HUNGARIAN,game);
 
         long redCards = cards.stream().map(Card::getType).filter(cardType -> cardType.equals(CardType.RED_SPY)).count();
         assertEquals(9, redCards);

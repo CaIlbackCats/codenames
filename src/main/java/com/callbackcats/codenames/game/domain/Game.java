@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,40 +33,45 @@ public class Game {
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "game")
-    private List<Card> board;
+    private List<Card> board = new ArrayList<>();
 
     @Column(name = "is_end_game")
-    private Boolean endGame;
+    private Boolean endGame = false;
 
     @Column(name = "is_end_turn")
-    private Boolean endTurn;
+    private Boolean endTurn = false;
 
     @Column(name = "winning_team")
+    @Enumerated(EnumType.STRING)
     private SideType winner;
 
     @Column(name = "is_assassing_found")
-    private Boolean endGameByAssassin;
+    private Boolean endGameByAssassin = false;
 
     @Column(name = "start_team_color")
-    private SideType startingTeamColor;
+    @Enumerated(EnumType.STRING)
+    private SideType startingTeam;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "game")
-    private List<Team> teams;
+    private List<Team> teams = new ArrayList<>();
 
     @Column(name = "current_team_turn")
+    @Enumerated(EnumType.STRING)
     private SideType currentTeam;
 
     @Column(name = "is_active")
-    private Boolean active;
+    private Boolean active = true;
 
-    public Game(List<Card> board, List<Team> teams) {
-        this.board = board;
-        this.teams = teams;
-        this.teams = new ArrayList<>();
-        this.endGame = false;
-        this.endTurn = false;
-        active = true;
+    @Column(name = "is_voting_phase_on")
+    private Boolean votingPhase = false;
+
+    public Game(Lobby lobby) {
+        this.startingTeam = SideType.getRandomSide();
+        this.currentTeam = startingTeam;
+        this.lobby = lobby;
     }
 
 }
