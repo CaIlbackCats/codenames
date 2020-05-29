@@ -1,12 +1,13 @@
 package com.callbackcats.codenames.game.service;
 
-import com.callbackcats.codenames.game.card.repository.WordRepository;
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.game.domain.Word;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.repository.GameRepository;
+import com.callbackcats.codenames.game.team.domain.Team;
+import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
@@ -25,31 +26,28 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameService {
 
-    private static final Integer MAX_STARTING_TEAM_CARD = 9;
-    private static final Integer MAX_SECOND_TEAM_CARD = 8;
-    private static final Integer MAX_ASSASSIN_CARD = 1;
-    private static final Integer BOARD_SIZE = 25;
 
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
     private final PlayerService playerService;
-    private final WordRepository wordRepository;
+    private final TeamService teamService;
+    private final CardService cardService;
 
-    public GameService(GameRepository gameRepository, LobbyService lobbyService, PlayerService playerService, WordRepository wordRepository) {
+    public GameService(GameRepository gameRepository, LobbyService lobbyService, PlayerService playerService, TeamService teamService, CardService cardService) {
         this.gameRepository = gameRepository;
         this.lobbyService = lobbyService;
         this.playerService = playerService;
-        this.wordRepository = wordRepository;
+        this.teamService = teamService;
+        this.cardService = cardService;
     }
-
 
     public GameDetails createGame(String lobbyId) {
         Lobby lobby = this.lobbyService.findLobbyById(lobbyId);
-        SideType randomSide = SideType.getRandomSide();
-        List<Card> cards = generateMap(randomSide);
-        Game game = new Game();
+        List<Team> teams = teamService.createTeamsByLobbyId(lobbyId);
 
-        game.setBoard(cards);
+        SideType randomSide = SideType.getRandomSide();
+        List<Card> cards = cardService.generateMap(randomSide);
+        Game game = new Game(cards, teams);
 
         this.gameRepository.save(game);
         lobbyService.addGame(lobby, game);
@@ -58,57 +56,51 @@ public class GameService {
     }
 
 
-    List<Card> generateMap(SideType startingTeamColor) {
-        Set<Word> words = new HashSet<>();
-        List<Word> allWords = wordRepository.findAll();
-        while (words.size() < BOARD_SIZE) {
-            Word randomWord = findRandomWord(allWords);
-            words.add(randomWord);
+    public void countScore(Long gameId) {
+        Game game = findGameById(gameId);
+        Team currentTeam = teamService.findTeamByGameIdBySide(gameId,game.getCurrentTeam());
+        List<Card> votedCards = currentTeam.getPlayers()
+                .stream()
+                .map(Player::getVotedCard)
+                .collect(Collectors.toList());
+
+        Map<Card, Integer> cardScores = fillCardVotesMap(votedCards);
+        Integer maxVote = Collections.max(cardScores.values());
+        List<Card> mostVotedCards = cardScores.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().equals(maxVote))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        if (mostVotedCards.size() > 1) {
+            game.setEndTurn(true);
+        } else {
+            Card mostVotedCard = mostVotedCards.get(0);
+            if (mostVotedCard.getType() == CardType.ASSASSIN) {
+                game.setEndGameByAssassin(true);
+            } else {
+                switch (mostVotedCard.getType()) {
+                    case BLUE_SPY:
+
+                        break;
+                }
+            }
         }
-        List<Card> cards = new ArrayList<>();
-        CardType startingCardType = CardType.findCardTypeBySide(startingTeamColor);
 
-        //todo multi-thread?!
-
-        CardType secondCardType = CardType.selectOpposite(startingTeamColor);
-        cards.addAll(getCardsByCardType(words, MAX_STARTING_TEAM_CARD, startingCardType));
-        cards.addAll(getCardsByCardType(words, MAX_SECOND_TEAM_CARD, secondCardType));
-        cards.addAll(getCardsByCardType(words, MAX_ASSASSIN_CARD, CardType.ASSASSIN));
-        cards.addAll(words.stream().map(word -> createCard(word, CardType.BYSTANDER)).collect(Collectors.toList()));
-
-        Collections.shuffle(cards);
-
-        return cards;
-
+        gameRepository.save(game);
     }
 
-    private List<Card> getCardsByCardType(Set<Word> words, int size, CardType cardType) {
-        List<Card> cards = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            int randomIndex = (int) Math.floor(Math.random() * words.size());
-            Word foundWord = words
-                    .stream()
-                    .skip(randomIndex)
-                    .findFirst().orElseThrow(() -> new RuntimeException("Word not found"));
-            cards.add(createCard(foundWord, cardType));
-            words.remove(foundWord);
+    private Map<Card, Integer> fillCardVotesMap(List<Card> votedCards) {
+        Map<Card, Integer> votesMap = new HashMap<>();
+        for (Card votedCard : votedCards) {
+            if (votesMap.containsKey(votedCard)) {
+                Integer newScore = votesMap.get(votedCard) + 1;
+                votesMap.put(votedCard, newScore);
+            } else {
+                votesMap.put(votedCard, 0);
+            }
         }
-        return cards;
-    }
-
-    private Card createCard(Word word, CardType cardType) {
-        return new Card(word, cardType);
-    }
-
-    private Word findRandomWord(List<Word> words) {
-        int randomIndex = (int) Math.floor(Math.random() * words.size());
-        return words.get(randomIndex);
-    }
-
-    public void countScore(String lobbyId) {
-        List<Player> players = playerService.findVisiblePlayersByLobbyIdByGameTurnInActiveGame(lobbyId);
-        List<Card> votedCards = players.stream().map(Player::getVotedCard).collect(Collectors.toList());
-
+        return votesMap;
     }
 
     private Game findGameById(Long id) {

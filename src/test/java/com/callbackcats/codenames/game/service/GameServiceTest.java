@@ -2,6 +2,7 @@ package com.callbackcats.codenames.game.service;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameServiceTest {
 
     @Autowired
-    private GameService gameService;
+    private CardService cardService;
 
     @Test
     public void testGenerateMap() {
 
-        List<Card> cards = gameService.generateMap(SideType.RED);
+        List<Card> cards = cardService.generateMap(SideType.RED);
 
         assertEquals(25, cards.size());
 

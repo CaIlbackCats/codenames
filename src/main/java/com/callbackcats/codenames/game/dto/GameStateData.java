@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GameStateData {
 
+    //todo add teamData
+
     private Long id;
 
     private Integer blueScore;
@@ -30,8 +32,6 @@ public class GameStateData {
 
     public GameStateData(Game game) {
         this.id = game.getId();
-        this.blueScore = game.getBlueScore();
-        this.redScore = game.getRedSCore();
         this.endGame = game.getEndGame();
         this.endTurn = game.getEndTurn();
         this.winnerTeam = game.getWinner().toString();

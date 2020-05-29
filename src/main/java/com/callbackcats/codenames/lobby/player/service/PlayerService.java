@@ -190,6 +190,7 @@ public class PlayerService {
     }
 
     public List<Player> findVisiblePlayersByLobbyIdByGameTurnInActiveGame(String lobbyId) {
+
         return playerRepository.findVisiblePlayersByLobbyInActiveGame(lobbyId);
     }
 
@@ -325,6 +326,10 @@ public class PlayerService {
 
     private List<Player> findAllPlayersInLobby(String lobbyName) {
         return playerRepository.findAllPlayersInLobby(lobbyName);
+    }
+
+    public List<Player> findVisiblePlayersByLobbyIdBySide(String lobbyId, SideType sideType) {
+        return playerRepository.findAllVisiblePlayersByLobbyIdBySide(lobbyId, sideType);
     }
 
     private void setSpymasterToSidelessPlayer(List<Player> players) {

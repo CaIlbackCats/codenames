@@ -12,4 +12,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("select g from Game g where g.active=true and g.lobby.id= :lobbyId")
     Game findActiveGameByLobby(@Param("lobbyId") String lobbyId);
 
+
 }
