@@ -10,14 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class WordImporter {
-
-
-/*    INSERT INTO mars.provider_account (id, name, provider_service_name, password, email, phone, role, zipcode, city,
-    address, age_group_min, age_group_max)
-    VALUES (1, 'test', 'tesztelek', '$2y$10$HssVEkgvwfRehsw7Dl9nfek5PNwdWfiSkF7A2TaNiAeCRFH8691/m', 'pecske92@gmail.com',
-                    '1234 567', 'ROLE_PROVIDER', '9500', 'pest', 'asd', 0, 79);*/
-
+public class SQLScriptCreator {
 
     public static void main(String[] args) {
 
