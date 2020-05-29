@@ -58,13 +58,17 @@ public class Game {
     @Column(name = "is_active")
     private Boolean active;
 
+    private Boolean votingPhase;
+
     public Game(List<Card> board, List<Team> teams) {
         this.board = board;
         this.teams = teams;
         this.teams = new ArrayList<>();
+        this.endGameByAssassin = false;
         this.endGame = false;
         this.endTurn = false;
-        active = true;
+        this.active = true;
+        this.votingPhase = false;
     }
 
 }

@@ -40,6 +40,12 @@ public class TeamService {
         return teamRepository.findCurrentTeamByGameIdBySide(id, sideType);
     }
 
+    public void increaseTeamScore(Team team) {
+        int increasedScore = team.getScore() + 1;
+        team.setScore(increasedScore);
+        teamRepository.save(team);
+    }
+
 
     private Team createTeam(String lobbyId, SideType side) {
         List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);

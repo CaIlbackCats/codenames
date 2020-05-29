@@ -32,8 +32,8 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public subscribeToGame() {
-        const lobbyId: string = this.context.getters["lobbyId"];
-        const gamePath: string = config.LOBBY_SUBSCRIPTION_PATH + lobbyId + "/" + this.gameId;
+     //   const lobbyId: string = this.context.getters["lobbyId"];
+        const gamePath: string = "/" + this.gameId;
         websocket.subscribe(gamePath, (body) => {
                 if (body) {
                     this.context.commit("UPDATE_GAME", body);

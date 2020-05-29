@@ -1,4 +1,4 @@
-package com.callbackcats.codenames.game.service;
+package com.callbackcats.codenames.game.card.service;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Rollback
-public class GameServiceTest {
+public class CardServiceTest {
 
     @Autowired
     private CardService cardService;
