@@ -18,7 +18,7 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "card")
+    @OneToOne
     @JoinColumn(name = "word_id")
     private Word word;
 
