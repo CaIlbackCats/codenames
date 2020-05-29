@@ -1,9 +1,11 @@
 package com.callbackcats.codenames.game.card.service;
 
 import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.dto.CardDetails;
 import com.callbackcats.codenames.game.card.repository.CardRepository;
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.repository.WordRepository;
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.domain.Word;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ public class CardService {
         cardRepository.save(card);
     }
 
-    public List<Card> generateMap(SideType startingTeamColor) {
+    public List<Card> generateMap(SideType startingTeamColor, Game game) {
         Set<Word> words = new HashSet<>();
         List<Word> allWords = wordRepository.findAll();
         while (words.size() < BOARD_SIZE) {
@@ -49,24 +51,28 @@ public class CardService {
         //todo multi-thread?!
 
         CardType secondCardType = CardType.selectOpposite(startingTeamColor);
-        cards.addAll(getCardsByCardType(words, MAX_STARTING_TEAM_CARD, startingCardType));
-        cards.addAll(getCardsByCardType(words, MAX_SECOND_TEAM_CARD, secondCardType));
-        cards.addAll(getCardsByCardType(words, MAX_ASSASSIN_CARD, CardType.ASSASSIN));
-        cards.addAll(words.stream().map(word -> createCard(word, CardType.BYSTANDER)).collect(Collectors.toList()));
+        cards.addAll(getCardsByCardType(words, MAX_STARTING_TEAM_CARD, startingCardType, game));
+        cards.addAll(getCardsByCardType(words, MAX_SECOND_TEAM_CARD, secondCardType, game));
+        cards.addAll(getCardsByCardType(words, MAX_ASSASSIN_CARD, CardType.ASSASSIN, game));
+        cards.addAll(words.stream().map(word -> createCard(word, CardType.BYSTANDER, game)).collect(Collectors.toList()));
 
         Collections.shuffle(cards);
 
         cardRepository.saveAll(cards);
-        return cards;
 
+        return cards;
     }
 
     public Card findCardById(Long id) {
         return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found by given ID:\t" + id));
     }
 
+    public List<CardDetails> findCardsByGameId(Long gameId) {
+        return cardRepository.findCardsByGameId(gameId).stream().map(CardDetails::new).collect(Collectors.toList());
+    }
 
-    private List<Card> getCardsByCardType(Set<Word> words, int size, CardType cardType) {
+
+    private List<Card> getCardsByCardType(Set<Word> words, int size, CardType cardType, Game game) {
         List<Card> cards = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             int randomIndex = (int) Math.floor(Math.random() * words.size());
@@ -74,14 +80,14 @@ public class CardService {
                     .stream()
                     .skip(randomIndex)
                     .findFirst().orElseThrow(() -> new RuntimeException("Word not found"));
-            cards.add(createCard(foundWord, cardType));
+            cards.add(createCard(foundWord, cardType, game));
             words.remove(foundWord);
         }
         return cards;
     }
 
-    private Card createCard(Word word, CardType cardType) {
-        return new Card(word, cardType);
+    private Card createCard(Word word, CardType cardType, Game game) {
+        return new Card(word, cardType, game);
     }
 
     private Word findRandomWord(List<Word> words) {

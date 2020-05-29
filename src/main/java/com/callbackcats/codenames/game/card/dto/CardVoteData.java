@@ -13,5 +13,5 @@ import java.util.List;
 public class CardVoteData {
 
     private Long votedCardId;
-    private Long votedPlayersId;
+    private Long votedPlayerId;
 }

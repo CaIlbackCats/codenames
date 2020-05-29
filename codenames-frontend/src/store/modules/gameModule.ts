@@ -16,8 +16,6 @@ export default class GameModule extends VuexModule {
     private game: GameStateModel = {
         id: -1,
         board: [],
-        blueScore: 0,
-        redScore: 0,
         civiliansFoundByBlueTeam: 0,
         civiliansFoundByRedTeam: 0,
         rounds: 0,
@@ -26,14 +24,18 @@ export default class GameModule extends VuexModule {
         winnerTeam: "",
         gameEndByAssassin: false,
         startingTeamColor: "",
+        active: false,
+        currentTeam: "",
+        teams: [],
+        votingPhase: false,
     }
 
     private cardVotes: Array<CardVoteModel> = [];
 
     @Action({rawError: true})
     public subscribeToGame() {
-     //   const lobbyId: string = this.context.getters["lobbyId"];
-        const gamePath: string = "/" + this.gameId;
+        //   const lobbyId: string = this.context.getters["lobbyId"];
+        const gamePath: string = "/game/" + this.gameId;
         websocket.subscribe(gamePath, (body) => {
                 if (body) {
                     this.context.commit("UPDATE_GAME", body);
@@ -64,8 +66,13 @@ export default class GameModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public sendGameState(teamVoteModel: TeamVoteModel): void {
-        websocket.send(config.GAME_STATE_UPDATE_PATH, teamVoteModel);
+    public sendCardVote(cardId: number): void {
+        const currentPlayerId: number = this.context.getters["currentPlayerId"];
+        const cardVoteModel: CardVoteModel = {
+            votedCardId: cardId,
+            votedPlayerId: currentPlayerId,
+        }
+        websocket.send(config.GAME_STATE_UPDATE_PATH + "/" + this.game.id, cardVoteModel);
     }
 
     @Action({commit: "ADD_CARD_VOTE", rawError: true})
@@ -84,9 +91,8 @@ export default class GameModule extends VuexModule {
     }
 
     @Mutation
-    private SET_GAME(gameCreationModel: GameCreationModel): void {
-        this.game.id = gameCreationModel.id;
-        this.game.board = gameCreationModel.board;
+    private SET_GAME(game: GameStateModel): void {
+        this.game = game;
     }
 
     get rounds(): number {
@@ -99,14 +105,6 @@ export default class GameModule extends VuexModule {
 
     get civiliansFoundByRedTeam(): number {
         return this.game.civiliansFoundByRedTeam;
-    }
-
-    get blueScore(): number {
-        return this.game.blueScore;
-    }
-
-    get redScore(): number {
-        return this.game.redScore;
     }
 
     get gameId(): number {

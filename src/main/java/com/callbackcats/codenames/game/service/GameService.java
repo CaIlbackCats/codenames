@@ -2,11 +2,13 @@ package com.callbackcats.codenames.game.service;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.dto.CardDetails;
 import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
+import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.domain.Player;
@@ -45,38 +47,45 @@ public class GameService {
         this.scheduler = scheduler;
     }
 
-    public GameStateData getGameDetails(Long gameId) {
-        return new GameStateData(findGameById(gameId));
+    public GameStateData getGameStateData(Long gameId) {
+        Game game = findGameById(gameId);
+        List<TeamData> teamsInGame = teamService.findTeamsByGameId(gameId);
+        List<CardDetails> boardInGame = cardService.findCardsByGameId(gameId);
+        return new GameStateData(game, boardInGame, teamsInGame);
     }
 
-    public GameDetails createGame(String lobbyId) {
+    public GameStateData createGame(String lobbyId) {
         Lobby lobby = this.lobbyService.findLobbyById(lobbyId);
-        List<Team> teams = teamService.createTeamsByLobbyId(lobbyId);
-
-        SideType randomSide = SideType.getRandomSide();
-        List<Card> cards = cardService.generateMap(randomSide);
-        Game game = new Game(cards, teams);
-
+        Game game = new Game(lobby);
         this.gameRepository.save(game);
-        lobbyService.addGame(lobby, game);
+        teamService.createTeamsByLobbyId(lobbyId, game);
+        SideType startingSide = game.getStartingTeam();
+        cardService.generateMap(startingSide, game);
+
         log.info("Game created");
-        return new GameDetails(game);
+        return getGameStateData(game.getId());
     }
 
     public ScheduledFuture<?> startVotingPhase(Long gameId) {
         ScheduledFuture<?> schedule = null;
         Game game = findGameById(gameId);
         if (!game.getVotingPhase()) {
-            game.setVotingPhase(true);
-            schedule = scheduler.schedule(() -> countScore(gameId), CARD_VOTING_PHASE_DURATION, TimeUnit.SECONDS);
+            changeGameVotingPhase(true,gameId);
+            schedule = scheduler.schedule(() -> countScore(game), CARD_VOTING_PHASE_DURATION, TimeUnit.SECONDS);
         }
         return schedule;
     }
 
-
-    public void countScore(Long gameId) {
+    public void changeGameVotingPhase(Boolean votingPhase, Long gameId) {
         Game game = findGameById(gameId);
-        Team currentTeam = teamService.findTeamByGameIdBySide(gameId, game.getCurrentTeam());
+        game.setVotingPhase(votingPhase);
+        gameRepository.save(game);
+        log.info("Game voting phase changed id:\t"+ gameId+"\t to:\t"+votingPhase);
+    }
+
+
+    public void countScore(Game game) {
+        Team currentTeam = teamService.findTeamByGameIdBySide(game.getId(), game.getCurrentTeam());
         List<Card> votedCards = currentTeam.getPlayers()
                 .stream()
                 .map(Player::getVotedCard)

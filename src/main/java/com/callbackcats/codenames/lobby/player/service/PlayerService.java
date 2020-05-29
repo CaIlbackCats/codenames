@@ -4,6 +4,7 @@ import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.dto.CardVoteData;
 import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.RoleType;
@@ -265,13 +266,17 @@ public class PlayerService {
     }
 
     public void setCardVote(CardVoteData cardVote) {
-        Player player = findPlayerById(cardVote.getVotedPlayersId());
+        Player player = findPlayerById(cardVote.getVotedPlayerId());
         Card votedCard = cardService.findCardById(cardVote.getVotedCardId());
         player.setVotedCard(votedCard);
         playerRepository.save(player);
         log.info("Card by id:\t" + votedCard.getId() + "\t attached to player by id:\t" + player.getId());
     }
 
+    public void saveTeamToPlayer(Team team, Player player) {
+        player.setTeam(team);
+        playerRepository.save(player);
+    }
 
     private void removePlayer(Player player) {
         player.setLobby(null);

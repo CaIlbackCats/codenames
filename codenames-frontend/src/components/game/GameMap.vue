@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="card in board" :key="card.id">
-            <span @click="sendVote">{{card.word.word}} - {{card.type}}</span>
+            <span @click="sendVote(card.id)">{{card.word.word}} - {{card.type}}</span>
         </div>
     </div>
 </template>
@@ -13,8 +13,8 @@
     @Component
     export default class GameMap extends Vue {
 
-        public sendVote():void{
-            this.$store.dispatch("sendGameState");
+        public sendVote(cardId:number):void{
+            this.$store.dispatch("sendCardVote",cardId);
         }
 
         get board(): Array<CardDetailsModel> {

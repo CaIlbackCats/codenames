@@ -1,10 +1,8 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.game.card.dto.CardVoteData;
-import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.dto.GameStateData;
 import com.callbackcats.codenames.game.dto.PayloadData;
-import com.callbackcats.codenames.game.dto.TeamVoteData;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.player.service.PlayerService;
@@ -42,11 +40,11 @@ public class GameController {
 
     @ResponseBody
     @PostMapping("/api/game")
-    public ResponseEntity<GameDetails> createGame(@RequestBody PayloadData payloadData) {
+    public ResponseEntity<GameStateData> createGame(@RequestBody PayloadData payloadData) {
         log.info("Game creation requested");
-        GameDetails gameDetails = gameService.createGame(payloadData.getLobbyId());
+        GameStateData game = gameService.createGame(payloadData.getLobbyId());
 
-        return new ResponseEntity<>(gameDetails, HttpStatus.CREATED);
+        return new ResponseEntity<>(game, HttpStatus.CREATED);
     }
 
     @MessageMapping("/fetchGame")
@@ -55,15 +53,6 @@ public class GameController {
         LobbyDetails modifiedLobby = lobbyService.getLobbyDetailsById(lobbyDetails.getId());
 
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyDetails.getId(), modifiedLobby);
-    }
-
-    @MessageMapping("/processVote")
-    public void processVote(@Payload TeamVoteData teamVoteData) {
-        log.info("Process vote requested");
-        //  GameStateData gameStateData = gameService.processVotes(teamVoteData);
-
-        //todo send gamestate to lobby/gameId
-        //  simpMessagingTemplate.convertAndSend("/lobby/" + gameStateData.getLobbyId() + "/" + gameStateData.getId());
     }
 
     @MessageMapping("/cardVote/{gameId}")
@@ -75,8 +64,9 @@ public class GameController {
         ScheduledFuture<?> future = gameService.startVotingPhase(gameId);
         try {
             future.get();
+            gameService.changeGameVotingPhase(false, gameId);
             log.info("Player card vote finished");
-
+            updateGameMessage(gameId);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
@@ -84,7 +74,7 @@ public class GameController {
 
 
     private void updateGameMessage(Long gameId) {
-        GameStateData game = gameService.getGameDetails(gameId);
-        simpMessagingTemplate.convertAndSend("/" + gameId, game);
+        GameStateData game = gameService.getGameStateData(gameId);
+        simpMessagingTemplate.convertAndSend("/game/" + gameId, game);
     }
 }

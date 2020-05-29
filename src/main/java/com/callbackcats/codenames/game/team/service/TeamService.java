@@ -1,6 +1,8 @@
 package com.callbackcats.codenames.game.team.service;
 
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.team.domain.Team;
+import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.repository.TeamRepository;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,18 +29,15 @@ public class TeamService {
         this.playerService = playerService;
     }
 
-    public List<Team> createTeamsByLobbyId(String lobbyId) {
-        List<Team> teams = Arrays.stream(SideType.values())
+    public List<Team> createTeamsByLobbyId(String lobbyId, Game game) {
+        return Arrays.stream(SideType.values())
                 .filter(side -> !side.equals(SideType.NOT_SELECTED))
-                .map(side -> createTeam(lobbyId, side))
+                .map(side -> createTeam(lobbyId, side, game))
                 .collect(Collectors.toList());
-
-        teamRepository.saveAll(teams);
-        return teams;
     }
 
-    public Team findTeamByGameIdBySide(Long id, SideType sideType) {
-        return teamRepository.findCurrentTeamByGameIdBySide(id, sideType);
+    public Team findTeamByGameIdBySide(Long gameId, SideType sideType) {
+        return teamRepository.findCurrentTeamByGameIdBySide(gameId, sideType).orElseThrow(() -> new EntityNotFoundException("Team not found by given gameId:\t" + gameId));
     }
 
     public void increaseTeamScore(Team team) {
@@ -46,9 +46,18 @@ public class TeamService {
         teamRepository.save(team);
     }
 
+    public List<TeamData> findTeamsByGameId(Long id) {
+        return teamRepository.findTeamsByGameId(id).stream().map(TeamData::new).collect(Collectors.toList());
+    }
 
-    private Team createTeam(String lobbyId, SideType side) {
+
+    private Team createTeam(String lobbyId, SideType side, Game game) {
         List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);
-        return new Team(players, side);
+
+        Team team = new Team(players, side, game);
+        teamRepository.save(team);
+
+        players.forEach(player -> playerService.saveTeamToPlayer(team, player));
+        return team;
     }
 }

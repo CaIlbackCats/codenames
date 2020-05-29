@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,11 +27,13 @@ public class Team {
     private Long id;
 
     @Column(name = "side")
+    @Enumerated(EnumType.STRING)
     private SideType side;
 
     @Column(name = "score")
     private Integer score;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "team")
     private List<Player> players;
 
@@ -37,9 +41,10 @@ public class Team {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    public Team(List<Player> players, SideType side) {
+    public Team(List<Player> players, SideType side, Game game) {
         this.players = players;
         this.side = side;
+        this.game = game;
         this.score = 0;
     }
 }

@@ -2,7 +2,7 @@ export const config = {
     HIDE_PLAYER_PATH: "/player/hidePlayer",
     FETCH_GAME_PATH: "/game/fetchGame",
     LOBBY_SUBSCRIPTION_PATH: "/lobby/",
-    GAME_STATE_UPDATE_PATH: "/game/processVote",
+    GAME_STATE_UPDATE_PATH: "/game/cardVote",
     CHAT_SUBSCRIPTION_PATH: "/chat/",
     CHAT_SEND_MSG_PATH: "/chat/public",
     LOBBY_ROLE_PATH: "/lobby/role",

@@ -3,7 +3,9 @@ package com.callbackcats.codenames.game.card.service;
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
 import com.callbackcats.codenames.game.card.service.CardService;
+import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +24,18 @@ public class CardServiceTest {
     @Autowired
     private CardService cardService;
 
+    private Game game;
+
+
+    @BeforeEach
+    public void init() {
+        this.game = new Game();
+    }
+
     @Test
     public void testGenerateMap() {
 
-        List<Card> cards = cardService.generateMap(SideType.RED);
+        List<Card> cards = cardService.generateMap(SideType.RED, game);
 
         assertEquals(25, cards.size());
 

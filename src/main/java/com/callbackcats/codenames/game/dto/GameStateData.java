@@ -40,15 +40,17 @@ public class GameStateData {
     private Boolean votingPhase;
 
 
-    public GameStateData(Game game) {
+    public GameStateData(Game game, List<CardDetails> board, List<TeamData> teams) {
         this.id = game.getId();
-        this.board = game.getBoard().stream().map(CardDetails::new).collect(Collectors.toList());
+        this.board = board;
         this.endGame = game.getEndGame();
         this.endTurn = game.getEndTurn();
-        this.winnerTeam = game.getWinner().toString();
+        if (winnerTeam!=null){
+            this.winnerTeam = game.getWinner().toString();
+        }
         this.gameEndByAssassin = game.getEndGameByAssassin();
-        this.startingTeamColor = game.getStartingTeamColor().toString();
-        this.teams = game.getTeams().stream().map(TeamData::new).collect(Collectors.toList());
+        this.startingTeamColor = game.getStartingTeam().toString();
+        this.teams = teams;
         this.currentTeam = game.getCurrentTeam().toString();
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();

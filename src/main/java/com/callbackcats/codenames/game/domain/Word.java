@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "word")
@@ -22,6 +23,6 @@ public class Word {
 
     private String word;
 
-    @OneToOne(mappedBy = "word")
-    private Card card;
+    @OneToMany(mappedBy = "word")
+    private List<Card> cards;
 }
