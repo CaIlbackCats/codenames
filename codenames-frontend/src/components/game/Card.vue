@@ -1,5 +1,5 @@
 <template>
-    <div :class="[isBlue ? 'blue-card' : '',
+    <div @click="sendVote(card.id)" :class="[isBlue ? 'blue-card' : '',
         isRed ? 'red-card' : '',
         isBlack ? 'black-card' : '',
         isGold ? 'gold-card': '',
@@ -42,6 +42,20 @@
             }
         }
 
+        public sendVote(cardId: number): void {
+            if (this.currentTeam === this.currentPlayerSide) {
+                this.$store.dispatch("sendCardVote", cardId);
+            }
+        }
+
+        get currentPlayerSide(): string {
+            return this.$store.getters["currentPlayerSide"];
+        }
+
+        get currentTeam(): string {
+            return this.$store.getters["currentTeam"];
+        }
+
     }
 </script>
 
@@ -49,8 +63,8 @@
 
     .card-line {
         height: 1px;
-        background: rgb(255,255,255);
-        background: linear-gradient(90deg, rgba(255,255,255,0) 10%, rgba(255,255,255, 0.4) 50%, rgba(255,255,255,0) 90%);
+        background: rgb(255, 255, 255);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 90%);
     }
 
     .card {
@@ -77,7 +91,7 @@
     }
 
     .black-card {
-        background-color: rgba(0,0,0, 0.8);
+        background-color: rgba(0, 0, 0, 0.8);
     }
 
     .gold-card {

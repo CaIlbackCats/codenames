@@ -8,7 +8,6 @@ import com.callbackcats.codenames.game.card.dto.CardDetails;
 import com.callbackcats.codenames.game.card.repository.CardRepository;
 import com.callbackcats.codenames.game.card.repository.WordRepository;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.game.domain.Word;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

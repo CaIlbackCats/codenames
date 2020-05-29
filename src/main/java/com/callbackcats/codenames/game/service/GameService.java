@@ -6,7 +6,7 @@ import com.callbackcats.codenames.game.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.card.dto.CardDetails;
 import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.game.dto.GameDetails;
+import com.callbackcats.codenames.game.dto.GameStateData;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.dto.TeamData;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;

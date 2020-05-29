@@ -17,6 +17,6 @@ export interface GameStateModel {
     lobbyId?: string,
     civiliansFoundByBlueTeam: number,
     civiliansFoundByRedTeam: number,
-    rounds: number
+    rounds: number,
 
 }

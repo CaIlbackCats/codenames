@@ -24,4 +24,12 @@ public class Word {
 
     @OneToMany(mappedBy = "word")
     private List<Card> cards;
+
+    @Enumerated(EnumType.STRING)
+    private GameLanguage language;
+
+    public Word(String word, GameLanguage gameLanguage) {
+        this.word = word;
+        this.language = gameLanguage;
+    }
 }
