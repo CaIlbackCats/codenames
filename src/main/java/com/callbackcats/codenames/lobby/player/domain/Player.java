@@ -49,7 +49,7 @@ public class Player {
     @Column(name = "visible")
     private Boolean visible;
 
-    @OneToOne(mappedBy = "player")
+    @OneToOne
     @JoinColumn(name = "voted_card_id")
     private Card votedCard;
 

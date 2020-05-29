@@ -1,7 +1,6 @@
 package com.callbackcats.codenames.game.service;
 
 import com.callbackcats.codenames.game.card.repository.WordRepository;
-import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
 import com.callbackcats.codenames.game.domain.Game;
@@ -9,6 +8,7 @@ import com.callbackcats.codenames.game.domain.Word;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import com.callbackcats.codenames.lobby.player.service.PlayerService;
 import com.callbackcats.codenames.lobby.service.LobbyService;
@@ -32,11 +32,13 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
+    private final PlayerService playerService;
     private final WordRepository wordRepository;
 
-    public GameService(GameRepository gameRepository, LobbyService lobbyService, WordRepository wordRepository) {
+    public GameService(GameRepository gameRepository, LobbyService lobbyService, PlayerService playerService, WordRepository wordRepository) {
         this.gameRepository = gameRepository;
         this.lobbyService = lobbyService;
+        this.playerService = playerService;
         this.wordRepository = wordRepository;
     }
 
@@ -103,7 +105,9 @@ public class GameService {
         return words.get(randomIndex);
     }
 
-    public void countScore() {
+    public void countScore(String lobbyId) {
+        List<Player> players = playerService.findVisiblePlayersByLobbyIdByGameTurnInActiveGame(lobbyId);
+        List<Card> votedCards = players.stream().map(Player::getVotedCard).collect(Collectors.toList());
 
     }
 

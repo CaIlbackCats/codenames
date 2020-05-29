@@ -22,6 +22,6 @@ public class Word {
 
     private String word;
 
-    @OneToOne
+    @OneToOne(mappedBy = "word")
     private Card card;
 }

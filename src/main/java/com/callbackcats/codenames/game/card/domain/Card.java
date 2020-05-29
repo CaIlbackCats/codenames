@@ -19,7 +19,7 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "card")
+    @OneToOne
     @JoinColumn(name = "word_id")
     private Word word;
 
@@ -32,7 +32,7 @@ public class Card {
 
     private Integer vote;
 
-    @OneToOne
+    @OneToOne(mappedBy = "votedCard")
     private Player player;
 
     public Card(Word word, CardType cardType) {

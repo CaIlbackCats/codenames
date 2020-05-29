@@ -189,7 +189,7 @@ public class PlayerService {
         return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
-    public List<Player> findVisiblePlayersByLobbyIdInActiveGame(String lobbyId) {
+    public List<Player> findVisiblePlayersByLobbyIdByGameTurnInActiveGame(String lobbyId) {
         return playerRepository.findVisiblePlayersByLobbyInActiveGame(lobbyId);
     }
 
