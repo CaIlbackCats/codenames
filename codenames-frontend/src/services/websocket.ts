@@ -1,6 +1,4 @@
-import webstomp, {Client, Message, SubscribeHeaders} from 'webstomp-client';
-
-import {config} from '@/config'
+import webstomp, {Client, Message, SubscribeHeaders, Subscription} from 'webstomp-client';
 import SockJS from "sockjs-client";
 
 let client: Client;
@@ -32,4 +30,8 @@ export const subscribe = async (path: string, callback: (body?: object) => void,
     if (!client) await connect()
     const wrappedCallback = (message: Message) => callback(JSON.parse(message.body))
     return client.subscribe(path, wrappedCallback, headers)
+}
+
+export function unsubscribe(subscription: Subscription) {
+    client.unsubscribe(subscription.id)
 }

@@ -97,7 +97,6 @@
             if (!joined) {
                 router.push('/')
             } else {
-                this.$store.dispatch("chatModule/subscribeToChat", this.$route.params.lobbyId);
                 await this.$store.dispatch("subscribeToLobbyRoleData");
                 await this.$store.dispatch("subscribeToKick");
             }

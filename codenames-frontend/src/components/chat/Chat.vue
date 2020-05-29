@@ -26,16 +26,22 @@
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/chat/messageModel";
+    import {Subscription} from "webstomp-client";
 
 
     @Component
     export default class Chat extends Vue {
-
+        private subscription!: Subscription;
         private chatMessageToSend = "";
 
         mounted() {
             // TODO: can we get types for action payloads? use action creators?
-            this.$store.dispatch("chatModule/subscribeToChat", this.lobbyId);
+            this.$store.dispatch("chatModule/subscribeToChat", this.lobbyId)
+                .then(subs => this.subscription = subs);
+        }
+
+        beforeDestroy() {
+            this.$store.dispatch("chatModule/unsubscribeToChat", this.subscription)
         }
 
         public sendChatMessage(): void {

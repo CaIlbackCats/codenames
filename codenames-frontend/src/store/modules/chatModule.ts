@@ -3,6 +3,7 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import {MessageModel} from "@/models/chat/messageModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
+import {Subscription} from "webstomp-client";
 
 @Module({namespaced: true})
 export default class ChatModule extends VuexModule {
@@ -19,11 +20,16 @@ export default class ChatModule extends VuexModule {
     };
 
     @Action({rawError: true})
-    public subscribeToChat(lobbyId:string) {
+    public subscribeToChat(lobbyId: string): Promise<Subscription> {
         const path = `${config.CHAT_SUBSCRIPTION_PATH}${lobbyId}`
         return websocket.subscribe(path, (message) => {
             if (message) this.context.commit("ADD_MESSAGE", message);
-        });
+        }, {name: 'chat'});
+    }
+
+    @Action({rawError: true})
+    public unsubscribeToChat(subsciption: Subscription) {
+        websocket.unsubscribe(subsciption);
     }
 
     @Action
