@@ -52,3 +52,4 @@ yarn-error.log*
 *.sw?
 
 /src/main/resources/application-local.yaml
+/my-key.pem

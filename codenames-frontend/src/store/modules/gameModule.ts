@@ -7,6 +7,7 @@ import {TeamVoteModel} from "@/models/game/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
 import {LobbyModel} from "@/models/lobby/lobbyModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -26,6 +27,8 @@ export default class GameModule extends VuexModule {
         gameEndByAssassin: false,
         startingTeamColor: "",
     }
+
+    private cardVotes: Array<CardVoteModel> = [];
 
     @Action({rawError: true})
     public subscribeToGame() {
@@ -63,6 +66,16 @@ export default class GameModule extends VuexModule {
     @Action({rawError: true})
     public sendGameState(teamVoteModel: TeamVoteModel): void {
         websocket.send(config.GAME_STATE_UPDATE_PATH, teamVoteModel);
+    }
+
+    @Action({commit: "ADD_CARD_VOTE", rawError: true})
+    public addCardVote(cardVote: CardVoteModel): CardVoteModel {
+        return cardVote;
+    }
+
+    @Mutation
+    private ADD_CARD_VOTE(cardVote: CardVoteModel): void {
+        this.cardVotes.push(cardVote);
     }
 
     @Mutation

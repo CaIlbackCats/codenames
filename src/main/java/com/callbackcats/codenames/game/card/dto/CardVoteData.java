@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CardVoteData {
 
-    private CardDetails votedCard;
-    private List<Long> votedPlayersId;
+    private Long votedCardId;
+    private Long votedPlayersId;
 }

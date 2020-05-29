@@ -68,6 +68,11 @@
         transition: .5s;
     }
 
+    #welcome-buttons {
+        margin-top: 30vh;
+        position: absolute;
+        z-index: 1;
+    }
 
     #spies.move-right {
         transform: translateX(3%);
@@ -77,13 +82,6 @@
     #spies.move-left {
         transform: translateX(-3%);
         -webkit-transform: translateX(-3%);
-    }
-
-
-    #welcome-buttons {
-        margin-top: 30vh;
-        position: absolute;
-        z-index: 1;
     }
 
     .main-div {

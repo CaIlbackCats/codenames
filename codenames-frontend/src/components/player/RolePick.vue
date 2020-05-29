@@ -7,7 +7,7 @@
                         style="color: dodgerblue"
                         id="blue-spymaster"
                         @click="sendSelection('BLUE','SPYMASTER')"
-                        :disabled="isBlueSpymasterFull"
+                        v-if="!isBlueSpymasterFull"
                         :icon="['fas', 'briefcase']">
                 </font-awesome-icon>
                 <font-awesome-icon
@@ -15,7 +15,7 @@
                         style="color: dodgerblue"
                         id="blue-spy"
                         @click="sendSelection('BLUE','SPY')"
-                        :disabled="isBlueSpyFull"
+                        v-if="!isBlueSpyFull"
                         :icon="['fas', 'user-secret']">
                 </font-awesome-icon>
                 <font-awesome-icon
@@ -23,7 +23,7 @@
                         style="color: indianred"
                         id="red-spymaster"
                         @click="sendSelection('RED','SPYMASTER')"
-                        :disabled="isRedSpymasterFull"
+                        v-if="!isRedSpymasterFull"
                         :icon="['fas', 'briefcase']">
                 </font-awesome-icon>
                 <font-awesome-icon
@@ -31,7 +31,7 @@
                         style="color: indianred"
                         id="red-spy"
                         @click="sendSelection('RED','SPY')"
-                        :disabled="isRedSpyFull"
+                        v-if="!isRedSpyFull"
                         :icon="['fas', 'user-secret']">
                 </font-awesome-icon>
             </div>
@@ -117,11 +117,6 @@
         filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
         margin: 0.5rem 1rem 0.5rem 1rem;
     }
-
-    svg:disabled {
-        color: grey;
-    }
-
     svg:hover {
         cursor: pointer;
         -webkit-filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.7));

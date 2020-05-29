@@ -1,7 +1,9 @@
 package com.callbackcats.codenames.game.domain;
 
 import com.callbackcats.codenames.game.card.domain.Card;
+import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.player.domain.Player;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,17 +34,11 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Card> board;
 
-    @Column(name = "blue_score")
-    private Integer blueScore = 0;
-
-    @Column(name = "red_score")
-    private Integer redSCore = 0;
-
     @Column(name = "is_end_game")
-    private Boolean endGame = false;
+    private Boolean endGame;
 
     @Column(name = "is_end_turn")
-    private Boolean endTurn = false;
+    private Boolean endTurn;
 
     @Column(name = "winning_team")
     private SideType winner;
@@ -52,7 +49,22 @@ public class Game {
     @Column(name = "start_team_color")
     private SideType startingTeamColor;
 
+    @OneToMany(mappedBy = "game")
+    private List<Team> teams;
+
+    @Column(name = "current_team_turn")
+    private SideType currentTeam;
+
     @Column(name = "is_active")
-    private Boolean active = true;
+    private Boolean active;
+
+    public Game(List<Card> board, List<Team> teams) {
+        this.board = board;
+        this.teams = teams;
+        this.teams = new ArrayList<>();
+        this.endGame = false;
+        this.endTurn = false;
+        active = true;
+    }
 
 }

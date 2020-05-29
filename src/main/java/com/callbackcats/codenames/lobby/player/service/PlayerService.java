@@ -1,5 +1,8 @@
 package com.callbackcats.codenames.lobby.player.service;
 
+import com.callbackcats.codenames.game.card.domain.Card;
+import com.callbackcats.codenames.game.card.dto.CardVoteData;
+import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.domain.Player;
@@ -29,11 +32,13 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final LobbyService lobbyService;
+    private final CardService cardService;
     private final ScheduledExecutorService scheduler;
 
-    public PlayerService(PlayerRepository playerRepository, LobbyService lobbyService, ScheduledExecutorService scheduler) {
+    public PlayerService(PlayerRepository playerRepository, LobbyService lobbyService, CardService cardService, ScheduledExecutorService scheduler) {
         this.playerRepository = playerRepository;
         this.lobbyService = lobbyService;
+        this.cardService = cardService;
         this.scheduler = scheduler;
     }
 
@@ -184,6 +189,11 @@ public class PlayerService {
         return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
     }
 
+    public List<Player> findVisiblePlayersByLobbyIdByGameTurnInActiveGame(String lobbyId) {
+
+        return playerRepository.findVisiblePlayersByLobbyInActiveGame(lobbyId);
+    }
+
     public RemainingRoleData getRemainingRoleData(String lobbyName) {
         RemainingRoleData remainingRoleData = new RemainingRoleData();
         List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
@@ -250,9 +260,18 @@ public class PlayerService {
         Player player = findPlayerById(playerDetailsData.getId());
         player.setVisible(true);
         playerRepository.save(player);
-        log.info("Visibility changed on player id:\t" + player.getId());
+        log.info("Player's visibility is turned on by player id:\t" + player.getId());
         return new PlayerData(player);
     }
+
+    public void setCardVote(CardVoteData cardVote) {
+        Player player = findPlayerById(cardVote.getVotedPlayersId());
+        Card votedCard = cardService.findCardById(cardVote.getVotedCardId());
+        player.setVotedCard(votedCard);
+        playerRepository.save(player);
+        log.info("Card by id:\t" + votedCard.getId() + "\t attached to player by id:\t" + player.getId());
+    }
+
 
     private void removePlayer(Player player) {
         player.setLobby(null);
@@ -307,6 +326,10 @@ public class PlayerService {
 
     private List<Player> findAllPlayersInLobby(String lobbyName) {
         return playerRepository.findAllPlayersInLobby(lobbyName);
+    }
+
+    public List<Player> findVisiblePlayersByLobbyIdBySide(String lobbyId, SideType sideType) {
+        return playerRepository.findAllVisiblePlayersByLobbyIdBySide(lobbyId, sideType);
     }
 
     private void setSpymasterToSidelessPlayer(List<Player> players) {

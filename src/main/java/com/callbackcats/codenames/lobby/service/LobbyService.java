@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.lobby.service;
 
+import com.callbackcats.codenames.game.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
@@ -8,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,6 +42,12 @@ public class LobbyService {
 
     public void addGame(Lobby lobby, Game game) {
         lobby.getGames().add(game);
+        this.lobbyRepository.save(lobby);
+    }
+
+    public void updateLobbyGameLanguage(String id, GameLanguage gameLanguage) {
+        Lobby lobby = lobbyRepository.findLobbyByName(id);
+        lobby.setGameLanguage(gameLanguage);
         this.lobbyRepository.save(lobby);
     }
 }
