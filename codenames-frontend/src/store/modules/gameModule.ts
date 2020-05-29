@@ -7,7 +7,7 @@ import {TeamVoteModel} from "@/models/game/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
 import {LobbyModel} from "@/models/lobby/lobbyModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
-import {CardVoteModel} from "@/models/cardVoteModel";
+import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
