@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.lobby.domain;
 
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.domain.GameLanguage;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,5 +33,8 @@ public class Lobby {
 
     @Column(name = "is_kicking_phase")
     private Boolean kickingPhase = false;
+
+    @Column(name = "game_language")
+    private GameLanguage gameLanguage;
 
 }

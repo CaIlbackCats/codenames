@@ -24,4 +24,6 @@ public class Word {
 
     @OneToOne(mappedBy = "word")
     private Card card;
+
+    private GameLanguage language;
 }
