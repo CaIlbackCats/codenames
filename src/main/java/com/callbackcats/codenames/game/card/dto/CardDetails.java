@@ -2,8 +2,7 @@ package com.callbackcats.codenames.game.card.dto;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
-import com.callbackcats.codenames.game.domain.Word;
-import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.game.card.domain.Word;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +23,8 @@ public class LobbyDetails {
     private Long currentGameId;
 
     private Boolean kickingPhase;
+
+    private String gameLanguage;
 
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();

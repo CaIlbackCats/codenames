@@ -1,6 +1,8 @@
 package com.callbackcats.codenames.lobby.player.domain;
 
+import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.player.dto.PlayerCreationData;
 import lombok.AllArgsConstructor;
@@ -47,6 +49,14 @@ public class Player {
 
     @Column(name = "visible")
     private Boolean visible;
+
+    @OneToOne
+    @JoinColumn(name = "voted_card_id")
+    private Card votedCard;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     public Player(PlayerCreationData playerCreationData) {
         //  this.lobbyOwner = playerCreationData.getLobbyOwner();

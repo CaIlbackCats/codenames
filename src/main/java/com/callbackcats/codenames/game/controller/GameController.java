@@ -52,9 +52,9 @@ public class GameController {
     @MessageMapping("/processVote")
     public void processVote(@Payload TeamVoteData teamVoteData) {
         log.info("Process vote requested");
-        GameStateData gameStateData = gameService.processVotes(teamVoteData);
+      //  GameStateData gameStateData = gameService.processVotes(teamVoteData);
 
         //todo send gamestate to lobby/gameId
-        simpMessagingTemplate.convertAndSend("/lobby/" + gameStateData.getLobbyId() + "/" + gameStateData.getId());
+      //  simpMessagingTemplate.convertAndSend("/lobby/" + gameStateData.getLobbyId() + "/" + gameStateData.getId());
     }
 }

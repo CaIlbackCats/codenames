@@ -1,6 +1,5 @@
-package com.callbackcats.codenames.game.domain;
+package com.callbackcats.codenames.game.card.domain;
 
-import com.callbackcats.codenames.game.card.domain.Card;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +21,9 @@ public class Word {
 
     private String word;
 
-    @OneToOne
+    @OneToOne(mappedBy = "word")
     private Card card;
+
+    @Enumerated(EnumType.STRING)
+    private GameLanguage language;
 }
