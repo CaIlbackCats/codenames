@@ -2,9 +2,10 @@ package com.callbackcats.codenames.game.service;
 
 import com.callbackcats.codenames.game.card.domain.Card;
 import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.game.dto.*;
+import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.service.TeamService;
@@ -18,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +50,8 @@ public class GameService {
         List<Team> teams = teamService.createTeamsByLobbyId(lobbyId);
 
         SideType randomSide = SideType.getRandomSide();
-        List<Card> cards = cardService.generateMap(randomSide);
+        GameLanguage language = lobby.getGameLanguage();
+        List<Card> cards = cardService.generateMap(randomSide, language);
         Game game = new Game(cards, teams);
 
         this.gameRepository.save(game);

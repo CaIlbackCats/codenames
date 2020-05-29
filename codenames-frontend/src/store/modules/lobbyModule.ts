@@ -5,9 +5,9 @@ import {LobbyModel} from "@/models/lobbyModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
 import {RemainingRoleModel} from "@/models/remainingRoleModel";
-import router from "@/router";
 import {PlayerModel} from "@/models/playerModel";
 import {PlayerDetailsModel} from "@/models/playerDetailsModel";
+import {LanguageModel} from "@/models/languageModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -119,6 +119,11 @@ export default class LobbyModule extends VuexModule {
     @Action({rawError: true})
     public updateLobby(): void {
         websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
+    }
+
+    @Action({rawError: true})
+    public setGameLanguage(payload: LanguageModel): void {
+        axios.post(BASE_URL + "/lobby/" + this.lobbyId, payload);
     }
 
     get playersOrdered(): Array<PlayerModel> {

@@ -1,7 +1,7 @@
 package com.callbackcats.codenames.lobby.domain;
 
+import com.callbackcats.codenames.game.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.game.domain.GameLanguage;
 import com.callbackcats.codenames.lobby.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

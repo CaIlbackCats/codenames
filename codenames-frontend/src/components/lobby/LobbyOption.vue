@@ -1,35 +1,46 @@
 <template>
     <div class="align-center">
         <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
-                  size="sm" block squared @click="randomizeRoles" :disabled="partySize<MIN_PARTY_SIZE">Random role</b-button>
+                  :disabled="partySize<MIN_PARTY_SIZE" @click="randomizeRoles" block size="sm" squared>Random role
+        </b-button>
         <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
-                  size="sm" block squared @click="randomizeSide" :disabled="partySize<MIN_PARTY_SIZE">Random side</b-button>
+                  :disabled="partySize<MIN_PARTY_SIZE" @click="randomizeSide" block size="sm" squared>Random side
+        </b-button>
         <b-button :title="isEveryoneReady ? '' : '' "
-                size="md" block squared :disabled="!isEveryoneReady" @click="createGame" class="mt-3">Start The Game!</b-button>
+                  :disabled="!isEveryoneReady" @click="createGame" block class="mt-3" size="md" squared>Start The Game!
+        </b-button>
+        <b-button @click="setGameLanguage('ENGLISH')">English</b-button>
+        <b-button @click="setGameLanguage('HUNGARIAN')">Hungarian</b-button>
     </div>
 </template>
 
 <script lang="ts">
 
     import {Component, Vue, Watch} from "vue-property-decorator";
-    import * as websocket from '@/services/websocket'
     import router from "@/router";
-    import {config} from "@/config";
+    import {LanguageModel} from "@/models/languageModel";
 
     @Component
     export default class LobbyOption extends Vue {
 
         private MIN_PARTY_SIZE = 4;
 
-        @Watch("gameId")
-        private navigateToGame() {
-            if(this.gameId != -1) {
-                router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
+        public setGameLanguage(language: string): void {
+            const gameLanguage: LanguageModel = {
+                language: language
             }
+            this.$store.dispatch("setGameLanguage", gameLanguage);
         }
 
         constructor() {
             super();
+        }
+
+        @Watch("gameId")
+        private navigateToGame() {
+            if (this.gameId != -1) {
+                router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
+            }
         }
 
         public createGame(): void {
@@ -63,7 +74,7 @@
 </script>
 
 <style scoped>
-    small{
+    small {
         color: rgb(135, 25, 75);
         opacity: 0.6;
     }

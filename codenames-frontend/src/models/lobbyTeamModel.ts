@@ -1,4 +1,3 @@
-import {PlayerModel} from "@/models/playerModel";
 
 export interface LobbyTeamModel {
     blueSpymaster: boolean,

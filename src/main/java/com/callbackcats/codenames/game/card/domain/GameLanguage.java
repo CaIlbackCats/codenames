@@ -1,4 +1,4 @@
-package com.callbackcats.codenames.game.domain;
+package com.callbackcats.codenames.game.card.domain;
 
 import lombok.Getter;
 

@@ -1,10 +1,11 @@
 package com.callbackcats.codenames.game.card.service;
 
-import com.callbackcats.codenames.game.card.domain.CardType;
-import com.callbackcats.codenames.game.card.repository.CardRepository;
 import com.callbackcats.codenames.game.card.domain.Card;
+import com.callbackcats.codenames.game.card.domain.CardType;
+import com.callbackcats.codenames.game.card.domain.GameLanguage;
+import com.callbackcats.codenames.game.card.domain.Word;
+import com.callbackcats.codenames.game.card.repository.CardRepository;
 import com.callbackcats.codenames.game.card.repository.WordRepository;
-import com.callbackcats.codenames.game.domain.Word;
 import com.callbackcats.codenames.lobby.player.domain.SideType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,9 @@ public class CardService {
         cardRepository.save(card);
     }
 
-    public List<Card> generateMap(SideType startingTeamColor) {
+    public List<Card> generateMap(SideType startingTeamColor, GameLanguage language) {
         Set<Word> words = new HashSet<>();
-        List<Word> allWords = wordRepository.findAll();
+        List<Word> allWords = wordRepository.findWordsByLanguage(language);
         while (words.size() < BOARD_SIZE) {
             Word randomWord = findRandomWord(allWords);
             words.add(randomWord);
