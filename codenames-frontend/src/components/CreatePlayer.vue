@@ -3,7 +3,7 @@
         <div class="codenames-header">
             <b-img :src="logoUrl"></b-img>
         </div>
-        <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4 offset-md-2 offset-lg-3 offset-xl-4">
+        <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4 offset-md-2 offset-lg-3 offset-xl-4 mt-lg-5">
             <b-input-group size="md">
                 <b-form-input id="current-player"
                               type="text"
@@ -47,6 +47,12 @@
 </script>
 
 <style scoped>
+    img {
+        margin-top: 60px;
+        max-width: 75%;
+    }
+
+
     button {
         background-color: rgb(135, 25, 75);
         border: 0 solid;
