@@ -1,10 +1,7 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.card.dto.CardVoteData;
-import com.callbackcats.codenames.game.dto.GameDetails;
-import com.callbackcats.codenames.game.dto.GameStateData;
-import com.callbackcats.codenames.game.dto.PayloadData;
-import com.callbackcats.codenames.game.dto.PuzzleWordData;
+import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.player.service.PlayerService;
@@ -59,7 +56,8 @@ public class GameController {
     }
 
     @MessageMapping("/cardVote/{gameId}")
-    public void voteForCard(@DestinationVariable Long gameId, @Payload CardVoteData cardVoteData) {
+    @SendTo("/game/{gameId}")
+    public GameStateData voteForCard(@DestinationVariable Long gameId, @Payload CardVoteData cardVoteData) {
 
         log.info("Player vote requested");
         playerService.setCardVote(cardVoteData);
@@ -68,11 +66,24 @@ public class GameController {
         try {
             future.get();
             gameService.changeGameVotingPhase(false, gameId);
+            if (gameService.isEndTurn(gameId)) {
+                gameService.changeTurn(gameId);
+            }
             log.info("Player card vote finished");
-            updateGameMessage(gameId);
+            // updateGameMessage(gameId);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
+        return gameService.getGameStateData(gameId);
+    }
+
+    @MessageMapping("/passTurn/{gameId}")
+    @SendTo("/game/{gameId}")
+    public GameStateData passTurn(@DestinationVariable Long gameId) {
+
+        gameService.changeTurn(gameId);
+
+        return gameService.getGameStateData(gameId);
     }
 
     @MessageMapping("/setPuzzleWord/{gameId}")

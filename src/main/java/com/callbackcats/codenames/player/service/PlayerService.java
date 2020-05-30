@@ -4,6 +4,7 @@ import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.dto.CardVoteData;
 import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.domain.Player;
@@ -275,6 +276,12 @@ public class PlayerService {
 
     public void saveTeamToPlayer(Team team, Player player) {
         player.setTeam(team);
+        playerRepository.save(player);
+    }
+
+    public void setPlayerPassVote(Long playerId, PassVoteData passVoteData) {
+        Player player = findPlayerById(playerId);
+        player.setPassed(passVoteData.getPassed());
         playerRepository.save(player);
     }
 

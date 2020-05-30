@@ -22,13 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,7 +66,7 @@ public class GameService {
         this.gameRepository.save(game);
         teamService.createTeamsByLobbyId(lobbyId, game);
         SideType startingSide = game.getStartingTeam();
-        cardService.generateMap(startingSide,language, game);
+        cardService.generateMap(startingSide, language, game);
 
         log.info("Game created");
         return new GameDetails(game);
@@ -79,17 +76,22 @@ public class GameService {
         ScheduledFuture<?> schedule = null;
         Game game = findGameById(gameId);
         if (!game.getVotingPhase()) {
-            changeGameVotingPhase(true,gameId);
+            changeGameVotingPhase(true, gameId);
             schedule = scheduler.schedule(() -> countScore(game), CARD_VOTING_PHASE_DURATION, TimeUnit.SECONDS);
         }
         return schedule;
+    }
+
+    public Boolean isEndTurn(Long gameId) {
+        Game game = findGameById(gameId);
+        return game.getEndTurn();
     }
 
     public void changeGameVotingPhase(Boolean votingPhase, Long gameId) {
         Game game = findGameById(gameId);
         game.setVotingPhase(votingPhase);
         gameRepository.save(game);
-        log.info("Game voting phase changed id:\t"+ gameId+"\t to:\t"+votingPhase);
+        log.info("Game voting phase changed id:\t" + gameId + "\t to:\t" + votingPhase);
     }
 
     public void countScore(Game game) {
@@ -106,9 +108,29 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    public void setPuzzleWord(Long gameId, PuzzleWordData puzzleWord){
+    public void setPuzzleWord(Long gameId, PuzzleWordData puzzleWord) {
         Game game = findGameById(gameId);
-        puzzleWordService.savePuzzleWorldToGame(game,puzzleWord);
+        puzzleWordService.savePuzzleWorldToGame(game, puzzleWord);
+    }
+
+    public void changeTurn(Long gameId) {
+        Game game = findGameById(gameId);
+        SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
+        game.setCurrentTeam(oppositeTeam);
+        game.setEndTurn(false);
+        gameRepository.save(game);
+    }
+
+    public List<Player> filterCurrentPlayer(Long gameId, List<Long> players) {
+        Game game = findGameById(gameId);
+        Team currentTeam = game.getTeams()
+                .stream()
+                .filter(team -> team.getSide() == game.getCurrentTeam())
+                .findFirst().orElseThrow(NoSuchElementException::new);
+        return currentTeam.getPlayers()
+                .stream()
+                .filter(player -> players.contains(player.getId()))
+                .collect(Collectors.toList());
     }
 
     private List<Card> getMostVotedCards(List<Card> votedCards) {

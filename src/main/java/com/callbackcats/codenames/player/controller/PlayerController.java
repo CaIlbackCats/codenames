@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.player.controller;
 
+import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.player.dto.*;
 import com.callbackcats.codenames.player.service.PlayerService;
@@ -7,8 +8,10 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -164,6 +167,12 @@ public class PlayerController {
         playerService.hidePlayer(playerDetailsData.getId());
 
         updateLobbyState(playerDetailsData.getLobbyName());
+    }
+
+    @MessageMapping("/passTurn/{playerId}")
+    @SendTo("/player/{playerId}")
+    public void setPassTurn(@DestinationVariable Long playerId, @Payload PassVoteData passVoteData) {
+        playerService.setPlayerPassVote(playerId, passVoteData);
     }
 
     private void updateLobbyState(String lobbyName) {

@@ -57,6 +57,9 @@ public class Player {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @Column(name = "is_pass_turn")
+    private Boolean passed;
+
     public Player(PlayerCreationData playerCreationData) {
         //  this.lobbyOwner = playerCreationData.getLobbyOwner();
         this.name = playerCreationData.getName();
@@ -65,5 +68,6 @@ public class Player {
         this.kickVoteCount = 0;
         this.rdyState = false;
         this.visible = true;
+        this.passed = false;
     }
 }
