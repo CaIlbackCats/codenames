@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.util;
 
-import com.callbackcats.codenames.game.card.domain.GameLanguage;
+import com.callbackcats.codenames.card.domain.GameLanguage;
 
 import java.io.BufferedWriter;
 import java.io.File;

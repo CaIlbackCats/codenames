@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.lobby.controller;
 
-import com.callbackcats.codenames.game.card.domain.GameLanguage;
+import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LanguageDetails;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;

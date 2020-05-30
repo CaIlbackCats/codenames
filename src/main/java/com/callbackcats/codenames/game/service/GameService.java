@@ -1,19 +1,21 @@
 package com.callbackcats.codenames.game.service;
 
-import com.callbackcats.codenames.game.card.domain.Card;
-import com.callbackcats.codenames.game.card.domain.CardType;
-import com.callbackcats.codenames.game.card.domain.GameLanguage;
-import com.callbackcats.codenames.game.card.dto.CardDetails;
-import com.callbackcats.codenames.game.card.service.CardService;
+import com.callbackcats.codenames.card.domain.Card;
+import com.callbackcats.codenames.card.domain.CardType;
+import com.callbackcats.codenames.card.domain.GameLanguage;
+import com.callbackcats.codenames.card.dto.CardDetails;
+import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.dto.GameStateData;
+import com.callbackcats.codenames.game.dto.PuzzleWordData;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
-import com.callbackcats.codenames.lobby.player.domain.Player;
-import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.player.domain.Player;
+import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,14 +42,16 @@ public class GameService {
     private final LobbyService lobbyService;
     private final TeamService teamService;
     private final CardService cardService;
+    private final PuzzleWordService puzzleWordService;
     private final ScheduledExecutorService scheduler;
 
 
-    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, ScheduledExecutorService scheduler) {
+    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, PuzzleWordService puzzleWordService, ScheduledExecutorService scheduler) {
         this.gameRepository = gameRepository;
         this.lobbyService = lobbyService;
         this.teamService = teamService;
         this.cardService = cardService;
+        this.puzzleWordService = puzzleWordService;
         this.scheduler = scheduler;
     }
 
@@ -58,7 +62,7 @@ public class GameService {
         return new GameStateData(game, boardInGame, teamsInGame);
     }
 
-    public GameStateData createGame(String lobbyId) {
+    public GameDetails createGame(String lobbyId) {
         Lobby lobby = this.lobbyService.findLobbyById(lobbyId);
         GameLanguage language = lobby.getGameLanguage();
         Game game = new Game(lobby);
@@ -68,7 +72,7 @@ public class GameService {
         cardService.generateMap(startingSide,language, game);
 
         log.info("Game created");
-        return getGameStateData(game.getId());
+        return new GameDetails(game);
     }
 
     public ScheduledFuture<?> startVotingPhase(Long gameId) {
@@ -88,7 +92,6 @@ public class GameService {
         log.info("Game voting phase changed id:\t"+ gameId+"\t to:\t"+votingPhase);
     }
 
-
     public void countScore(Game game) {
         Team currentTeam = teamService.findTeamByGameIdBySide(game.getId(), game.getCurrentTeam());
         List<Card> votedCards = currentTeam.getPlayers()
@@ -101,6 +104,11 @@ public class GameService {
         processMostVotedCardScore(game, currentTeam, mostVotedCards);
 
         gameRepository.save(game);
+    }
+
+    public void setPuzzleWord(Long gameId, PuzzleWordData puzzleWord){
+        Game game = findGameById(gameId);
+        puzzleWordService.savePuzzleWorldToGame(game,puzzleWord);
     }
 
     private List<Card> getMostVotedCards(List<Card> votedCards) {

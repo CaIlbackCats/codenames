@@ -1,8 +1,8 @@
 package com.callbackcats.codenames.game.team.domain;
 
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.lobby.player.domain.Player;
-import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.player.domain.Player;
+import com.callbackcats.codenames.player.domain.SideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

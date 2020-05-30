@@ -56,7 +56,8 @@
 
         async mounted() {
             await websocket.connect();
-            await this.$store.dispatch("subscribeToGame")
+            await this.$store.dispatch("subscribeToGame");
+            await this.$store.dispatch("fetchActiveGame");
         }
 
     }

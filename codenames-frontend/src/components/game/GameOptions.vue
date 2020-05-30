@@ -8,15 +8,20 @@
             <b-input required
                      size="md"
                      style="margin-bottom: 1rem"
-                     type="text"></b-input>
+                     type="text"
+                     v-model="puzzleWord"
+            ></b-input>
             <b-input-group size="md">
                 <b-form-input
                         min="0"
                         required
-                        type="number"></b-form-input>
+                        type="number"
+                        v-model="maxGuessCount"
+                ></b-form-input>
                 <b-input-group-append>
                     <b-button squared
                               type="submit"
+                              @click="sendPuzzleWord"
                     >Ok
                     </b-button>
                 </b-input-group-append>
@@ -27,12 +32,26 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
+    import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 
     @Component
     export default class GameOptions extends Vue {
 
         @Prop()
         private spyMaster!: boolean;
+
+        private puzzleWord = "";
+
+        private maxGuessCount = 0;
+
+        public sendPuzzleWord() {
+            const puzzleWordModel: PuzzleWordModel = {
+                id: -1,
+                puzzleWord: this.puzzleWord,
+                maxGuessCount: this.maxGuessCount,
+            }
+            this.$store.dispatch("sendPuzzleWord", puzzleWordModel);
+        }
 
     }
 </script>

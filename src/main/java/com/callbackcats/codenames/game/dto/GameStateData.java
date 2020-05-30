@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.game.dto;
 
-import com.callbackcats.codenames.game.card.dto.CardDetails;
+import com.callbackcats.codenames.card.dto.CardDetails;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.team.dto.TeamData;
 import lombok.AllArgsConstructor;
@@ -39,20 +39,36 @@ public class GameStateData {
 
     private Boolean votingPhase;
 
+    private List<PuzzleWordData> puzzleWords;
 
     public GameStateData(Game game, List<CardDetails> board, List<TeamData> teams) {
         this.id = game.getId();
-        this.board = board;
+        if (game.getBoard() != null && !game.getBoard().isEmpty()) {
+            this.board = game.getBoard()
+                    .stream()
+                    .map(CardDetails::new)
+                    .collect(Collectors.toList());
+        }
         this.endGame = game.getEndGame();
         this.endTurn = game.getEndTurn();
-        if (winnerTeam!=null){
-            this.winnerTeam = game.getWinner().toString();
-        }
+        this.winnerTeam = String.valueOf(game.getWinner());
         this.gameEndByAssassin = game.getEndGameByAssassin();
-        this.startingTeamColor = game.getStartingTeam().toString();
-        this.teams = teams;
-        this.currentTeam = game.getCurrentTeam().toString();
+        this.startingTeamColor = String.valueOf(game.getStartingTeam());
+        if (game.getTeams() != null && !game.getTeams().isEmpty()) {
+            this.teams = game.getTeams()
+                    .stream()
+                    .map(TeamData::new)
+                    .collect(Collectors.toList());
+        }
+        this.currentTeam = String.valueOf(game.getCurrentTeam());
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();
+        if (game.getPuzzleWords() != null && !game.getPuzzleWords().isEmpty()) {
+            this.puzzleWords = game.getPuzzleWords()
+                    .stream()
+                    .map(PuzzleWordData::new)
+                    .collect(Collectors.toList());
+        }
+
     }
 }

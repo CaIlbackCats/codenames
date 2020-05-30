@@ -1,8 +1,8 @@
 package com.callbackcats.codenames.lobby.domain;
 
-import com.callbackcats.codenames.game.card.domain.GameLanguage;
+import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.game.domain.Game;
-import com.callbackcats.codenames.lobby.player.domain.Player;
+import com.callbackcats.codenames.player.domain.Player;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class Lobby {
     private List<Player> playerList;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "lobby")
+    @OneToMany(mappedBy = "lobby",cascade = CascadeType.ALL)
     private List<Game> games;
 
     @Column(name = "is_kicking_phase")

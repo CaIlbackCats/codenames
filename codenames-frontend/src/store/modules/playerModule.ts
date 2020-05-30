@@ -77,7 +77,7 @@ export default class PlayerModule extends VuexModule {
         if (resp.status === 200) {
             this.context.commit("SET_PLAYER_SELECTED", true);
             this.context.commit("UPDATE_PLAYER", resp.data);
-            this.context.dispatch("updateLobby");
+            this.context.dispatch("sendLobbyUpdate");
         }
     }
 
@@ -103,7 +103,7 @@ export default class PlayerModule extends VuexModule {
             const player: PlayerModel = resp.data;
             this.context.commit("UPDATE_PLAYER", player);
         }
-        await this.context.dispatch("updateLobby");
+        await this.context.dispatch("sendLobbyUpdate");
     }
 
     get isRoleSelected(): boolean {

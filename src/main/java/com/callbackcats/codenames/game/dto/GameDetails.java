@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.game.dto;
 
-import com.callbackcats.codenames.game.card.dto.CardDetails;
+import com.callbackcats.codenames.card.dto.CardDetails;
 import com.callbackcats.codenames.game.domain.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
