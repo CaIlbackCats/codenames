@@ -8,6 +8,7 @@ import {RemainingRoleModel} from "@/models/lobby/remainingRoleModel";
 import {PlayerModel} from "@/models/player/playerModel";
 import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {LanguageModel} from "@/models/languageModel";
+import Lobby from "@/components/Lobby.vue";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -79,7 +80,7 @@ export default class LobbyModule extends VuexModule {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
             await this.context.dispatch("subscribeToLobby");
-            await this.context.dispatch("checkSelectedPlayer", {root: true});
+            //  await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
         }
         return false;
@@ -101,10 +102,19 @@ export default class LobbyModule extends VuexModule {
             `${config.LOBBY_SUBSCRIPTION_PATH}${this.lobby.id}`,
             body => {
                 if (body) {
-                    this.context.commit("UPDATE_LOBBY", body);
-                    this.context.dispatch("checkRemovablePlayer");
+                    this.context.dispatch("updateLobby", body).then(() => {
+                        this.context.dispatch("checkRemovablePlayer");
+                    });
                 }
             });
+    }
+
+    @Action({commit: "UPDATE_LOBBY", rawError: true})
+    public async updateLobby(lobbyModel: LobbyModel) {
+        if (lobbyModel.currentGameId != null) {
+            await this.context.dispatch("setGameId", lobbyModel.currentGameId);
+        }
+        return lobbyModel;
     }
 
     @Action({rawError: true})
@@ -117,7 +127,7 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public updateLobby(): void {
+    public sendLobbyUpdate(): void {
         websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
     }
 

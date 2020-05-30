@@ -1,7 +1,7 @@
 package com.callbackcats.codenames.game.team.repository;
 
 import com.callbackcats.codenames.game.team.domain.Team;
-import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.player.domain.SideType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

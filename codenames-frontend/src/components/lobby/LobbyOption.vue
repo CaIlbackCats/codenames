@@ -36,13 +36,6 @@
             super();
         }
 
-        @Watch("gameId")
-        private navigateToGame() {
-            if (this.gameId != -1) {
-                router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
-            }
-        }
-
         public createGame(): void {
             this.$store.dispatch("createGame");
         }
@@ -65,10 +58,6 @@
 
         get partySize(): number {
             return this.$store.getters["partySize"];
-        }
-
-        get gameId(): number {
-            return this.$store.getters["gameId"];
         }
     }
 </script>

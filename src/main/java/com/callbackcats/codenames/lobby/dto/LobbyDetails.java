@@ -2,7 +2,7 @@ package com.callbackcats.codenames.lobby.dto;
 
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
-import com.callbackcats.codenames.lobby.player.dto.PlayerData;
+import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

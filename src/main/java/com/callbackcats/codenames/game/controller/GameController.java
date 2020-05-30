@@ -1,11 +1,13 @@
 package com.callbackcats.codenames.game.controller;
 
-import com.callbackcats.codenames.game.card.dto.CardVoteData;
+import com.callbackcats.codenames.card.dto.CardVoteData;
+import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.dto.GameStateData;
 import com.callbackcats.codenames.game.dto.PayloadData;
+import com.callbackcats.codenames.game.dto.PuzzleWordData;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
-import com.callbackcats.codenames.lobby.player.service.PlayerService;
+import com.callbackcats.codenames.player.service.PlayerService;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,9 +43,9 @@ public class GameController {
 
     @ResponseBody
     @PostMapping("/api/game")
-    public ResponseEntity<GameStateData> createGame(@RequestBody PayloadData payloadData) {
+    public ResponseEntity<GameDetails> createGame(@RequestBody PayloadData payloadData) {
         log.info("Game creation requested");
-        GameStateData game = gameService.createGame(payloadData.getLobbyId());
+        GameDetails game = gameService.createGame(payloadData.getLobbyId());
 
         return new ResponseEntity<>(game, HttpStatus.CREATED);
     }
@@ -70,6 +73,15 @@ public class GameController {
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
+    }
+
+    @MessageMapping("/setPuzzleWord/{gameId}")
+    @SendTo("/game/{gameId}")
+    public GameStateData setPuzzleWord(@DestinationVariable Long gameId, @Payload PuzzleWordData puzzleWordData) {
+
+        log.info("Puzzle world saving requested");
+        gameService.setPuzzleWord(gameId, puzzleWordData);
+        return gameService.getGameStateData(gameId);
     }
 
 

@@ -67,20 +67,28 @@
     import CreatePlayer from "@/components/CreatePlayer.vue";
 
     @Component({
-        components: {CreatePlayer,Chat, PlayerList, RolePick, ReadyCheck, KickPlayer, LobbyOption}
+        components: {CreatePlayer, Chat, PlayerList, RolePick, ReadyCheck, KickPlayer, LobbyOption}
     })
     export default class Lobby extends Vue {
         private isMouseInMiddle = true;
-        private path="";
+        private path = "";
 
 
         @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
             if (this.currentPlayerId !== -1) {
-                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
+                //    localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
                 this.$store.dispatch("subscribeToPlayerChange");
             } else if (this.currentPlayerId === -1) {
                 router.push("/");
+            }
+        }
+
+        @Watch("gameId")
+        private navigateToGame() {
+            if (this.gameId != -1 && this.gameId != null) {
+                router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
+                this.$store.dispatch("sendLobbyUpdate");
             }
         }
 
@@ -124,6 +132,10 @@
 
         get lobbyId(): string {
             return this.$store.getters["lobbyId"];
+        }
+
+        get gameId(): number {
+            return this.$store.getters["gameId"];
         }
 
     }

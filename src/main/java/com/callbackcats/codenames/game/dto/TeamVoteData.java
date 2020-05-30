@@ -1,6 +1,6 @@
 package com.callbackcats.codenames.game.dto;
 
-import com.callbackcats.codenames.game.card.dto.CardVoteData;
+import com.callbackcats.codenames.card.dto.CardVoteData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

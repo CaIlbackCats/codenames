@@ -1,5 +1,6 @@
 import {TeamModel} from "@/models/teamModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 
 export interface GameStateModel {
 
@@ -18,5 +19,6 @@ export interface GameStateModel {
     civiliansFoundByBlueTeam: number,
     civiliansFoundByRedTeam: number,
     rounds: number,
+    puzzleWords: Array<PuzzleWordModel>,
 
 }

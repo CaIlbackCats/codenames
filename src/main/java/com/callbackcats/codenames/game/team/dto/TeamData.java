@@ -1,7 +1,7 @@
 package com.callbackcats.codenames.game.team.dto;
 
 import com.callbackcats.codenames.game.team.domain.Team;
-import com.callbackcats.codenames.lobby.player.dto.PlayerData;
+import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,9 @@
 package com.callbackcats.codenames.game.domain;
 
-import com.callbackcats.codenames.game.card.domain.Card;
+import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
-import com.callbackcats.codenames.lobby.player.domain.Player;
-import com.callbackcats.codenames.lobby.player.domain.SideType;
+import com.callbackcats.codenames.player.domain.SideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +33,7 @@ public class Game {
     private Lobby lobby;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game",cascade = CascadeType.ALL)
     private List<Card> board = new ArrayList<>();
 
     @Column(name = "is_end_game")
@@ -55,7 +54,7 @@ public class Game {
     private SideType startingTeam;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game",cascade = CascadeType.ALL)
     private List<Team> teams = new ArrayList<>();
 
     @Column(name = "current_team_turn")
@@ -67,6 +66,10 @@ public class Game {
 
     @Column(name = "is_voting_phase_on")
     private Boolean votingPhase = false;
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "game")
+    private List<PuzzleWord> puzzleWords;
 
     public Game(Lobby lobby) {
         this.startingTeam = SideType.getRandomSide();

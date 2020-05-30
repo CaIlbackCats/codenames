@@ -8,6 +8,7 @@ import {LobbyModel} from "@/models/lobby/lobbyModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
+import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -28,6 +29,7 @@ export default class GameModule extends VuexModule {
         currentTeam: "",
         teams: [],
         votingPhase: false,
+        puzzleWords: [],
     }
 
     private cardVotes: Array<CardVoteModel> = [];
@@ -49,7 +51,7 @@ export default class GameModule extends VuexModule {
         const resp: AxiosResponse = await axios.post(BASE_URL + "/game", {lobbyId: this.context.getters["lobbyId"]});
         if (resp.status === 201) {
             const gameModel: GameCreationModel = resp.data;
-            this.context.commit("SET_GAME", gameModel);
+            this.context.commit("SET_GAME_ID", gameModel.id);
         }
     }
 
@@ -78,6 +80,21 @@ export default class GameModule extends VuexModule {
     @Action({commit: "ADD_CARD_VOTE", rawError: true})
     public addCardVote(cardVote: CardVoteModel): CardVoteModel {
         return cardVote;
+    }
+
+    @Action({rawError: true})
+    public sendPuzzleWord(puzzleWordModel: PuzzleWordModel) {
+        websocket.send("/game/setPuzzleWord/" + this.gameId, puzzleWordModel);
+    }
+
+    @Action({commit: "SET_GAME_ID", rawError: true})
+    public setGameId(gameId: number) {
+        return gameId;
+    }
+
+    @Mutation
+    private SET_GAME_ID(gameId: number) {
+        this.game.id = gameId;
     }
 
     @Mutation
@@ -117,5 +134,9 @@ export default class GameModule extends VuexModule {
 
     get currentTeam(): string {
         return this.game.currentTeam;
+    }
+
+    get puzzleWords(): Array<PuzzleWordModel> {
+        return this.game.puzzleWords;
     }
 }
