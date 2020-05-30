@@ -67,7 +67,6 @@ public class GameController {
                 gameService.changeTurn(gameId);
             }
             log.info("Player card vote finished");
-            // updateGameMessage(gameId);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
@@ -91,11 +90,5 @@ public class GameController {
         log.info("Puzzle world saving requested");
         gameService.setPuzzleWord(gameId, puzzleWordData);
         return gameService.getGameStateData(gameId);
-    }
-
-
-    private void updateGameMessage(Long gameId) {
-        GameStateData game = gameService.getGameStateData(gameId);
-        simpMessagingTemplate.convertAndSend("/game/" + gameId, game);
     }
 }

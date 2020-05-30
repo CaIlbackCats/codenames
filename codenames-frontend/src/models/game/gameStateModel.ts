@@ -20,5 +20,7 @@ export interface GameStateModel {
     civiliansFoundByRedTeam: number,
     rounds: number,
     puzzleWords: Array<PuzzleWordModel>,
+    passVoteCounter:number,
+
 
 }

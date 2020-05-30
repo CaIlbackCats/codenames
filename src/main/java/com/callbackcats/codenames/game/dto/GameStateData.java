@@ -41,7 +41,9 @@ public class GameStateData {
 
     private List<PuzzleWordData> puzzleWords;
 
-    public GameStateData(Game game, List<CardDetails> board, List<TeamData> teams) {
+    private Integer passVoteCounter;
+
+    public GameStateData(Game game) {
         this.id = game.getId();
         if (game.getBoard() != null && !game.getBoard().isEmpty()) {
             this.board = game.getBoard()
@@ -69,6 +71,7 @@ public class GameStateData {
                     .map(PuzzleWordData::new)
                     .collect(Collectors.toList());
         }
+        this.passVoteCounter = game.getPassVoteCounter();
 
     }
 }

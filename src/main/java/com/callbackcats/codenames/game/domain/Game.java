@@ -33,7 +33,7 @@ public class Game {
     private Lobby lobby;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Card> board = new ArrayList<>();
 
     @Column(name = "is_end_game")
@@ -54,7 +54,7 @@ public class Game {
     private SideType startingTeam;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Team> teams = new ArrayList<>();
 
     @Column(name = "current_team_turn")
@@ -70,6 +70,8 @@ public class Game {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "game")
     private List<PuzzleWord> puzzleWords;
+
+    private Integer passVoteCounter = 0;
 
     public Game(Lobby lobby) {
         this.startingTeam = SideType.getRandomSide();

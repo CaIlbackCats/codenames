@@ -55,9 +55,7 @@ public class GameService {
 
     public GameStateData getGameStateData(Long gameId) {
         Game game = findGameById(gameId);
-        List<TeamData> teamsInGame = teamService.findTeamsByGameId(gameId);
-        List<CardDetails> boardInGame = cardService.findCardsByGameId(gameId);
-        return new GameStateData(game, boardInGame, teamsInGame);
+        return new GameStateData(game);
     }
 
     public GameDetails createGame(String lobbyId) {

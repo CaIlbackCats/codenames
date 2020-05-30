@@ -28,6 +28,8 @@ public class PlayerData {
 
     private Boolean rdyState;
 
+    private Boolean passed;
+
     public PlayerData(Player player) {
         this.id = player.getId();
         this.lobbyOwner = player.getLobbyOwner();
@@ -38,6 +40,7 @@ public class PlayerData {
             this.lobbyId = player.getLobby().getId();
         }
         this.rdyState = player.getRdyState();
+        this.passed = player.getPassed();
     }
 
     @Override

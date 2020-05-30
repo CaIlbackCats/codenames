@@ -21,7 +21,7 @@
 
             <div :class="['game-options-decor',
                       {'move-right':turn}]">
-                <game-options :spy-master="spyMaster"></game-options>
+                <game-options></game-options>
                 <img :src="spyGameUrl" alt="spy">
             </div>
         </div>
@@ -51,7 +51,6 @@
     })
     export default class Game extends Vue {
         private spyGameUrl = require("../assets/spy_game.png");
-        private spyMaster = true;
         private turn = true;
 
         async mounted() {

@@ -8,6 +8,7 @@ import {RdyModel} from "@/models/player/rdyModel";
 import {SelectionModel} from "@/models/lobby/selectionModel";
 import {PlayerCreationModel} from "@/models/player/playerCreationModel";
 import axios, {AxiosResponse} from 'axios';
+import {PassedVoteModel} from "@/models/player/passedVoteModel";
 
 
 @Module
@@ -21,6 +22,7 @@ export default class PlayerModule extends VuexModule {
         role: "",
         side: "",
         rdyState: false,
+        passed: false,
     };
 
     private playerSelected = false;
@@ -34,6 +36,7 @@ export default class PlayerModule extends VuexModule {
             rdyState: false,
             name: "",
             lobbyOwner: false,
+            passed: false,
         }
         this.playerSelected = false;
     }
@@ -67,7 +70,7 @@ export default class PlayerModule extends VuexModule {
                 lobbyName: this.context.getters["lobbyId"],
                 id: Number(currentPlayerId),
             }
-            this.context.dispatch("setReturningPlayer",existingPlayer);
+            this.context.dispatch("setReturningPlayer", existingPlayer);
         }
     }
 
@@ -136,6 +139,14 @@ export default class PlayerModule extends VuexModule {
 
     get isPlayerSelected(): boolean {
         return this.currentPlayer.id !== -1;
+    }
+
+    get currentPlayerPassed(): boolean {
+        return this.currentPlayer.passed;
+    }
+
+    get isCurrentPlayerSpymaster(): boolean {
+        return this.currentPlayer.role === "SPYMASTER";
     }
 
 }

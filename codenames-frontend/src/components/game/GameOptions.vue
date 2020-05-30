@@ -1,9 +1,14 @@
 <template>
     <div class="game-options">
-        <b-button squared
-                  v-if="!spyMaster"
-        >No Vote
-        </b-button>
+        <div v-if="!currentPlayerSpymaster">
+            <b-button squared
+
+                      @click="sendPassTurn"
+            >No Vote
+            </b-button>
+            {{passVoteCounter}}/{{currentTeamSize}}
+        </div>
+
         <div class="col-sm-8 col-lg-6 offset-sm-2 offset-lg-3" v-else>
             <b-input required
                      size="md"
@@ -51,6 +56,22 @@
                 maxGuessCount: this.maxGuessCount,
             }
             this.$store.dispatch("sendPuzzleWord", puzzleWordModel);
+        }
+
+        private sendPassTurn(): void {
+            this.$store.dispatch("sendPassVote");
+        }
+
+        get passVoteCounter(): number {
+            return this.$store.getters["passVoteCounter"];
+        }
+
+        get currentTeamSize(): number {
+            return this.$store.getters["currentTeamSize"];
+        }
+
+        get currentPlayerSpymaster():boolean{
+            return this.$store.getters["isCurrentPlayerSpymaster"];
         }
 
     }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -33,8 +34,8 @@ public class Card {
 
     private Integer vote;
 
-    @OneToOne(mappedBy = "votedCard")
-    private Player player;
+    @OneToMany(mappedBy = "votedCard")
+    private List<Player> players;
 
     public Card(Word word, CardType cardType, Game game) {
         this.word = word;
