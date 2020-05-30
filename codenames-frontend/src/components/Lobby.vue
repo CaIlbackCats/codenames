@@ -95,7 +95,7 @@
             await websocket.connect();
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
             if (!joined) {
-                router.push('/')
+                router.push('/notFound')
             } else {
                 await this.$store.dispatch("subscribeToLobbyRoleData");
                 await this.$store.dispatch("subscribeToKick");

@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Lobby from "@/components/Lobby.vue";
 import Game from "@/views/Game.vue";
 import Statistics from '@/views/Statistics.vue';
+import NotFound from "@/components/NotFound.vue";
 
 Vue.use(VueRouter);
 
@@ -29,6 +30,11 @@ const routes: Array<RouteConfig> = [
     component: Statistics
   },
   {
+    path: "/notFound",
+    name: "NotFound",
+    component: NotFound
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
@@ -36,6 +42,11 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () =>
         import(/* webpackChunkName: "about" */ "../views/About.vue")
+  },
+  {
+    path: '*',
+    name: '404',
+    component: NotFound
   }
 ];
 
