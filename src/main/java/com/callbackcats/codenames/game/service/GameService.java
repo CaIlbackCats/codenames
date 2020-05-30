@@ -8,6 +8,7 @@ import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.dto.GameStateData;
+import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.dto.PuzzleWordData;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
@@ -113,6 +114,15 @@ public class GameService {
         puzzleWordService.savePuzzleWorldToGame(game, puzzleWord);
     }
 
+    public void processPassTurnVote(Long gameId) {
+        Game game = findGameById(gameId);
+        Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == game.getCurrentTeam()).findFirst().orElseThrow(NoSuchElementException::new);
+        boolean everyOnePassed = currentTeam.getPlayers().stream().allMatch(Player::getPassed);
+        if (everyOnePassed) {
+            changeTurn(game);
+        }
+    }
+
     public void changeTurn(Long gameId) {
         Game game = findGameById(gameId);
         SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
@@ -121,16 +131,11 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    public List<Player> filterCurrentPlayer(Long gameId, List<Long> players) {
-        Game game = findGameById(gameId);
-        Team currentTeam = game.getTeams()
-                .stream()
-                .filter(team -> team.getSide() == game.getCurrentTeam())
-                .findFirst().orElseThrow(NoSuchElementException::new);
-        return currentTeam.getPlayers()
-                .stream()
-                .filter(player -> players.contains(player.getId()))
-                .collect(Collectors.toList());
+    private void changeTurn(Game game) {
+        SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
+        game.setCurrentTeam(oppositeTeam);
+        game.setEndTurn(false);
+        gameRepository.save(game);
     }
 
     private List<Card> getMostVotedCards(List<Card> votedCards) {

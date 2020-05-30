@@ -279,8 +279,8 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    public void setPlayerPassVote(Long playerId, PassVoteData passVoteData) {
-        Player player = findPlayerById(playerId);
+    public void setPlayerPassVote(PassVoteData passVoteData) {
+        Player player = findPlayerById(passVoteData.getPlayerId());
         player.setPassed(passVoteData.getPassed());
         playerRepository.save(player);
     }

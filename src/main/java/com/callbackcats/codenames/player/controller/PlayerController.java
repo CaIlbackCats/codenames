@@ -169,12 +169,6 @@ public class PlayerController {
         updateLobbyState(playerDetailsData.getLobbyName());
     }
 
-    @MessageMapping("/passTurn/{playerId}")
-    @SendTo("/player/{playerId}")
-    public void setPassTurn(@DestinationVariable Long playerId, @Payload PassVoteData passVoteData) {
-        playerService.setPlayerPassVote(playerId, passVoteData);
-    }
-
     private void updateLobbyState(String lobbyName) {
 
         LobbyDetails lobbyDetails = lobbyService.getLobbyDetailsById(lobbyName);

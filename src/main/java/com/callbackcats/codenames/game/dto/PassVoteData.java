@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PassVoteData {
 
+    private Long playerId;
+
     private Boolean passed;
 
 }
