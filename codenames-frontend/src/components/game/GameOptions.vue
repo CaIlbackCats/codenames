@@ -40,12 +40,13 @@
         @Prop()
         private spyMaster!: boolean;
 
-        private puzzleWord="";
+        private puzzleWord = "";
 
-        private maxGuessCount= 0;
+        private maxGuessCount = 0;
 
         public sendPuzzleWord() {
             const puzzleWordModel: PuzzleWordModel = {
+                id: -1,
                 puzzleWord: this.puzzleWord,
                 maxGuessCount: this.maxGuessCount,
             }

@@ -50,12 +50,12 @@ public class GameController {
         return new ResponseEntity<>(game, HttpStatus.CREATED);
     }
 
-    @MessageMapping("/fetchGame")
-    public void createGames(@Payload LobbyDetails lobbyDetails) {
+    @MessageMapping("/fetchGame/{gameId}")
+    @SendTo("/game/{gameId}")
+    public GameStateData fetchGame(@DestinationVariable Long gameId) {
 
-        LobbyDetails modifiedLobby = lobbyService.getLobbyDetailsById(lobbyDetails.getId());
-
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyDetails.getId(), modifiedLobby);
+        log.info("Request gamestate by game id:\t" + gameId);
+        return gameService.getGameStateData(gameId);
     }
 
     @MessageMapping("/cardVote/{gameId}")

@@ -57,14 +57,7 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public fetchActiveGame(): void {
-        const lobbyModel: LobbyModel = {
-            id: this.context.getters["lobbyId"],
-            currentGameId: -1,
-            players: [],
-            everyoneRdy: false,
-            kickingPhase: false,
-        }
-        websocket.send(config.FETCH_GAME_PATH, lobbyModel)
+        websocket.send("/game/fetchGame/"+this.gameId,{});
     }
 
     @Action({rawError: true})
