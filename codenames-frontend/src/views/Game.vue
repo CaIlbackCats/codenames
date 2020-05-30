@@ -1,36 +1,41 @@
 <template>
-    <div class="game row m-0">
-        <div class="col-sm-12 col-lg-8 col-xl-9">
-            <div class="row mx-0">
-                <div class="col-lg-4 p-0">
-                    <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <game-counters></game-counters>
+    <div class="game">
+        <div class="row m-0" v-if="!isEndGame">
+            <div class="col-sm-12 col-lg-8 col-xl-9">
+                <div class="row mx-0">
+                    <div class="col-lg-4 p-0">
+                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
+                            <game-counters></game-counters>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8 pr-0 pl-lg-4">
+                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
+                            <puzzle></puzzle>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-lg-8 pr-0 pl-lg-4">
-                    <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <puzzle></puzzle>
-                    </div>
+                <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
+                    <game-map></game-map>
                 </div>
-            </div>
 
-            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
-                <game-map></game-map>
-            </div>
-
-            <div :class="['game-options-decor',
+                <div :class="['game-options-decor',
                       {'move-right':turn}]">
-                <game-options :spy-master="spyMaster"></game-options>
-                <img :src="spyGameUrl" alt="spy">
+                    <game-options :spy-master="spyMaster"></game-options>
+                    <img :src="spyGameUrl" alt="spy">
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-4 col-xl-3">
+                <div class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4">
+                    <player-list :is-in-lobby="false"></player-list>
+                </div>
+                <chat></chat>
             </div>
         </div>
-
-        <div class="col-sm-12 col-lg-4 col-xl-3">
-            <div class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4">
-                <player-list :is-in-lobby="false"></player-list>
-            </div>
-            <chat></chat>
+        <div class="row m-0" v-else>
+            <game-end></game-end>
         </div>
     </div>
 </template>
@@ -44,10 +49,11 @@
     import Puzzle from "@/components/game/Puzzle.vue";
     import GameOptions from "@/components/game/GameOptions.vue";
     import * as websocket from '@/services/websocket'
+    import GameEnd from "@/components/game/GameEnd.vue";
 
 
     @Component({
-        components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
+        components: {GameEnd, Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
         private spyGameUrl = require("../assets/spy_game.png");
@@ -60,6 +66,9 @@
             await this.$store.dispatch("fetchActiveGame");
         }
 
+        get isEndGame() {
+            return this.$store.getters["isEndGame"];
+        }
     }
 </script>
 

@@ -2,13 +2,12 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import * as websocket from '@/services/websocket';
 import {config} from "@/config";
 import {GameCreationModel} from "@/models/game/gameCreationModel";
-import {TeamVoteModel} from "@/models/game/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
-import {LobbyModel} from "@/models/lobby/lobbyModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
 import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
+import router from "@/router";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -34,16 +33,8 @@ export default class GameModule extends VuexModule {
 
     private cardVotes: Array<CardVoteModel> = [];
 
-    @Action({rawError: true})
-    public subscribeToGame() {
-        //   const lobbyId: string = this.context.getters["lobbyId"];
-        const gamePath: string = "/game/" + this.gameId;
-        websocket.subscribe(gamePath, (body) => {
-                if (body) {
-                    this.context.commit("UPDATE_GAME", body);
-                }
-            }
-        )
+    get isEndGame(): boolean {
+        return this.game.endGame;
     }
 
     @Action({rawError: true})
@@ -56,9 +47,18 @@ export default class GameModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public fetchActiveGame(): void {
-        websocket.send("/game/fetchGame/"+this.gameId,{});
+    public subscribeToGame() {
+        //   const lobbyId: string = this.context.getters["lobbyId"];
+        const currentGameId = router.currentRoute.params.gameId;
+        const gamePath: string = "/game/" + currentGameId;
+        websocket.subscribe(gamePath, (body) => {
+                if (body) {
+                    this.context.commit("UPDATE_GAME", body);
+                }
+            }
+        )
     }
+
 
     @Action({rawError: true})
     public sendCardVote(cardId: number): void {
@@ -131,5 +131,11 @@ export default class GameModule extends VuexModule {
 
     get puzzleWords(): Array<PuzzleWordModel> {
         return this.game.puzzleWords;
+    }
+
+    @Action({rawError: true})
+    public fetchActiveGame(): void {
+        const currentGameId = router.currentRoute.params.gameId;
+        websocket.send("/game/fetchGame/" + currentGameId, {});
     }
 }
