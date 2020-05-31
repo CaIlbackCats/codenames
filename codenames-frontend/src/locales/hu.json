@@ -1,0 +1,29 @@
+{
+  "welcome-header": {
+    "private-room": "Privát szoba",
+    "random-room": "Random szoba"
+  },
+  "lobby": {
+    "copy-link": "Cím másolása"
+  },
+  "chat": {
+    "send": "Küldés"
+  },
+  "game-options": {
+    "vote": "Nincs szavazat"
+  },
+  "lobby-option": {
+    "role": "Random szerep",
+    "side": "Random oldal",
+    "start": "Kezdjük a játékot!"
+  },
+  "kick-player": {
+    "kick": "Ki akarod dobni "
+  },
+  "role-pick": {
+    "clear": "Visszavonás"
+  },
+  "create-player": {
+    "placeholder": "Írd be a játékos neved"
+  }
+}

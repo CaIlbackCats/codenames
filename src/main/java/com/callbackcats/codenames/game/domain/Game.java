@@ -77,5 +77,4 @@ public class Game {
       //  this.currentTeam = startingTeam;
         this.lobby = lobby;
     }
-
 }
