@@ -48,7 +48,6 @@
     import PlayerList from "@/components/player/PlayerList.vue";
     import Puzzle from "@/components/game/Puzzle.vue";
     import GameOptions from "@/components/game/GameOptions.vue";
-    import * as websocket from '@/services/websocket'
     import GameEnd from "@/components/game/GameEnd.vue";
 
 
@@ -61,13 +60,20 @@
         private turn = true;
 
         async mounted() {
-            await websocket.connect();
             await this.$store.dispatch("subscribeToGame");
             await this.$store.dispatch("fetchActiveGame");
         }
 
+        get gameId(): number {
+            return this.$store.getters["gameId"];
+        }
+
         get isEndGame() {
             return this.$store.getters["isEndGame"];
+        }
+
+        get currentGameId() {
+            return this.$store.getters["currentGameId"];
         }
     }
 </script>

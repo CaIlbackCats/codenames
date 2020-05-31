@@ -9,9 +9,9 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
     {
-        path: "/",
-        name: "Home",
-        component: Home
+        path: "/lobby/:lobbyId/:gameId/statistics",
+        name: "Statistics",
+        component: Statistics
     },
     {
         path: "/lobby/:lobbyId/:gameId",
@@ -23,11 +23,10 @@ const routes: Array<RouteConfig> = [
         name: "Lobby",
         component: Lobby,
     },
-
     {
-        path: "/lobby/:lobbyId/:gameId/statistics",
-        name: "Statistics",
-        component: Statistics
+        path: "/",
+        name: "Home",
+        component: Home
     },
     {
         path: "/about",

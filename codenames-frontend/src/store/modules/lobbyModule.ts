@@ -8,7 +8,6 @@ import {RemainingRoleModel} from "@/models/lobby/remainingRoleModel";
 import {PlayerModel} from "@/models/player/playerModel";
 import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {LanguageModel} from "@/models/languageModel";
-import Lobby from "@/components/Lobby.vue";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -73,17 +72,8 @@ export default class LobbyModule extends VuexModule {
         }
     }
 
-    @Action({rawError: true})
-    public async joinLobby(payload: JoinActionPayload): Promise<boolean> {
-        const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
-        if (response.status === 200) {
-            const lobby: LobbyModel = response.data
-            this.context.commit('SET_LOBBY', lobby)
-            await this.context.dispatch("subscribeToLobby");
-            //  await this.context.dispatch("checkSelectedPlayer", {root: true});
-            return true;
-        }
-        return false;
+    get currentGameId(): number {
+        return this.lobby.currentGameId;
     }
 
 
@@ -185,5 +175,18 @@ export default class LobbyModule extends VuexModule {
 
     get isEveryoneReady(): boolean {
         return this.lobby.everyoneRdy;
+    }
+
+    @Action({rawError: true})
+    public async joinLobby(payload: JoinActionPayload): Promise<boolean> {
+        const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
+        if (response.status === 200) {
+            const lobby: LobbyModel = response.data
+            this.context.commit('SET_LOBBY', lobby)
+            await this.context.dispatch("subscribeToLobby");
+            await this.context.dispatch("checkSelectedPlayer", {root: true});
+            return true;
+        }
+        return false;
     }
 }

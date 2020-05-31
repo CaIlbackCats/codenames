@@ -73,29 +73,12 @@
         private isMouseInMiddle = true;
         private path = "";
 
-
-        @Watch("currentPlayerId")
-        private subscribeToPlayerChange() {
-            if (this.currentPlayerId !== -1) {
-                //    localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
-                this.$store.dispatch("subscribeToPlayerChange");
-            } else if (this.currentPlayerId === -1) {
-                router.push("/");
-            }
-        }
-
         @Watch("gameId")
         private navigateToGame() {
             if (this.gameId != -1 && this.gameId != null) {
                 router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
                 this.$store.dispatch("sendLobbyUpdate");
             }
-        }
-
-        constructor() {
-            super();
-
-            window.addEventListener('beforeunload', this.hideLeftPlayer);
         }
 
         async mounted() {
@@ -106,13 +89,8 @@
                 router.push('/')
             } else {
                 await this.$store.dispatch("subscribeToLobbyRoleData");
-                await this.$store.dispatch("subscribeToKick");
             }
         };
-
-        private hideLeftPlayer(): void {
-            this.$store.dispatch("hideLeftPlayer");
-        }
 
         public copyPath(): void {
             this.$copyText(this.path);
