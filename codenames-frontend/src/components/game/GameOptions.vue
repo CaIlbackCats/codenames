@@ -1,5 +1,5 @@
 <template>
-    <div class="game-options">
+    <div :class="['game-options', {'move-right':activeTurn}]" v-if="activeTurn">
         <div v-if="!currentPlayerSpymaster">
             <b-button squared
 
@@ -32,6 +32,7 @@
                 </b-input-group-append>
             </b-input-group>
         </div>
+        <img :src="spyGameUrl" alt="spy">
     </div>
 </template>
 
@@ -39,11 +40,11 @@
     import {Component, Prop, Vue} from "vue-property-decorator";
     import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 
+
     @Component
     export default class GameOptions extends Vue {
 
-        @Prop()
-        private spyMaster!: boolean;
+        private spyGameUrl = require("../../assets/spy_game.png");
 
         private puzzleWord = "";
 
@@ -54,6 +55,7 @@
                 id: -1,
                 puzzleWord: this.puzzleWord,
                 maxGuessCount: this.maxGuessCount,
+                usedGuesses: 0,
             }
             this.$store.dispatch("sendPuzzleWord", puzzleWordModel);
         }
@@ -70,8 +72,14 @@
             return this.$store.getters["currentTeamSize"];
         }
 
-        get currentPlayerSpymaster():boolean{
+        get currentPlayerSpymaster(): boolean {
             return this.$store.getters["isCurrentPlayerSpymaster"];
+        }
+
+        get activeTurn(): boolean {
+            const currentPlayerActiveTurn: boolean = this.$store.getters["isCurrentPlayerActiveTurn"]
+            const currentTeamActiveTurn: boolean = this.$store.getters["isCurrentTeamActive"];
+            return currentPlayerActiveTurn && currentTeamActiveTurn;
         }
 
     }
@@ -114,5 +122,22 @@
         outline: none;
         box-shadow: none;
         border: none;
+    }
+
+    img {
+        width: 25vw;
+    }
+
+
+    .game-options {
+        position: absolute;
+        bottom: 0;
+        left: -30vw;
+        transition: 1s;
+    }
+
+    .game-options.move-right {
+        transform: translateX(95%);
+        -webkit-transform: translateX(95%);
     }
 </style>

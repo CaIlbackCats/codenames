@@ -48,6 +48,6 @@ public class PuzzleWordService {
     }
 
     private PuzzleWord findLastWordByTeam(Team team) {
-        return puzzleWordRepository.findLatestPuzzleWordByTeam(team, LATEST_PUZZLE_WORD);
+        return puzzleWordRepository.findLatestPuzzleWordByTeam(team, LATEST_PUZZLE_WORD).stream().findFirst().orElseThrow();
     }
 }

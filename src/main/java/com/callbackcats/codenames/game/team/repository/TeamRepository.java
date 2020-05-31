@@ -16,6 +16,4 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Query("select t from Team t join t.game g where g.active=true and t.side= :side and g.id= :gameId")
     Optional<Team> findCurrentTeamByGameIdBySide(@Param("gameId") Long id, @Param("side") SideType side);
 
-    @Query("select t from Team t where t.game.id= :gameId")
-    List<Team> findTeamsByGameId(@Param("gameId") Long gameId);
 }

@@ -57,9 +57,9 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Team> teams = new ArrayList<>();
 
-    @Column(name = "current_team_turn")
-    @Enumerated(EnumType.STRING)
-    private SideType currentTeam;
+//    @Column(name = "current_team_turn")
+//    @Enumerated(EnumType.STRING)
+//    private SideType currentTeam;
 
     @Column(name = "is_active")
     private Boolean active = true;
@@ -69,9 +69,12 @@ public class Game {
 
     private Integer passVoteCounter = 0;
 
+    @OneToOne(mappedBy = "game")
+    private GameTurn gameTurn;
+
     public Game(Lobby lobby) {
         this.startingTeam = SideType.getRandomSide();
-        this.currentTeam = startingTeam;
+      //  this.currentTeam = startingTeam;
         this.lobby = lobby;
     }
 

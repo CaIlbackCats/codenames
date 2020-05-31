@@ -3,16 +3,13 @@ package com.callbackcats.codenames.game.service;
 import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.domain.CardType;
 import com.callbackcats.codenames.card.domain.GameLanguage;
-import com.callbackcats.codenames.card.dto.CardDetails;
 import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.GameDetails;
 import com.callbackcats.codenames.game.dto.GameStateData;
-import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.dto.PuzzleWordData;
 import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
-import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.domain.Player;
@@ -41,20 +38,23 @@ public class GameService {
     private final TeamService teamService;
     private final CardService cardService;
     private final PuzzleWordService puzzleWordService;
+    private final GameTurnService gameTurnService;
     private final ScheduledExecutorService scheduler;
 
 
-    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, PuzzleWordService puzzleWordService, ScheduledExecutorService scheduler) {
+    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, PuzzleWordService puzzleWordService, GameTurnService gameTurnService, ScheduledExecutorService scheduler) {
         this.gameRepository = gameRepository;
         this.lobbyService = lobbyService;
         this.teamService = teamService;
         this.cardService = cardService;
         this.puzzleWordService = puzzleWordService;
+        this.gameTurnService = gameTurnService;
         this.scheduler = scheduler;
     }
 
     public GameStateData getGameStateData(Long gameId) {
         Game game = findGameById(gameId);
+        GameStateData g = new GameStateData(game);
         return new GameStateData(game);
     }
 
@@ -63,6 +63,8 @@ public class GameService {
         GameLanguage language = lobby.getGameLanguage();
         Game game = new Game(lobby);
         this.gameRepository.save(game);
+
+        gameTurnService.createGameTurnToGame(game);
         teamService.createTeamsByLobbyId(lobbyId, game);
         SideType startingSide = game.getStartingTeam();
         cardService.generateMap(startingSide, language, game);
@@ -94,7 +96,8 @@ public class GameService {
     }
 
     public void countScore(Game game) {
-        Team currentTeam = teamService.findTeamByGameIdBySide(game.getId(), game.getCurrentTeam());
+        SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
+        Team currentTeam = teamService.findTeamByGameIdBySide(game.getId(), currentTeamSide);
         List<Card> votedCards = currentTeam.getPlayers()
                 .stream()
                 .map(Player::getVotedCard)
@@ -109,16 +112,20 @@ public class GameService {
 
     public void setPuzzleWord(Long gameId, PuzzleWordData puzzleWord) {
         Game game = findGameById(gameId);
+        SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
+
         Team currentTeam = game.getTeams()
                 .stream()
-                .filter(team -> team.getSide() == game.getCurrentTeam())
+                .filter(team -> team.getSide() == currentTeamSide)
                 .findFirst().orElseThrow(NoSuchElementException::new);
         puzzleWordService.savePuzzleWorldToGame(currentTeam, puzzleWord);
+        gameTurnService.advanceToSpyTurn(game.getGameTurn());
     }
 
     public void processPassTurnVote(Long gameId) {
         Game game = findGameById(gameId);
-        Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == game.getCurrentTeam()).findFirst().orElseThrow(NoSuchElementException::new);
+        SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
+        Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
         boolean everyOnePassed = currentTeam.getPlayers().stream().allMatch(Player::getPassed);
         if (everyOnePassed) {
             changeTurn(game);
@@ -127,15 +134,15 @@ public class GameService {
 
     public void changeTurn(Long gameId) {
         Game game = findGameById(gameId);
-        SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
-        game.setCurrentTeam(oppositeTeam);
+
+        gameTurnService.changeTurn(game.getGameTurn());
         game.setEndTurn(false);
         gameRepository.save(game);
     }
 
     private void changeTurn(Game game) {
-        SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
-        game.setCurrentTeam(oppositeTeam);
+
+        gameTurnService.changeTurn(game.getGameTurn());
         game.setEndTurn(false);
         gameRepository.save(game);
     }
@@ -151,7 +158,7 @@ public class GameService {
     }
 
     private void processMostVotedCardScore(Game game, Team currentTeam, List<Card> mostVotedCards) {
-        SideType oppositeSide = SideType.getOppositeSide(game.getCurrentTeam());
+        SideType oppositeSide = SideType.getOppositeSide(game.getGameTurn().getCurrentTeam());
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
 
         if (mostVotedCards.size() > 1) {
@@ -167,6 +174,7 @@ public class GameService {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
                     if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
+                        gameTurnService.advanceToSpyTurn(game.getGameTurn());
                         game.setEndTurn(true);
                     }
 

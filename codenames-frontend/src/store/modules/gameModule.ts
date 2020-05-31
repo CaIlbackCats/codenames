@@ -11,6 +11,7 @@ import {PassedVoteModel} from "@/models/player/passedVoteModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
+
 @Module
 export default class GameModule extends VuexModule {
     private game: GameStateModel = {
@@ -25,11 +26,13 @@ export default class GameModule extends VuexModule {
         gameEndByAssassin: false,
         startingTeamColor: "",
         active: false,
-        currentTeam: "",
         teams: [],
         votingPhase: false,
-        puzzleWords: [],
         passVoteCounter: 0,
+        gameTurnData: {
+            currentRole: "",
+            currentTeam: "",
+        }
     }
 
     private cardVotes: Array<CardVoteModel> = [];
@@ -136,12 +139,8 @@ export default class GameModule extends VuexModule {
         return this.game.board;
     }
 
-    get currentTeam(): string {
-        return this.game.currentTeam;
-    }
-
     get puzzleWords(): Array<PuzzleWordModel> {
-        return this.game.puzzleWords;
+        return this.game.teams.flatMap(team => team.puzzleWords).filter(puzzleWord => puzzleWord !== null)
     }
 
     get passVoteCounter(): number {
@@ -150,7 +149,7 @@ export default class GameModule extends VuexModule {
 
     get currentTeamSize(): number {
         let teamSize: number;
-        const currentTeam = this.game.teams.find(team => team.side === this.game.currentTeam)
+        const currentTeam = this.game.teams.find(team => team.side === this.game.gameTurnData.currentTeam)
         if (currentTeam) {
             teamSize = currentTeam.players.length;
         } else {
@@ -159,4 +158,15 @@ export default class GameModule extends VuexModule {
 
         return teamSize;
     }
+
+    get isCurrentPlayerActiveTurn(): boolean {
+        const currentPlayerRole: string = this.context.getters["currentPlayerRole"]
+        return this.game.gameTurnData.currentRole === currentPlayerRole;
+    }
+
+    get isCurrentTeamActive(): boolean {
+        const activeTeam: string = this.context.getters["currentPlayerSide"]
+        return this.game.gameTurnData.currentTeam === activeTeam;
+    }
+
 }

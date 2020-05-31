@@ -1,5 +1,6 @@
 import {TeamModel} from "@/models/teamModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {GameTurnModel} from "@/models/game/gameTurnModel";
 
 export interface GameStateModel {
 
@@ -11,14 +12,12 @@ export interface GameStateModel {
     gameEndByAssassin: boolean,
     startingTeamColor: string,
     teams: Array<TeamModel>,
-    currentTeam: string,
     active: boolean;
     votingPhase: boolean,
     lobbyId?: string,
     civiliansFoundByBlueTeam: number,
     civiliansFoundByRedTeam: number,
     rounds: number,
-    passVoteCounter:number,
-
-
+    passVoteCounter: number,
+    gameTurnData: GameTurnModel,
 }

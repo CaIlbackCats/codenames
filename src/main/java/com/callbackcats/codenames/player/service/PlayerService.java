@@ -187,15 +187,6 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-    public List<PlayerData> findPlayersByGame(Game game) {
-        return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
-    }
-
-    public List<Player> findVisiblePlayersByLobbyIdByGameTurnInActiveGame(String lobbyId) {
-
-        return playerRepository.findVisiblePlayersByLobbyInActiveGame(lobbyId);
-    }
-
     public RemainingRoleData getRemainingRoleData(String lobbyName) {
         RemainingRoleData remainingRoleData = new RemainingRoleData();
         List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);

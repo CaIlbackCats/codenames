@@ -33,13 +33,13 @@ public class GameStateData {
 
     private List<TeamData> teams;
 
-    private String currentTeam;
-
     private Boolean active;
 
     private Boolean votingPhase;
 
     private Integer passVoteCounter;
+
+    private GameTurnData gameTurnData;
 
     public GameStateData(Game game) {
         this.id = game.getId();
@@ -60,7 +60,7 @@ public class GameStateData {
                     .map(TeamData::new)
                     .collect(Collectors.toList());
         }
-        this.currentTeam = String.valueOf(game.getCurrentTeam());
+        this.gameTurnData = new GameTurnData(game.getGameTurn());
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();
         this.passVoteCounter = game.getPassVoteCounter();

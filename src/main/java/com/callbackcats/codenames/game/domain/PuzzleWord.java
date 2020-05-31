@@ -30,7 +30,7 @@ public class PuzzleWord {
     private Integer maxGuessCount;
 
     @Column(name = "used_guesses")
-    private Integer usedGuesses;
+    private Integer usedGuesses = 0;
 
     @ManyToOne
     @JoinColumn(name = "team_id")

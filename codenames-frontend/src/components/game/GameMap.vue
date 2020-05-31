@@ -15,8 +15,6 @@
     })
     export default class GameMap extends Vue {
 
-
-
         get board(): Array<CardDetailsModel> {
             return this.$store.getters["board"];
         }
