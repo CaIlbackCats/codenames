@@ -43,17 +43,20 @@
         }
 
         public sendVote(cardId: number): void {
-            if (this.currentTeam === this.currentPlayerSide) {
+            if (this.activeTurn && this.isCurrentPlayerSpy) {
                 this.$store.dispatch("sendCardVote", cardId);
             }
         }
 
-        get currentPlayerSide(): string {
-            return this.$store.getters["currentPlayerSide"];
+        get activeTurn(): boolean {
+            const currentPlayerActiveTurn: boolean = this.$store.getters["isCurrentPlayerActiveTurn"]
+            const currentTeamActiveTurn: boolean = this.$store.getters["isCurrentTeamActive"];
+            return currentPlayerActiveTurn && currentTeamActiveTurn;
         }
 
-        get currentTeam(): string {
-            return this.$store.getters["currentTeam"];
+        get isCurrentPlayerSpy(): boolean {
+            const currentPlayerRole: string = this.$store.getters["currentPlayerRole"];
+            return currentPlayerRole === "SPY";
         }
 
     }
