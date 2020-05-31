@@ -15,6 +15,7 @@ export default class KickModule extends VuexModule {
         side: "",
         rdyState: false,
         lobbyOwner: false,
+        passed: false,
     }
 
     private showKickWindow = false;

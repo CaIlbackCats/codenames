@@ -33,15 +33,15 @@ public class GameStateData {
 
     private List<TeamData> teams;
 
-    private String currentTeam;
-
     private Boolean active;
 
     private Boolean votingPhase;
 
-    private List<PuzzleWordData> puzzleWords;
+    private Integer passVoteCounter;
 
-    public GameStateData(Game game, List<CardDetails> board, List<TeamData> teams) {
+    private GameTurnData gameTurnData;
+
+    public GameStateData(Game game) {
         this.id = game.getId();
         if (game.getBoard() != null && !game.getBoard().isEmpty()) {
             this.board = game.getBoard()
@@ -60,15 +60,10 @@ public class GameStateData {
                     .map(TeamData::new)
                     .collect(Collectors.toList());
         }
-        this.currentTeam = String.valueOf(game.getCurrentTeam());
+        this.gameTurnData = new GameTurnData(game.getGameTurn());
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();
-        if (game.getPuzzleWords() != null && !game.getPuzzleWords().isEmpty()) {
-            this.puzzleWords = game.getPuzzleWords()
-                    .stream()
-                    .map(PuzzleWordData::new)
-                    .collect(Collectors.toList());
-        }
+        this.passVoteCounter = game.getPassVoteCounter();
 
     }
 }

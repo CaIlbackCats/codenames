@@ -1,12 +1,8 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.card.dto.CardVoteData;
-import com.callbackcats.codenames.game.dto.GameDetails;
-import com.callbackcats.codenames.game.dto.GameStateData;
-import com.callbackcats.codenames.game.dto.PayloadData;
-import com.callbackcats.codenames.game.dto.PuzzleWordData;
+import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.service.GameService;
-import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.player.service.PlayerService;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +26,11 @@ import java.util.concurrent.ScheduledFuture;
 public class GameController {
 
     private final GameService gameService;
-    private final LobbyService lobbyService;
     private final PlayerService playerService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public GameController(GameService gameService, LobbyService lobbyService, PlayerService playerService, SimpMessagingTemplate simpMessagingTemplate) {
+    public GameController(GameService gameService, PlayerService playerService, SimpMessagingTemplate simpMessagingTemplate) {
         this.gameService = gameService;
-        this.lobbyService = lobbyService;
         this.playerService = playerService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
@@ -59,7 +53,8 @@ public class GameController {
     }
 
     @MessageMapping("/cardVote/{gameId}")
-    public void voteForCard(@DestinationVariable Long gameId, @Payload CardVoteData cardVoteData) {
+    @SendTo("/game/{gameId}")
+    public GameStateData voteForCard(@DestinationVariable Long gameId, @Payload CardVoteData cardVoteData) {
 
         log.info("Player vote requested");
         playerService.setCardVote(cardVoteData);
@@ -68,11 +63,24 @@ public class GameController {
         try {
             future.get();
             gameService.changeGameVotingPhase(false, gameId);
+            if (gameService.isEndTurn(gameId)) {
+                gameService.changeTurn(gameId);
+            }
             log.info("Player card vote finished");
-            updateGameMessage(gameId);
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
+        return gameService.getGameStateData(gameId);
+    }
+
+    @MessageMapping("/passTurn/{gameId}")
+    @SendTo("/game/{gameId}")
+    public GameStateData votePassTurn(@DestinationVariable Long gameId, PassVoteData passVoteData) {
+
+        playerService.setPlayerPassVote(passVoteData);
+        gameService.processPassTurnVote(gameId);
+
+        return gameService.getGameStateData(gameId);
     }
 
     @MessageMapping("/setPuzzleWord/{gameId}")
@@ -82,11 +90,5 @@ public class GameController {
         log.info("Puzzle world saving requested");
         gameService.setPuzzleWord(gameId, puzzleWordData);
         return gameService.getGameStateData(gameId);
-    }
-
-
-    private void updateGameMessage(Long gameId) {
-        GameStateData game = gameService.getGameStateData(gameId);
-        simpMessagingTemplate.convertAndSend("/game/" + gameId, game);
     }
 }

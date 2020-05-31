@@ -2,15 +2,15 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import * as websocket from '@/services/websocket';
 import {config} from "@/config";
 import {GameCreationModel} from "@/models/game/gameCreationModel";
-import {TeamVoteModel} from "@/models/game/teamVoteModel";
 import axios, {AxiosResponse} from 'axios';
-import {LobbyModel} from "@/models/lobby/lobbyModel";
 import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
 import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
+import {PassedVoteModel} from "@/models/player/passedVoteModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
+
 
 @Module
 export default class GameModule extends VuexModule {
@@ -26,10 +26,13 @@ export default class GameModule extends VuexModule {
         gameEndByAssassin: false,
         startingTeamColor: "",
         active: false,
-        currentTeam: "",
         teams: [],
         votingPhase: false,
-        puzzleWords: [],
+        passVoteCounter: 0,
+        gameTurnData: {
+            currentRole: "",
+            currentTeam: "",
+        }
     }
 
     private cardVotes: Array<CardVoteModel> = [];
@@ -57,7 +60,7 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public fetchActiveGame(): void {
-        websocket.send("/game/fetchGame/"+this.gameId,{});
+        websocket.send("/game/fetchGame/" + this.gameId, {});
     }
 
     @Action({rawError: true})
@@ -83,6 +86,17 @@ export default class GameModule extends VuexModule {
     @Action({commit: "SET_GAME_ID", rawError: true})
     public setGameId(gameId: number) {
         return gameId;
+    }
+
+    @Action({rawError: true})
+    public sendPassVote() {
+        const playerId: number = this.context.getters["currentPlayerId"];
+        const passedVote: boolean = this.context.getters["currentPlayerPassed"];
+        const passedVoteModel: PassedVoteModel = {
+            playerId: playerId,
+            passed: !passedVote,
+        }
+        websocket.send("/game/passTurn/" + this.gameId, passedVoteModel);
     }
 
     @Mutation
@@ -125,11 +139,34 @@ export default class GameModule extends VuexModule {
         return this.game.board;
     }
 
-    get currentTeam(): string {
-        return this.game.currentTeam;
+    get puzzleWords(): Array<PuzzleWordModel> {
+        return this.game.teams.flatMap(team => team.puzzleWords).filter(puzzleWord => puzzleWord !== null)
     }
 
-    get puzzleWords(): Array<PuzzleWordModel> {
-        return this.game.puzzleWords;
+    get passVoteCounter(): number {
+        return this.game.passVoteCounter;
     }
+
+    get currentTeamSize(): number {
+        let teamSize: number;
+        const currentTeam = this.game.teams.find(team => team.side === this.game.gameTurnData.currentTeam)
+        if (currentTeam) {
+            teamSize = currentTeam.players.length;
+        } else {
+            throw new TypeError('The value was promised to always be there!');
+        }
+
+        return teamSize;
+    }
+
+    get isCurrentPlayerActiveTurn(): boolean {
+        const currentPlayerRole: string = this.context.getters["currentPlayerRole"]
+        return this.game.gameTurnData.currentRole === currentPlayerRole;
+    }
+
+    get isCurrentTeamActive(): boolean {
+        const activeTeam: string = this.context.getters["currentPlayerSide"]
+        return this.game.gameTurnData.currentTeam === activeTeam;
+    }
+
 }

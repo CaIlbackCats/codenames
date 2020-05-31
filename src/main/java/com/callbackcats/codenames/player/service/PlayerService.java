@@ -4,6 +4,7 @@ import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.dto.CardVoteData;
 import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.domain.Player;
@@ -186,15 +187,6 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-    public List<PlayerData> findPlayersByGame(Game game) {
-        return playerRepository.findAllPlayersByGame(game).stream().map(PlayerData::new).collect(Collectors.toList());
-    }
-
-    public List<Player> findVisiblePlayersByLobbyIdByGameTurnInActiveGame(String lobbyId) {
-
-        return playerRepository.findVisiblePlayersByLobbyInActiveGame(lobbyId);
-    }
-
     public RemainingRoleData getRemainingRoleData(String lobbyName) {
         RemainingRoleData remainingRoleData = new RemainingRoleData();
         List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
@@ -275,6 +267,12 @@ public class PlayerService {
 
     public void saveTeamToPlayer(Team team, Player player) {
         player.setTeam(team);
+        playerRepository.save(player);
+    }
+
+    public void setPlayerPassVote(PassVoteData passVoteData) {
+        Player player = findPlayerById(passVoteData.getPlayerId());
+        player.setPassed(passVoteData.getPassed());
         playerRepository.save(player);
     }
 

@@ -49,13 +49,16 @@ public class Player {
     @Column(name = "visible")
     private Boolean visible;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "voted_card_id")
     private Card votedCard;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
+
+    @Column(name = "is_pass_turn")
+    private Boolean passed;
 
     public Player(PlayerCreationData playerCreationData) {
         //  this.lobbyOwner = playerCreationData.getLobbyOwner();
@@ -65,5 +68,6 @@ public class Player {
         this.kickVoteCount = 0;
         this.rdyState = false;
         this.visible = true;
+        this.passed = false;
     }
 }

@@ -19,10 +19,9 @@
                 <game-map></game-map>
             </div>
 
-            <div :class="['game-options-decor',
-                      {'move-right':turn}]">
-                <game-options :spy-master="spyMaster"></game-options>
-                <img :src="spyGameUrl" alt="spy">
+            <div class="game-options-decor">
+                <game-options></game-options>
+
             </div>
         </div>
 
@@ -50,8 +49,6 @@
         components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
-        private spyGameUrl = require("../assets/spy_game.png");
-        private spyMaster = true;
         private turn = true;
 
         async mounted() {
@@ -85,7 +82,7 @@
         height: 21vh;
     }
 
-    .game-options {
+    .game-options-decor {
         height: 14vh;
     }
 
@@ -103,22 +100,5 @@
 
     .white-backgrounded-div {
         -ms-overflow-style: none;
-    }
-
-    .game-options-decor {
-        position: absolute;
-        bottom: 0;
-        left: -30vw;
-        transition: 1s;
-    }
-
-
-    .game-options-decor img {
-        width: 25vw;
-    }
-
-    .game-options-decor.move-right {
-        transform: translateX(95%);
-        -webkit-transform: translateX(95%);
     }
 </style>

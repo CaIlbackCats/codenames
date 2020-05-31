@@ -5,4 +5,5 @@ export interface PlayerModel {
     role: string,
     side: string,
     rdyState: boolean,
+    passed: boolean,
 }

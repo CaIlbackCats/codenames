@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.team.service;
 
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.service.PuzzleWordService;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.repository.TeamRepository;
@@ -23,10 +24,12 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final PlayerService playerService;
+    private final PuzzleWordService puzzleWordService;
 
-    public TeamService(TeamRepository teamRepository, PlayerService playerService) {
+    public TeamService(TeamRepository teamRepository, PlayerService playerService, PuzzleWordService puzzleWordService) {
         this.teamRepository = teamRepository;
         this.playerService = playerService;
+        this.puzzleWordService = puzzleWordService;
     }
 
     public List<Team> createTeamsByLobbyId(String lobbyId, Game game) {
@@ -44,12 +47,12 @@ public class TeamService {
         int increasedScore = team.getScore() + 1;
         team.setScore(increasedScore);
         teamRepository.save(team);
+        puzzleWordService.increaseLatestPuzzleWordGuessCounter(team);
     }
 
-    public List<TeamData> findTeamsByGameId(Long id) {
-        return teamRepository.findTeamsByGameId(id).stream().map(TeamData::new).collect(Collectors.toList());
+    public Boolean isCurrentTeamReachMaxGuesses(Team team) {
+        return puzzleWordService.isPuzzleWordGuessLimitReached(team);
     }
-
 
     private Team createTeam(String lobbyId, SideType side, Game game) {
         List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);
