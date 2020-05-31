@@ -21,7 +21,6 @@
 
             <div class="game-options-decor">
                 <game-options></game-options>
-
             </div>
         </div>
 

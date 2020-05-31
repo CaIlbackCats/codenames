@@ -1,9 +1,7 @@
 <template>
-    <div :class="['game-options', {'move-right':activeTurn}]" v-if="activeTurn">
+    <div :class="['game-options', {'move-right':activeTurn}]">
         <div v-if="!currentPlayerSpymaster">
-            <b-button squared
-
-                      @click="sendPassTurn"
+            <b-button @click="sendPassTurn" squared
             >No Vote
             </b-button>
             {{passVoteCounter}}/{{currentTeamSize}}
@@ -37,7 +35,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Component, Vue} from "vue-property-decorator";
     import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 
 
@@ -86,9 +84,6 @@
 </script>
 
 <style scoped>
-    .game-options {
-        width: 100%;
-    }
 
     button {
         background-color: rgb(135, 25, 75);
@@ -125,19 +120,18 @@
     }
 
     img {
+        margin-top: 4rem;
         width: 25vw;
     }
-
 
     .game-options {
         position: absolute;
         bottom: 0;
         left: -30vw;
-        transition: 1s;
+        transition: all 1s;
     }
 
     .game-options.move-right {
-        transform: translateX(95%);
-        -webkit-transform: translateX(95%);
+        left: -5vw;
     }
 </style>
