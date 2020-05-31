@@ -53,6 +53,18 @@ export default class GameModule extends VuexModule {
     }
 
     @Action({rawError: true})
+    public async subscribeToGameRoles() {
+        await websocket.subscribe("/game/" + this.gameId + "/spy", body => {
+            if (body) {
+                this.context.commit("UPDATE_SPY_MAP", body);
+            }
+        });
+        await websocket.subscribe("/game/" + this.gameId + "/spymaster", body => {
+            this.context.commit("UPDATE_SPYMASTER_MAP", body);
+        });
+    }
+
+    @Action({rawError: true})
     public async createGame(): Promise<void> {
         const resp: AxiosResponse = await axios.post(BASE_URL + "/game", {lobbyId: this.context.getters["lobbyId"]});
         if (resp.status === 201) {
@@ -100,6 +112,16 @@ export default class GameModule extends VuexModule {
             passed: !passedVote,
         }
         websocket.send("/game/passTurn/" + this.gameId, passedVoteModel);
+    }
+
+    @Mutation
+    private UPDATE_SPY_MAP(spyMap: Array<TypelessCardDetailsModel>): void {
+        this.spyMap = spyMap;
+    }
+
+    @Mutation
+    private UPDATE_SPYMASTER_MAP(spymasterMap: Array<TypedCardDetailsModel>): void {
+        this.spymasterMap = spymasterMap;
     }
 
     @Mutation

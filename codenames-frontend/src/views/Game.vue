@@ -48,11 +48,11 @@
         components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
-        private turn = true;
 
         async mounted() {
             await websocket.connect();
             await this.$store.dispatch("subscribeToGame");
+            await this.$store.dispatch("subscribeToGameRoles");
             await this.$store.dispatch("fetchActiveGame");
         }
 

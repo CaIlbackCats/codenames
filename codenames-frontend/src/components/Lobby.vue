@@ -77,7 +77,7 @@
         @Watch("currentPlayerId")
         private subscribeToPlayerChange() {
             if (this.currentPlayerId !== -1) {
-                    localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
+                //    localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
                 this.$store.dispatch("subscribeToPlayerChange");
             } else if (this.currentPlayerId === -1) {
                 router.push("/");
