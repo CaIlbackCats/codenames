@@ -1,6 +1,5 @@
 package com.callbackcats.codenames.game.dto;
 
-import com.callbackcats.codenames.card.dto.CardDetails;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.team.dto.TeamData;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,7 @@ public class GameStateData {
 
     private Long id;
 
-    private List<CardDetails> board;
+  //  private List<CardDetails> board;
 
     private Boolean endGame;
 
@@ -43,12 +42,12 @@ public class GameStateData {
 
     public GameStateData(Game game) {
         this.id = game.getId();
-        if (game.getBoard() != null && !game.getBoard().isEmpty()) {
-            this.board = game.getBoard()
-                    .stream()
-                    .map(CardDetails::new)
-                    .collect(Collectors.toList());
-        }
+//        if (game.getBoard() != null && !game.getBoard().isEmpty()) {
+//            this.board = game.getBoard()
+//                    .stream()
+//                    .map(CardDetails::new)
+//                    .collect(Collectors.toList());
+//        }
         this.endGame = game.getEndGame();
         this.endTurn = game.getEndTurn();
         this.winnerTeam = String.valueOf(game.getWinner());

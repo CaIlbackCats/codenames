@@ -32,7 +32,7 @@ public class Card {
     @ManyToOne
     private Game game;
 
-    private Integer vote;
+   // private Integer vote;
 
     @OneToMany(mappedBy = "votedCard")
     private List<Player> players;

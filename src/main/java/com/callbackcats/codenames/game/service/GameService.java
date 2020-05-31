@@ -54,7 +54,6 @@ public class GameService {
 
     public GameStateData getGameStateData(Long gameId) {
         Game game = findGameById(gameId);
-        GameStateData g = new GameStateData(game);
         return new GameStateData(game);
     }
 
@@ -183,6 +182,7 @@ public class GameService {
                     game.setEndTurn(true);
                 }
             }
+            cardService.setCardFound(mostVotedCard);
         }
     }
 

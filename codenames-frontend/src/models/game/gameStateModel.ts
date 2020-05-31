@@ -1,11 +1,10 @@
 import {TeamModel} from "@/models/teamModel";
-import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
 import {GameTurnModel} from "@/models/game/gameTurnModel";
 
 export interface GameStateModel {
 
     id: number,
-    board: Array<CardDetailsModel>,
     endGame: boolean,
     endTurn: boolean,
     winnerTeam: string,

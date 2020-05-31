@@ -1,6 +1,6 @@
-import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
 
 export interface GameCreationModel {
     id: number,
-    board: Array<CardDetailsModel>,
+    board: Array<TypedCardDetailsModel>,
 }

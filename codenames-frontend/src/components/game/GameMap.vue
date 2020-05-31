@@ -8,14 +8,14 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
-    import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+    import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
     import Card from "@/components/game/Card.vue";
     @Component({
         components: {Card}
     })
     export default class GameMap extends Vue {
 
-        get board(): Array<CardDetailsModel> {
+        get board(): Array<TypedCardDetailsModel> {
             return this.$store.getters["board"];
         }
 

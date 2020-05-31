@@ -4,11 +4,13 @@ import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.domain.CardType;
 import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.card.domain.Word;
-import com.callbackcats.codenames.card.dto.CardDetails;
+import com.callbackcats.codenames.card.dto.TypedCardDetailsData;
+import com.callbackcats.codenames.card.dto.TypelessCardDetailsData;
 import com.callbackcats.codenames.card.repository.CardRepository;
 import com.callbackcats.codenames.card.repository.WordRepository;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.player.domain.SideType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class CardService {
 
     private static final Integer MAX_STARTING_TEAM_CARD = 9;
@@ -33,9 +36,8 @@ public class CardService {
         this.wordRepository = wordRepository;
     }
 
-    public void setCardFound(Long id, Boolean found) {
-        Card card = findCardById(id);
-        card.setFound(found);
+    public void setCardFound(Card card) {
+        card.setFound(true);
         cardRepository.save(card);
     }
 
@@ -60,7 +62,7 @@ public class CardService {
         Collections.shuffle(cards);
 
         cardRepository.saveAll(cards);
-
+        log.info("Map successfully generated for game id:\t" + game.getId());
         return cards;
     }
 
@@ -68,8 +70,18 @@ public class CardService {
         return cardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Card not found by given ID:\t" + id));
     }
 
-    public List<CardDetails> findCardsByGameId(Long gameId) {
-        return cardRepository.findCardsByGameId(gameId).stream().map(CardDetails::new).collect(Collectors.toList());
+    public List<TypelessCardDetailsData> getSpyMap(Long gameId) {
+        log.info("Map requested for spies");
+        return findCardsByGameId(gameId).stream().map(TypelessCardDetailsData::new).collect(Collectors.toList());
+    }
+
+    public List<TypedCardDetailsData> getSpymasterMap(Long gameId) {
+        log.info("Map requested for spymasters");
+        return findCardsByGameId(gameId).stream().map(TypedCardDetailsData::new).collect(Collectors.toList());
+    }
+
+    private List<Card> findCardsByGameId(Long gameId) {
+        return cardRepository.findCardsByGameId(gameId);
     }
 
 

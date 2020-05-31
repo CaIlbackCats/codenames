@@ -1,6 +1,6 @@
 import {WordDetailModel} from "@/models/game/card/wordDetailModel";
 
-export interface CardDetailsModel {
+export interface TypedCardDetailsModel {
     id:number,
     word: WordDetailModel,
     type: string,

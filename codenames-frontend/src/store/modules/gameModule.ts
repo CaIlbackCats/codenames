@@ -3,11 +3,12 @@ import * as websocket from '@/services/websocket';
 import {config} from "@/config";
 import {GameCreationModel} from "@/models/game/gameCreationModel";
 import axios, {AxiosResponse} from 'axios';
-import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
+import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
 import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 import {PassedVoteModel} from "@/models/player/passedVoteModel";
+import {TypelessCardDetailsModel} from "@/models/game/card/typelessCardDetailsModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -16,7 +17,6 @@ const BASE_URL = process.env.VUE_APP_BASE_URL;
 export default class GameModule extends VuexModule {
     private game: GameStateModel = {
         id: -1,
-        board: [],
         civiliansFoundByBlueTeam: 0,
         civiliansFoundByRedTeam: 0,
         rounds: 0,
@@ -34,6 +34,9 @@ export default class GameModule extends VuexModule {
             currentTeam: "",
         }
     }
+
+    private spymasterMap: Array<TypedCardDetailsModel> = [];
+    private spyMap: Array<TypelessCardDetailsModel> = [];
 
     private cardVotes: Array<CardVoteModel> = [];
 
@@ -135,8 +138,13 @@ export default class GameModule extends VuexModule {
         return this.game.id;
     }
 
-    get board(): Array<CardDetailsModel> {
-        return this.game.board;
+    get board(): Array<TypedCardDetailsModel> | Array<TypelessCardDetailsModel> {
+        const currentPlayerRole: string = this.context.getters["currentPlayerRole"];
+        if (currentPlayerRole === "SPYMASTER") {
+            return this.spymasterMap;
+        } else {
+            return this.spyMap;
+        }
     }
 
     get puzzleWords(): Array<PuzzleWordModel> {

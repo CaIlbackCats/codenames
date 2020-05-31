@@ -12,7 +12,7 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from "vue-property-decorator";
-    import {CardDetailsModel} from "../../models/game/card/cardDetailsModel";
+    import {TypedCardDetailsModel} from "../../models/game/card/typedCardDetailsModel";
 
     @Component
     export default class Card extends Vue {
@@ -23,7 +23,7 @@
         private isGold = false;
 
         @Prop()
-        private card!: CardDetailsModel;
+        private card!: TypedCardDetailsModel;
 
         mounted() {
             switch (this.card.type) {

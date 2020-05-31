@@ -1,10 +1,12 @@
 package com.callbackcats.codenames.game.controller;
 
 import com.callbackcats.codenames.card.dto.CardVoteData;
+import com.callbackcats.codenames.card.dto.TypedCardDetailsData;
+import com.callbackcats.codenames.card.dto.TypelessCardDetailsData;
+import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.dto.*;
 import com.callbackcats.codenames.game.service.GameService;
 import com.callbackcats.codenames.player.service.PlayerService;
-import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 
@@ -27,11 +30,13 @@ public class GameController {
 
     private final GameService gameService;
     private final PlayerService playerService;
+    private final CardService cardService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public GameController(GameService gameService, PlayerService playerService, SimpMessagingTemplate simpMessagingTemplate) {
+    public GameController(GameService gameService, PlayerService playerService, CardService cardService, SimpMessagingTemplate simpMessagingTemplate) {
         this.gameService = gameService;
         this.playerService = playerService;
+        this.cardService = cardService;
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
@@ -49,6 +54,7 @@ public class GameController {
     public GameStateData fetchGame(@DestinationVariable Long gameId) {
 
         log.info("Request gamestate by game id:\t" + gameId);
+        sendMapMessage(gameId);
         return gameService.getGameStateData(gameId);
     }
 
@@ -70,6 +76,8 @@ public class GameController {
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.getMessage());
         }
+
+        sendMapMessage(gameId);
         return gameService.getGameStateData(gameId);
     }
 
@@ -90,5 +98,13 @@ public class GameController {
         log.info("Puzzle world saving requested");
         gameService.setPuzzleWord(gameId, puzzleWordData);
         return gameService.getGameStateData(gameId);
+    }
+
+    private void sendMapMessage(Long gameId) {
+        List<TypelessCardDetailsData> spyMap = cardService.getSpyMap(gameId);
+        simpMessagingTemplate.convertAndSend("/game/" + gameId + "/spy", spyMap);
+
+        List<TypedCardDetailsData> spymasterMap = cardService.getSpymasterMap(gameId);
+        simpMessagingTemplate.convertAndSend("/game/" + gameId + "/spymaster", spymasterMap);
     }
 }

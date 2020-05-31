@@ -82,7 +82,7 @@ export default class LobbyModule extends VuexModule {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
             await this.context.dispatch("subscribeToLobby");
-            //  await this.context.dispatch("checkSelectedPlayer", {root: true});
+             await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
         } catch (err) {
             // redirect to 404\
