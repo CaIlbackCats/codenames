@@ -27,6 +27,9 @@ public class PuzzleWord {
     @Column(name = "max_guess_count")
     private Integer maxGuessCount;
 
+    @Column(name = "used_guesses")
+    private Integer usedGuesses;
+
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
@@ -34,5 +37,6 @@ public class PuzzleWord {
     public PuzzleWord(PuzzleWordData puzzleWordData) {
         this.puzzleWord = puzzleWordData.getPuzzleWord();
         this.maxGuessCount = puzzleWordData.getMaxGuessCount();
+        this.usedGuesses = puzzleWordData.getUsedGuesses();
     }
 }

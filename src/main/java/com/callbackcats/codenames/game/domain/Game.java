@@ -33,7 +33,7 @@ public class Game {
     private Lobby lobby;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game")
     private List<Card> board = new ArrayList<>();
 
     @Column(name = "is_end_game")
@@ -54,7 +54,7 @@ public class Game {
     private SideType startingTeam;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game")
     private List<Team> teams = new ArrayList<>();
 
     @Column(name = "current_team_turn")

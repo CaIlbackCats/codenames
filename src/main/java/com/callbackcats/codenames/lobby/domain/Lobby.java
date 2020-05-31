@@ -28,7 +28,7 @@ public class Lobby {
     private List<Player> playerList;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "lobby",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lobby")
     private List<Game> games;
 
     @Column(name = "is_kicking_phase")

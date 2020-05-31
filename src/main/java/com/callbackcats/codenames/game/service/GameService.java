@@ -129,6 +129,10 @@ public class GameService {
         gameRepository.save(game);
     }
 
+    private void processRoleTurn(Long gameId){
+        
+    }
+
     private void changeTurn(Game game) {
         SideType oppositeTeam = SideType.getOppositeSide(game.getCurrentTeam());
         game.setCurrentTeam(oppositeTeam);

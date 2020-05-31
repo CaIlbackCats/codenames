@@ -25,4 +25,10 @@ public class PuzzleWordService {
         puzzleWordRepository.save(puzzleWord);
         log.info("PuzzleWord has been saved to game id:\t" + game.getId());
     }
+
+    public void increaseGuessCounter(PuzzleWord puzzleWord) {
+        int guess = puzzleWord.getUsedGuesses() + 1;
+        puzzleWord.setUsedGuesses(guess);
+        puzzleWordRepository.save(puzzleWord);
+    }
 }
