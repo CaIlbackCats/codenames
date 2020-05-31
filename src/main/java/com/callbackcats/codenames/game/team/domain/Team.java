@@ -1,6 +1,7 @@
 package com.callbackcats.codenames.game.team.domain;
 
 import com.callbackcats.codenames.game.domain.Game;
+import com.callbackcats.codenames.game.domain.PuzzleWord;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.SideType;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,10 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "team")
+    private List<PuzzleWord> puzzleWords;
 
     public Team(List<Player> players, SideType side, Game game) {
         this.players = players;

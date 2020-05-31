@@ -39,8 +39,6 @@ public class GameStateData {
 
     private Boolean votingPhase;
 
-    private List<PuzzleWordData> puzzleWords;
-
     private Integer passVoteCounter;
 
     public GameStateData(Game game) {
@@ -65,12 +63,6 @@ public class GameStateData {
         this.currentTeam = String.valueOf(game.getCurrentTeam());
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();
-        if (game.getPuzzleWords() != null && !game.getPuzzleWords().isEmpty()) {
-            this.puzzleWords = game.getPuzzleWords()
-                    .stream()
-                    .map(PuzzleWordData::new)
-                    .collect(Collectors.toList());
-        }
         this.passVoteCounter = game.getPassVoteCounter();
 
     }

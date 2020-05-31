@@ -109,7 +109,11 @@ public class GameService {
 
     public void setPuzzleWord(Long gameId, PuzzleWordData puzzleWord) {
         Game game = findGameById(gameId);
-        puzzleWordService.savePuzzleWorldToGame(game, puzzleWord);
+        Team currentTeam = game.getTeams()
+                .stream()
+                .filter(team -> team.getSide() == game.getCurrentTeam())
+                .findFirst().orElseThrow(NoSuchElementException::new);
+        puzzleWordService.savePuzzleWorldToGame(currentTeam, puzzleWord);
     }
 
     public void processPassTurnVote(Long gameId) {
@@ -127,10 +131,6 @@ public class GameService {
         game.setCurrentTeam(oppositeTeam);
         game.setEndTurn(false);
         gameRepository.save(game);
-    }
-
-    private void processRoleTurn(Long gameId){
-        
     }
 
     private void changeTurn(Game game) {
@@ -160,11 +160,16 @@ public class GameService {
             Card mostVotedCard = mostVotedCards.get(0);
             if (mostVotedCard.getType() == CardType.ASSASSIN) {
                 game.setEndGameByAssassin(true);
+                game.setEndGame(true);
             } else if (mostVotedCard.getType().equals(CardType.BYSTANDER)) {
                 game.setEndTurn(true);
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
+                    if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
+                        game.setEndTurn(true);
+                    }
+
                 } else {
                     teamService.increaseTeamScore(otherTeam);
                     game.setEndTurn(true);

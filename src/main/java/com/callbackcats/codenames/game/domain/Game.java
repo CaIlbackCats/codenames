@@ -67,10 +67,6 @@ public class Game {
     @Column(name = "is_voting_phase_on")
     private Boolean votingPhase = false;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "game")
-    private List<PuzzleWord> puzzleWords;
-
     private Integer passVoteCounter = 0;
 
     public Game(Lobby lobby) {
