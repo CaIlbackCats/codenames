@@ -54,11 +54,6 @@ public class TeamService {
         return puzzleWordService.isPuzzleWordGuessLimitReached(team);
     }
 
-    public List<TeamData> findTeamsByGameId(Long id) {
-        return teamRepository.findTeamsByGameId(id).stream().map(TeamData::new).collect(Collectors.toList());
-    }
-
-
     private Team createTeam(String lobbyId, SideType side, Game game) {
         List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);
 

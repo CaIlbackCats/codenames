@@ -1,5 +1,6 @@
 package com.callbackcats.codenames.game.team.dto;
 
+import com.callbackcats.codenames.game.dto.PuzzleWordData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,23 @@ public class TeamData {
 
     private List<PlayerData> players;
 
+    private List<PuzzleWordData> puzzleWords;
+
     public TeamData(Team team) {
         this.id = team.getId();
         this.side = team.getSide().toString();
         this.score = team.getScore();
-        this.players = team.getPlayers()
-                .stream()
-                .map(PlayerData::new)
-                .collect(Collectors.toList());
+        if (team.getPlayers() != null && !team.getPlayers().isEmpty()) {
+            this.players = team.getPlayers()
+                    .stream()
+                    .map(PlayerData::new)
+                    .collect(Collectors.toList());
+        }
+        if (team.getPuzzleWords() != null && !team.getPuzzleWords().isEmpty()) {
+            this.puzzleWords = team.getPuzzleWords()
+                    .stream()
+                    .map(PuzzleWordData::new)
+                    .collect(Collectors.toList());
+        }
     }
 }
