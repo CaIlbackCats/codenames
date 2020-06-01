@@ -46,4 +46,9 @@ public class LobbyDetails {
         this.kickingPhase = lobby.getKickingPhase();
         this.gameLanguage = String.valueOf(lobby.getGameLanguage());
     }
+
+    public LobbyDetails(Lobby lobby, Boolean everyoneRdy) {
+        this(lobby);
+        this.everyoneRdy = everyoneRdy;
+    }
 }

@@ -5,6 +5,7 @@ import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
+import com.callbackcats.codenames.player.domain.Player;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,13 @@ public class LobbyService {
         this.lobbyRepository.save(lobby);
     }
 
-    public LobbyDetails getLobbyDetailsById(String id) {
-        return new LobbyDetails(findLobbyById(id));
+    public LobbyDetails getLobbyDetailsById(String lobbyId) {
+        Lobby lobby = findLobbyById(lobbyId);
+        boolean everyoneReady = lobby.getPlayerList()
+                .stream()
+                .allMatch(Player::getRdyState);
+
+        return new LobbyDetails(lobby, everyoneReady);
     }
 
     public Lobby findLobbyById(String id) {
@@ -43,7 +49,15 @@ public class LobbyService {
         lobby.setGameLanguage(gameLanguage);
         this.lobbyRepository.save(lobby);
 
-        return new LobbyDetails(lobby);
+        return getLobbyDetailsByLobby(lobby);
+    }
+
+    private LobbyDetails getLobbyDetailsByLobby(Lobby lobby) {
+        boolean everyoneReady = lobby.getPlayerList()
+                .stream()
+                .allMatch(Player::getRdyState);
+
+        return new LobbyDetails(lobby, everyoneReady);
     }
 
 
