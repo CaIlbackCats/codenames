@@ -117,9 +117,9 @@
     }
 
     .voted {
-        -webkit-box-shadow: 10px 10px 40px 0px rgb(0, 255, 0);
-        -moz-box-shadow: 10px 10px 40px 0px rgba(0, 255, 0, 1);
-        box-shadow: 10px 10px 40px 0px rgba(0, 255, 0, 1);
+        -webkit-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
+        -moz-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
+        box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
     }
 
 </style>
