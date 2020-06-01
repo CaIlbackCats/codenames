@@ -186,7 +186,7 @@ export default class GameModule extends VuexModule {
         let teamSize: number;
         const currentTeam = this.game.teams.find(team => team.side === this.game.gameTurnData.currentTeam)
         if (currentTeam) {
-            teamSize = currentTeam.players.length;
+            teamSize = currentTeam.players.filter(player => player.role === "SPY").length
         } else {
             teamSize = 0;
         }

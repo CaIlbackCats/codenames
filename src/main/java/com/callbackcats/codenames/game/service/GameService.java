@@ -127,7 +127,10 @@ public class GameService {
         Game game = findGameById(gameId);
         SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
         Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
-        boolean everyOnePassed = currentTeam.getPlayers().stream().allMatch(Player::getPassed);
+        boolean everyOnePassed = currentTeam.getPlayers()
+                .stream()
+                .filter(player -> player.getRole() == RoleType.SPY)
+                .allMatch(Player::getPassed);
         if (everyOnePassed) {
             changeTurn(game);
         }
