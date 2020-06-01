@@ -3,12 +3,14 @@
         isRed ? 'red-card' : '',
         isBlack ? 'black-card' : '',
         isGold ? 'gold-card': '',
-        card.isFound ? 'found' : '',
+        isColored ? 'colored-card': '',
+        !isColored && activeTurn ? 'clickable' : '',
+        card.found ? 'found' : '',
         card.voted ? 'voted':'',
         'card']">
-        <label class="m-0">{{card.word.word}} </label>
+        <label class="m-0">{{card.word.word}}</label>
+        <div :class="[isColored ? 'white-line' : 'pink-line']"></div>
         <small v-if="card.voteCounter>0">{{card.voteCounter}}</small>
-        <div :class="[isRed || isBlack || isGold || isBlue ? 'white-line' : 'pink-line']"></div>
     </div>
 </template>
 
@@ -24,6 +26,7 @@
         private isRed = false;
         private isBlack = false;
         private isGold = false;
+        private isColored = false;
 
         @Prop()
         private card!: TypedCardDetailsModel | TypelessCardDetailsModel;
@@ -44,6 +47,7 @@
                     this.isBlack = true;
                     break;
             }
+            this.isColored = this.isRed || this.isBlack || this.isGold || this.isBlue;
         }
 
         public sendVote(cardId: number): void {
@@ -82,41 +86,62 @@
     }
 
     .card {
+        width: 100%;
         height: 12vh;
         border-radius: 1rem;
         color: rgb(135, 25, 75);
         font-weight: bold;
         text-transform: uppercase;
-        font-size: 1.3rem;
+        font-size: 1.2vw;
         padding-top: 3vh;
         opacity: 0.6;
+        outline: rgba(255, 255, 255, 1) solid 1px;
+        outline-offset: -0.5rem;
+        transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
-    .found {
+    .clickable {
+        cursor: pointer;
+    }
+
+    .clickable:hover {
         opacity: 1;
     }
 
+    .found {
+        opacity: 1 !important;
+        outline-color: rgba(135, 25, 75, 0) !important;
+        outline-offset: 15px;
+    }
+
     .blue-card {
-        background-color: rgba(30, 144, 255, 0.8);
-        color: white;
+        background-color: rgba(30, 144, 255, 1);
+        outline-color: rgba(30, 144, 255, 1);
     }
 
     .red-card {
-        background-color: rgba(205, 92, 92, 0.8);
-        color: white;
+        background-color: rgba(205, 92, 92, 1);
+        outline-color: rgba(205, 92, 92, 1);
     }
 
     .black-card {
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
+        background-color: rgba(0, 0, 0, 1);
+        outline-color: rgba(0, 0, 0, 1);
     }
 
     .gold-card {
-        background-color: rgba(184, 134, 11, 0.8);
+        background-color: rgba(184, 134, 11, 1);
+        outline-color: rgba(184, 134, 11, 1);
+    }
+
+    .colored-card {
+        opacity: 0.4;
         color: white;
+        cursor: none;
     }
 
     .voted {
+        opacity: 1;
         -webkit-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
         -moz-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
         box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);

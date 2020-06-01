@@ -17,6 +17,7 @@
             <b-input-group size="md">
                 <b-form-input
                         min="0"
+                        max="25"
                         required
                         type="number"
                         v-model="maxGuessCount"
@@ -49,6 +50,7 @@
         private maxGuessCount = 0;
 
         public sendPuzzleWord() {
+
             const puzzleWordModel: PuzzleWordModel = {
                 id: -1,
                 puzzleWord: this.puzzleWord,

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +12,7 @@ public class TypelessCardDetailsData {
 
     private Long id;
     private WordDetails word;
-    private boolean isFound;
+    private boolean found;
     private String type;
     private Boolean voted;
     private Integer voteCounter;
@@ -22,8 +20,8 @@ public class TypelessCardDetailsData {
     public TypelessCardDetailsData(Card card) {
         this.id = card.getId();
         this.word = new WordDetails(card.getWord());
-        this.isFound = card.isFound();
-        if (this.isFound) {
+        this.found = card.isFound();
+        if (this.found) {
             this.type = String.valueOf(card.getType());
         }
         this.voted = card.getVoted();

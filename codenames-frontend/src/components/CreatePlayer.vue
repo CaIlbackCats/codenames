@@ -19,7 +19,7 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
-            <span v-if="isNameError">Name already exist</span>
+            <p v-if="isNameError">Name already exist</p>
         </div>
     </div>
 
@@ -52,6 +52,11 @@
 </script>
 
 <style scoped>
+
+    p {
+        color: white;
+        font-weight: bold;
+    }
 
     input {
         text-align: center;
