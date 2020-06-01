@@ -2,6 +2,7 @@ package com.callbackcats.codenames.lobby.dto;
 
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.dto.PlayerData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class LobbyDetails {
         if (lobby.getPlayerList() != null && !lobby.getPlayerList().isEmpty()) {
             this.players = lobby.getPlayerList()
                     .stream()
+                    .filter(Player::getVisible)
                     .map(PlayerData::new)
                     .collect(Collectors.toList());
         }

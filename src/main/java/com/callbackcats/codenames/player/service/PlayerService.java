@@ -160,6 +160,9 @@ public class PlayerService {
 
     public void hidePlayer(Long id) {
         Player player = findPlayerById(id);
+        player.setSide(SideType.NOT_SELECTED);
+        player.setRole(RoleType.NOT_SELECTED);
+        player.setRdyState(false);
         player.setVisible(false);
         playerRepository.save(player);
     }
