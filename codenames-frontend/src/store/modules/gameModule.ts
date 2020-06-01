@@ -3,7 +3,6 @@ import * as websocket from '@/services/websocket';
 import {config} from "@/config";
 import {GameCreationModel} from "@/models/game/gameCreationModel";
 import axios, {AxiosResponse} from 'axios';
-import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
@@ -184,7 +183,7 @@ export default class GameModule extends VuexModule {
     }
 
     get currentTeam(): string {
-        return this.game.currentTeam;
+        return this.game.gameTurnData.currentTeam;
     }
 
     get puzzleWords(): Array<PuzzleWordModel> {

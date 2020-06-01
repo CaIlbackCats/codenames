@@ -49,7 +49,6 @@
         private loseUrl = require("../../assets/maybe_next_time.png");
         private winUrl = require("../../assets/you_won.png");
         private moveLabel = false;
-        private isInWinnerTeam = false;
 
         get currentPlayerSide(): string {
             return this.$store.getters['currentPlayerSide'];
