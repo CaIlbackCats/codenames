@@ -8,7 +8,6 @@ import {RdyModel} from "@/models/player/rdyModel";
 import {SelectionModel} from "@/models/lobby/selectionModel";
 import {PlayerCreationModel} from "@/models/player/playerCreationModel";
 import axios, {AxiosResponse} from 'axios';
-import {PassedVoteModel} from "@/models/player/passedVoteModel";
 
 
 @Module
@@ -26,6 +25,7 @@ export default class PlayerModule extends VuexModule {
     };
 
     private playerSelected = false;
+    private nameError = false;
 
     @Mutation
     private REMOVE_CURRENT_PLAYER(): void {
@@ -39,6 +39,11 @@ export default class PlayerModule extends VuexModule {
             passed: false,
         }
         this.playerSelected = false;
+    }
+
+    @Mutation
+    private SET_NAME_ERROR(nameError: boolean) {
+        this.nameError = nameError;
     }
 
     @Mutation
@@ -101,12 +106,15 @@ export default class PlayerModule extends VuexModule {
 
     @Action({rawError: true})
     public async sendPlayerCreation(playerCreationModel: PlayerCreationModel) {
-        const resp = await axios.post(process.env.VUE_APP_BASE_URL + "/createPlayer", playerCreationModel);
-        if (resp.status === 201) {
-            const player: PlayerModel = resp.data;
-            this.context.commit("UPDATE_PLAYER", player);
-        }
-        await this.context.dispatch("sendLobbyUpdate");
+        axios.post(process.env.VUE_APP_BASE_URL + "/createPlayer", playerCreationModel).then(resp => {
+            if (resp.status === 201) {
+                const player: PlayerModel = resp.data;
+                this.context.commit("UPDATE_PLAYER", player);
+                this.context.dispatch("sendLobbyUpdate");
+            }
+        }).catch(() => this.context.commit("SET_NAME_ERROR", true));
+
+
     }
 
     get isRoleSelected(): boolean {
@@ -149,6 +157,9 @@ export default class PlayerModule extends VuexModule {
         return this.currentPlayer.role === "SPYMASTER";
     }
 
+    get isNameError(): boolean {
+        return this.nameError;
+    }
 
 
 }

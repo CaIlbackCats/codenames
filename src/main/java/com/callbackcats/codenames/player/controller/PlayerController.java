@@ -1,6 +1,5 @@
 package com.callbackcats.codenames.player.controller;
 
-import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.player.dto.*;
 import com.callbackcats.codenames.player.service.PlayerService;
@@ -8,10 +7,8 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,13 +33,20 @@ public class PlayerController {
         this.lobbyService = lobbyService;
     }
 
+
     @ResponseBody
     @PostMapping("/api/createPlayer")
     public ResponseEntity<PlayerData> createPlayer(@RequestBody PlayerCreationData playerCreationData) {
         log.info("Player Creation requested");
         PlayerData savedPlayer = playerService.savePlayer(playerCreationData);
+        ResponseEntity<PlayerData> responseEntity;
+        if (savedPlayer != null) {
+            responseEntity = new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
+        } else {
+            responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
-        return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
+        return responseEntity;
     }
 
     @ResponseBody
