@@ -10,7 +10,7 @@
         'card']">
         <label class="m-0">{{card.word.word}}</label>
         <div :class="[isColored ? 'white-line' : 'pink-line']"></div>
-        <small class="float-right" v-if="card.voteCounter>0">{{card.voteCounter}}</small>
+        <small v-if="card.voteCounter>0">{{card.voteCounter}}</small>
     </div>
 </template>
 
@@ -86,12 +86,13 @@
     }
 
     .card {
+        width: 100%;
         height: 12vh;
         border-radius: 1rem;
         color: rgb(135, 25, 75);
         font-weight: bold;
         text-transform: uppercase;
-        font-size: 1.3rem;
+        font-size: 1.2vw;
         padding-top: 3vh;
         opacity: 0.6;
         outline: rgba(255, 255, 255, 1) solid 1px;
