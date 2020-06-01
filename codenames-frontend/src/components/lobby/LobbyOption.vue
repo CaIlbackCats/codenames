@@ -1,24 +1,43 @@
 <template>
-    <div class="align-center">
-        <b-button :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
-                  :disabled="!isEnoughPlayersToPlay" @click="randomizeRoles" block size="sm" squared>Random role
-        </b-button>
-        <b-button :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
-                  :disabled="!isEnoughPlayersToPlay" @click="randomizeSide" block size="sm" squared>Random side
-        </b-button>
-        <b-button :title="isGameReadyToStart ? '' : '' "
-                  :disabled="!isGameReadyToStart" @click="createGame" block class="mt-3" size="md" squared>Start The
-            Game!
-        </b-button>
-        <b-button @click="setGameLanguage('ENGLISH')">English</b-button>
-        <b-button @click="setGameLanguage('HUNGARIAN')">Hungarian</b-button>
+    <div class="align-center row mx-0">
+        <div class="col-lg-6">
+            <b-button :disabled="!isEnoughPlayersToPlay"
+                      :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
+                      @click="randomizeRoles" block size="sm" squared>Random role
+            </b-button>
+        </div>
+        <div class="col-lg-6">
+            <b-button :disabled="!isEnoughPlayersToPlay"
+                      :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
+                      @click="randomizeSide" block size="sm" squared>Random side
+            </b-button>
+        </div>
+
+        <div class="col-sm-12">
+            <img @click="setGameLanguage('ENGLISH')"
+                 alt="english"
+                 src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg">
+            <img @click="setGameLanguage('HUNGARIAN')"
+                 alt="hungarian"
+                 src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg">
+        </div>
+
+        <div class="col-sm-12">
+            <b-button :disabled="!isGameReadyToStart"
+                      :title="isGameReadyToStart ? '' :
+                      !isEnoughPlayersToPlay ? 'Not enough players to play' : 'No language selected' "
+                      @click="createGame" block size="md" squared>
+                Start The
+                Game!
+            </b-button>
+        </div>
+
     </div>
 </template>
 
 <script lang="ts">
 
-    import {Component, Vue, Watch} from "vue-property-decorator";
-    import router from "@/router";
+    import {Component, Vue} from "vue-property-decorator";
     import {LanguageModel} from "@/models/languageModel";
 
     @Component
@@ -66,6 +85,25 @@
 </script>
 
 <style scoped>
+    img {
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        cursor: pointer;
+        opacity: 0.7;
+        margin: 0 1rem 0 1rem;
+        box-sizing: content-box;
+        -webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+    }
+
+    img:hover {
+        opacity: 1;
+        cursor: pointer;
+        -webkit-filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.7));
+        filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.7));
+    }
+
     small {
         color: rgb(135, 25, 75);
         opacity: 0.6;
