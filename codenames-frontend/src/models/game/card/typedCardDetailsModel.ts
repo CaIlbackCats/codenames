@@ -1,10 +1,10 @@
 import {WordDetailModel} from "@/models/game/card/wordDetailModel";
 
 export interface TypedCardDetailsModel {
-    id:number,
+    id: number,
     word: WordDetailModel,
     type: string,
-    isFound: boolean,
-    voted:boolean,
-    voteCounter:number,
+    found: boolean,
+    voted: boolean,
+    voteCounter: number,
 }

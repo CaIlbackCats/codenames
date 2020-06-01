@@ -3,12 +3,14 @@
         isRed ? 'red-card' : '',
         isBlack ? 'black-card' : '',
         isGold ? 'gold-card': '',
-        card.isFound ? 'found' : '',
+        isColored ? 'colored-card': '',
+        !isColored && activeTurn ? 'clickable' : '',
+        card.found ? 'found' : '',
         card.voted ? 'voted':'',
         'card']">
         <label class="m-0">{{card.word.word}} </label>
         <small v-if="card.voteCounter>0">{{card.voteCounter}}</small>
-        <div :class="[isRed || isBlack || isGold || isBlue ? 'white-line' : 'pink-line']"></div>
+        <div :class="[isColored ? 'white-line' : 'pink-line']"></div>
     </div>
 </template>
 
@@ -24,6 +26,7 @@
         private isRed = false;
         private isBlack = false;
         private isGold = false;
+        private isColored = false;
 
         @Prop()
         private card!: TypedCardDetailsModel | TypelessCardDetailsModel;
@@ -44,6 +47,7 @@
                     this.isBlack = true;
                     break;
             }
+            this.isColored = this.isRed || this.isBlack || this.isGold || this.isBlue;
         }
 
         public sendVote(cardId: number): void {
@@ -92,31 +96,41 @@
         opacity: 0.6;
     }
 
+    .clickable {
+        cursor: pointer;
+    }
+
+    .clickable:hover {
+        opacity: 1;
+    }
+
     .found {
         opacity: 1;
     }
 
     .blue-card {
         background-color: rgba(30, 144, 255, 0.8);
-        color: white;
     }
 
     .red-card {
         background-color: rgba(205, 92, 92, 0.8);
-        color: white;
     }
 
     .black-card {
         background-color: rgba(0, 0, 0, 0.8);
-        color: white;
     }
 
     .gold-card {
         background-color: rgba(184, 134, 11, 0.8);
+    }
+
+    .colored-card {
         color: white;
+        cursor: none;
     }
 
     .voted {
+        opacity: 1;
         -webkit-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
         -moz-box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);
         box-shadow: 0 0 1rem 0 rgba(0, 255, 0, 1);

@@ -30,7 +30,7 @@ public class Card {
     private CardType type;
 
     @Column(name = "is_found")
-    private boolean isFound;
+    private boolean found;
 
     @ManyToOne
     @JoinColumn(name = "game_id")
