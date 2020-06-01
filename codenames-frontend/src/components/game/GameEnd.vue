@@ -30,9 +30,9 @@
                     <p><span>Team accuracy</span></p>
                 </div>
                 <div class="col-lg-5 text-right mt-lg-4">
-                    <p><span>0 spies in a row</span></p>
-                    <p><span>0 spies in a row</span></p>
-                    <p><span>0%</span></p>
+                    <p><span>- spies in a row</span></p>
+                    <p><span>- spies in a row</span></p>
+                    <p><span>-%</span></p>
                 </div>
             </div>
         </div>
