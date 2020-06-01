@@ -1,13 +1,14 @@
 <template>
     <div class="align-center">
-        <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
-                  :disabled="partySize<MIN_PARTY_SIZE" @click="randomizeRoles" block size="sm" squared>Random role
+        <b-button :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
+                  :disabled="!isEnoughPlayersToPlay" @click="randomizeRoles" block size="sm" squared>Random role
         </b-button>
-        <b-button :title="partySize<MIN_PARTY_SIZE ? 'There must be at least 4 players to use this function': '' "
-                  :disabled="partySize<MIN_PARTY_SIZE" @click="randomizeSide" block size="sm" squared>Random side
+        <b-button :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
+                  :disabled="!isEnoughPlayersToPlay" @click="randomizeSide" block size="sm" squared>Random side
         </b-button>
-        <b-button :title="isEveryoneReady ? '' : '' "
-                  :disabled="!isEveryoneReady" @click="createGame" block class="mt-3" size="md" squared>Start The Game!
+        <b-button :title="isGameReadyToStart ? '' : '' "
+                  :disabled="!isGameReadyToStart" @click="createGame" block class="mt-3" size="md" squared>Start The
+            Game!
         </b-button>
         <b-button @click="setGameLanguage('ENGLISH')">English</b-button>
         <b-button @click="setGameLanguage('HUNGARIAN')">Hungarian</b-button>
@@ -22,8 +23,6 @@
 
     @Component
     export default class LobbyOption extends Vue {
-
-        private MIN_PARTY_SIZE = 4;
 
         public setGameLanguage(language: string): void {
             const gameLanguage: LanguageModel = {
@@ -48,16 +47,20 @@
             this.$store.dispatch("sendRandomizeSide");
         }
 
-        get isEveryoneReady(): boolean {
-            return this.$store.getters["isEveryoneReady"];
-        }
-
         get lobbyId(): string {
             return this.$store.getters["lobbyId"];
         }
 
         get partySize(): number {
             return this.$store.getters["partySize"];
+        }
+
+        get isGameReadyToStart(): boolean {
+            return this.$store.getters["isGameReadyToStart"];
+        }
+
+        get isEnoughPlayersToPlay(): boolean {
+            return this.$store.getters["isEnoughPlayersToPlay"];
         }
     }
 </script>

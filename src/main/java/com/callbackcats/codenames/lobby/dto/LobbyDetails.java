@@ -42,5 +42,6 @@ public class LobbyDetails {
                     .getId();
         }
         this.kickingPhase = lobby.getKickingPhase();
+        this.gameLanguage = String.valueOf(lobby.getGameLanguage());
     }
 }

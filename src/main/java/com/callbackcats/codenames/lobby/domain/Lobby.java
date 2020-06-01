@@ -35,6 +35,7 @@ public class Lobby {
     private Boolean kickingPhase = false;
 
     @Column(name = "game_language")
+    @Enumerated(EnumType.STRING)
     private GameLanguage gameLanguage;
 
 }

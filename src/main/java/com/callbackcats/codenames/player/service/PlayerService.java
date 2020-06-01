@@ -3,7 +3,6 @@ package com.callbackcats.codenames.player.service;
 import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.dto.CardVoteData;
 import com.callbackcats.codenames.card.service.CardService;
-import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;

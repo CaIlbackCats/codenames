@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 
 import {LobbyModel} from "@/models/lobby/lobbyModel";
@@ -9,14 +9,14 @@ import {PlayerModel} from "@/models/player/playerModel";
 import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {LanguageModel} from "@/models/languageModel";
 import router from "@/router";
-import NotFound from "@/components/NotFound.vue";
-import Lobby from "@/components/Lobby.vue";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
 interface JoinActionPayload {
     lobbyId: string
 }
+
+const MIN_PARTY_SIZE = 4;
 
 @Module
 export default class LobbyModule extends VuexModule {
@@ -27,6 +27,7 @@ export default class LobbyModule extends VuexModule {
         everyoneRdy: false,
         currentGameId: -1,
         kickingPhase: false,
+        gameLanguage: "",
 
     }
     private remainingRoleModel: RemainingRoleModel = {
@@ -136,9 +137,10 @@ export default class LobbyModule extends VuexModule {
         websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
     }
 
-    @Action({rawError: true})
-    public setGameLanguage(payload: LanguageModel): void {
-        axios.post(BASE_URL + "/lobby/" + this.lobbyId, payload);
+    @Action({commit: "UPDATE_LOBBY", rawError: true})
+    public async setGameLanguage(payload: LanguageModel): Promise<LobbyModel> {
+        const response: AxiosResponse = await axios.post(BASE_URL + "/lobby/" + this.lobbyId, payload);
+        return response.data;
     }
 
     get playersOrdered(): Array<PlayerModel> {
@@ -163,6 +165,15 @@ export default class LobbyModule extends VuexModule {
             return -1;
         }
     }
+
+    get isEnoughPlayersToPlay(): boolean {
+        let enoughPlayers = false;
+        if (this.lobby.players) {
+            enoughPlayers = this.lobby.players.length >= 4;
+        }
+        return enoughPlayers;
+    }
+
 
     get isKickingPhase(): boolean {
         return this.lobby.kickingPhase;
@@ -190,5 +201,21 @@ export default class LobbyModule extends VuexModule {
 
     get isEveryoneReady(): boolean {
         return this.lobby.everyoneRdy;
+    }
+
+    get isLanguageSet(): boolean {
+        return this.lobby.gameLanguage !== "";
+    }
+
+    get isAllPlayersHaveRoleAndSide(): boolean {
+        let isAllPlayersHaveRoleAndSide = false
+        if (this.lobby.players) {
+            isAllPlayersHaveRoleAndSide = this.lobby.players.filter(player => player.side === "NOT_SELECTED" && player.role === "NOT_SELECTED").length === 0;
+        }
+        return isAllPlayersHaveRoleAndSide;
+    }
+
+    get isGameReadyToStart(): boolean {
+        return this.isLanguageSet && this.isAllPlayersHaveRoleAndSide && this.isEveryoneReady && this.isEnoughPlayersToPlay;
     }
 }

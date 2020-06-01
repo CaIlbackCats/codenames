@@ -32,22 +32,19 @@ public class LobbyService {
         return this.lobbyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Lobby not found by given id:\t" + id));
     }
 
-
     public void setKickPhase(String lobbyId, boolean kickPhase) {
         Lobby lobby = findLobbyById(lobbyId);
         lobby.setKickingPhase(kickPhase);
         lobbyRepository.save(lobby);
     }
 
-
-    public void addGame(Lobby lobby, Game game) {
-        lobby.getGames().add(game);
-        this.lobbyRepository.save(lobby);
-    }
-
-    public void updateLobbyGameLanguage(String id, GameLanguage gameLanguage) {
+    public LobbyDetails updateLobbyGameLanguage(String id, GameLanguage gameLanguage) {
         Lobby lobby = lobbyRepository.findLobbyByName(id);
         lobby.setGameLanguage(gameLanguage);
         this.lobbyRepository.save(lobby);
+
+        return new LobbyDetails(lobby);
     }
+
+
 }

@@ -60,6 +60,7 @@ public class GameService {
 
     public GameDetails createGame(String lobbyId) {
         Lobby lobby = this.lobbyService.findLobbyById(lobbyId);
+
         GameLanguage language = lobby.getGameLanguage();
         Game game = new Game(lobby);
         this.gameRepository.save(game);

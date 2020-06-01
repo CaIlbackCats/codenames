@@ -27,12 +27,12 @@ public class LobbyController {
         return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<HttpStatus> setGameLanguage(@PathVariable String id, @RequestBody LanguageDetails gameLanguage) {
+    @PostMapping("/{lobbyId}")
+    public ResponseEntity<LobbyDetails> setGameLanguage(@PathVariable String lobbyId, @RequestBody LanguageDetails gameLanguage) {
         GameLanguage language = GameLanguage.valueOf(gameLanguage.getLanguage());
-        this.lobbyService.updateLobbyGameLanguage(id, language);
-        log.info("Game language updated to " + gameLanguage.getLanguage() + " in lobby with id: " + id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        LobbyDetails updatedLobby = this.lobbyService.updateLobbyGameLanguage(lobbyId, language);
+        log.info("Game language updated to " + gameLanguage.getLanguage() + " in lobby with id: " + lobbyId);
+        return new ResponseEntity<>(updatedLobby, HttpStatus.OK);
     }
 
 

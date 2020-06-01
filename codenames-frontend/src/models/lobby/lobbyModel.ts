@@ -6,4 +6,5 @@ export interface LobbyModel {
     players: Array<PlayerModel>,
     currentGameId: number,
     kickingPhase: boolean,
+    gameLanguage:string,
 }
