@@ -49,5 +49,6 @@ public class Team {
         this.side = side;
         this.game = game;
         this.score = 0;
+        this.statistics = new Stat();
     }
 }

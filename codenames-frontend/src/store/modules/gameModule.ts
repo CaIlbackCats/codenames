@@ -8,6 +8,8 @@ import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
 import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
 import router from "@/router";
+import {StatModel} from "@/models/game/statModel";
+import {TeamModel} from "@/models/teamModel";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -131,6 +133,25 @@ export default class GameModule extends VuexModule {
 
     get puzzleWords(): Array<PuzzleWordModel> {
         return this.game.puzzleWords;
+    }
+
+    get teams(): Array<TeamModel> {
+        return this.game.teams;
+    }
+
+    get ownTeam(): TeamModel {
+        const side = this.context.getters['currentPlayerSide'];
+        return this.context.getters["teams"].find(team => team.side === side);
+    }
+
+    get ownScore(): number {
+        const ownTeam: TeamModel = this.context.getters['ownTeam'];
+        return ownTeam.score;
+    }
+
+    get currentPlayerTeamStatistics(): StatModel {
+        const ownTeam: TeamModel = this.context.getters['ownTeam'];
+        return ownTeam.statistics;
     }
 
     @Action({rawError: true})

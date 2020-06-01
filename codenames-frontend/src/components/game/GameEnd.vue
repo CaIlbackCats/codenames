@@ -16,12 +16,12 @@
                     <p>invalid votes</p>
                 </div>
                 <div class="col-lg-5 text-right">
-                    <p>0</p>
-                    <p>0</p>
-                    <p>0</p>
-                    <p>0</p>
-                    <p>0</p>
-                    <p>0</p>
+                    <p>{{teamStatistics.numOfCivilians}}</p>
+                    <p>{{teamStatistics.numOfEnemySpies}}</p>
+                    <p>{{score}}</p>
+                    <p>{{teamStatistics.teamRounds}}</p>
+                    <p>{{teamStatistics.numOfPasses}}</p>
+                    <p>{{teamStatistics.numOfInvalidVotes}}</p>
                 </div>
 
                 <div class="col-lg-5 offset-lg-1 mt-lg-4">
@@ -41,6 +41,7 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
+    import {StatModel} from "@/models/game/statModel";
 
     @Component
     export default class GameEnd extends Vue {
@@ -58,13 +59,21 @@
         moveDown() {
             this.moveLabel = true;
         }
+
+        get teamStatistics(): StatModel {
+            return this.$store.getters['currentPlayerTeamStatistics'];
+        }
+
+        get score(): number {
+            return this.$store.getters['ownScore'];
+        }
     }
 </script>
 
 <style scoped>
 
     span {
-        font-size: 1rem;
+        font-size: 0.8rem;
         font-weight: bold;
         color: rgb(135, 25, 75);
         text-transform: uppercase;
@@ -73,7 +82,7 @@
     p {
         margin: 0;
         color: rgba(135, 25, 75, 0.7);
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 
     img {
