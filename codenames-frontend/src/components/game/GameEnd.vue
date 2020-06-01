@@ -10,10 +10,14 @@
                 <div class="col-lg-5 offset-lg-1">
                     <p>civilians</p>
                     <p>enemy spies</p>
+                    <p>friendly spies</p>
                     <p>rounds</p>
                     <p>passes</p>
+                    <p>invalid votes</p>
                 </div>
                 <div class="col-lg-5 text-right">
+                    <p>0</p>
+                    <p>0</p>
                     <p>0</p>
                     <p>0</p>
                     <p>0</p>
@@ -30,7 +34,6 @@
                     <p><span>0 spies in a row</span></p>
                     <p><span>0%</span></p>
                 </div>
-
             </div>
         </div>
     </div>

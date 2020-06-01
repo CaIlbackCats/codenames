@@ -22,6 +22,8 @@ public class TeamData {
 
     private List<PlayerData> players;
 
+    private StatData statistics;
+
     public TeamData(Team team) {
         this.id = team.getId();
         this.side = team.getSide().toString();
@@ -30,5 +32,6 @@ public class TeamData {
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
+        this.statistics = new StatData(team.getStatistics());
     }
 }

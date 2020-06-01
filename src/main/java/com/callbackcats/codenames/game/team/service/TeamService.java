@@ -60,4 +60,28 @@ public class TeamService {
         players.forEach(player -> playerService.saveTeamToPlayer(team, player));
         return team;
     }
+
+    public void increaseNumOfEnemySpies(Team team) {
+        int increasedValue = team.getStatistics().getNumOfEnemySpies() + 1;
+        team.getStatistics().setNumOfEnemySpies(increasedValue);
+        teamRepository.save(team);
+    }
+
+    public void increaseNumOfCivilians(Team team) {
+        int increasedValue = team.getStatistics().getNumOfCivilians() + 1;
+        team.getStatistics().setNumOfCivilians(increasedValue);
+        teamRepository.save(team);
+    }
+
+    public void increaseNumOfInvalidVotes(Team team) {
+        int increasedValue = team.getStatistics().getNumOfInvalidVotes() + 1;
+        team.getStatistics().setNumOfInvalidVotes(increasedValue);
+        teamRepository.save(team);
+    }
+
+    public void increaseTeamRounds(Team team) {
+        int increasedValue = team.getStatistics().getTeamRounds() + 1;
+        team.getStatistics().setTeamRounds(increasedValue);
+        teamRepository.save(team);
+    }
 }

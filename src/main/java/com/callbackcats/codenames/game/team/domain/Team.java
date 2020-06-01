@@ -41,6 +41,9 @@ public class Team {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Stat statistics;
+
     public Team(List<Player> players, SideType side, Game game) {
         this.players = players;
         this.side = side;

@@ -14,21 +14,21 @@ import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.SideType;
-import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,19 +124,23 @@ public class GameService {
     private void processMostVotedCardScore(Game game, Team currentTeam, List<Card> mostVotedCards) {
         SideType oppositeSide = SideType.getOppositeSide(game.getCurrentTeam());
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
+        teamService.increaseTeamRounds(currentTeam);
 
         if (mostVotedCards.size() > 1) {
+            teamService.increaseNumOfInvalidVotes(currentTeam);
             game.setEndTurn(true);
         } else {
             Card mostVotedCard = mostVotedCards.get(0);
             if (mostVotedCard.getType() == CardType.ASSASSIN) {
                 game.setEndGameByAssassin(true);
             } else if (mostVotedCard.getType().equals(CardType.BYSTANDER)) {
+                teamService.increaseNumOfCivilians(currentTeam);
                 game.setEndTurn(true);
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
                 } else {
+                    teamService.increaseNumOfEnemySpies(currentTeam);
                     teamService.increaseTeamScore(otherTeam);
                     game.setEndTurn(true);
                 }
