@@ -12,15 +12,22 @@ import com.callbackcats.codenames.game.repository.GameRepository;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
-import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,6 +40,7 @@ import java.util.stream.Collectors;
 public class GameService {
 
     private static final Integer CARD_VOTING_PHASE_DURATION = 5;
+    private static final Integer STARTING_TEAM_SPIES_COUNT = 9;
 
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
@@ -166,32 +174,49 @@ public class GameService {
         SideType oppositeSide = SideType.getOppositeSide(game.getGameTurn().getCurrentTeam());
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
         Card mostVotedCard = mostVotedCards.get(0);
+        teamService.increaseTeamRounds(currentTeam);
+
+        int allSpies;
+        if (game.getStartingTeam().equals(currentTeam.getSide())) {
+            allSpies = STARTING_TEAM_SPIES_COUNT;
+        } else {
+            allSpies = STARTING_TEAM_SPIES_COUNT - 1;
+        }
 
         if (mostVotedCards.size() > 1) {
+            teamService.increaseNumOfInvalidVotes(currentTeam);
             game.setEndTurn(true);
             log.info("Same card has the max amount of votes");
         } else if (!mostVotedCard.isFound()) {
             if (mostVotedCard.getType() == CardType.ASSASSIN) {
                 game.setEndGameByAssassin(true);
+                game.setEndTurn(true);
                 game.setEndGame(true);
                 log.info("Assassin has been found");
             } else if (mostVotedCard.getType().equals(CardType.BYSTANDER)) {
+                teamService.increaseNumOfCivilians(currentTeam);
                 game.setEndTurn(true);
                 log.info("Civilian found");
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
-                    log.info("current team scored");
-                    if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
+                    log.info("Current team scored");
+                    boolean isGameEndByScore = allSpies == currentTeam.getScore();
+                    if(isGameEndByScore){
+                        game.setEndGame(isGameEndByScore);
+                        log.info("Set end game by score");
+                    }
+                    else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
                         gameTurnService.advanceToSpyTurn(game.getGameTurn());
                         game.setEndTurn(true);
-                        log.info("reached maximum guesses");
+                        log.info("Reached maximum guesses");
                     }
-
                 } else {
+                    teamService.increaseNumOfEnemySpies(currentTeam);
                     teamService.increaseTeamScore(otherTeam);
+                    game.setEndGame(allSpies == otherTeam.getScore());
                     game.setEndTurn(true);
-                    log.info("enemy team scored");
+                    log.info("Enemy team scored");
                 }
             }
             cardService.setCardFound(mostVotedCard);

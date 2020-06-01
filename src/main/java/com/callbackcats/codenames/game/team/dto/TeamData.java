@@ -23,12 +23,15 @@ public class TeamData {
 
     private List<PlayerData> players;
 
+    private StatData statistics;
+
     private List<PuzzleWordData> puzzleWords;
 
     public TeamData(Team team) {
         this.id = team.getId();
         this.side = team.getSide().toString();
         this.score = team.getScore();
+        this.statistics = new StatData(team.getStatistics());
         if (team.getPlayers() != null && !team.getPlayers().isEmpty()) {
             this.players = team.getPlayers()
                     .stream()

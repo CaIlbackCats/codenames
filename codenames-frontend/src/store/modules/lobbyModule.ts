@@ -203,6 +203,10 @@ export default class LobbyModule extends VuexModule {
         return this.lobby.everyoneRdy;
     }
 
+    get currentGameId(): number {
+        return this.lobby.currentGameId;
+    }
+
     get isLanguageSet(): boolean {
         return this.lobby.gameLanguage !== "";
     }

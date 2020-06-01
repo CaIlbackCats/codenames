@@ -42,6 +42,9 @@ public class Team {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Stat statistics;
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "team")
     private List<PuzzleWord> puzzleWords;
@@ -51,5 +54,6 @@ public class Team {
         this.side = side;
         this.game = game;
         this.score = 0;
+        this.statistics = new Stat();
     }
 }

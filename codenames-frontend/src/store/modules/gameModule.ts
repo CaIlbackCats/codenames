@@ -3,10 +3,14 @@ import * as websocket from '@/services/websocket';
 import {config} from "@/config";
 import {GameCreationModel} from "@/models/game/gameCreationModel";
 import axios, {AxiosResponse} from 'axios';
+import {CardDetailsModel} from "@/models/game/card/cardDetailsModel";
 import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
 import {CardVoteModel} from "@/models/game/card/cardVoteModel";
 import {GameStateModel} from "@/models/game/gameStateModel";
 import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
+import router from "@/router";
+import {StatModel} from "@/models/game/statModel";
+import {TeamModel} from "@/models/teamModel";
 import {PassedVoteModel} from "@/models/player/passedVoteModel";
 import {TypelessCardDetailsModel} from "@/models/game/card/typelessCardDetailsModel";
 
@@ -80,7 +84,8 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public fetchActiveGame(): void {
-        websocket.send("/game/fetchGame/" + this.gameId, {});
+        const currentGameId = router.currentRoute.params.gameId;
+        websocket.send("/game/fetchGame/" + currentGameId, {});
     }
 
     @Action({rawError: true})
@@ -174,6 +179,14 @@ export default class GameModule extends VuexModule {
         }
     }
 
+    get isEndGame(): boolean {
+        return this.game.endGame;
+    }
+
+    get currentTeam(): string {
+        return this.game.currentTeam;
+    }
+
     get puzzleWords(): Array<PuzzleWordModel> {
         return this.game.teams.flatMap(team => team.puzzleWords).filter(puzzleWord => puzzleWord !== null)
     }
@@ -222,5 +235,23 @@ export default class GameModule extends VuexModule {
         }
     }
 
+    get teams(): Array<TeamModel> {
+        return this.game.teams;
+    }
+
+    get ownTeam(): TeamModel {
+        const side = this.context.getters['currentPlayerSide'];
+        return this.context.getters["teams"].find(team => team.side === side);
+    }
+
+    get ownScore(): number {
+        const ownTeam: TeamModel = this.context.getters['ownTeam'];
+        return ownTeam.score;
+    }
+
+    get currentPlayerTeamStatistics(): StatModel {
+        const ownTeam: TeamModel = this.context.getters['ownTeam'];
+        return ownTeam.statistics;
+    }
 
 }

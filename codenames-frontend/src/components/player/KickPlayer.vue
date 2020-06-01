@@ -57,6 +57,10 @@
             super();
         }
 
+        async mounted() {
+            await this.$store.dispatch("subscribeToKick");
+        }
+
         public kickPlayer(vote: boolean): void {
             this.$store.dispatch("sendVote", vote);
             clearInterval(this.timer);

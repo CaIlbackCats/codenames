@@ -23,10 +23,11 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from "vue-property-decorator";
+    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import KickPlayer from "@/components/player/KickPlayer.vue";
     import {PlayerModel} from "@/models/player/playerModel";
     import ReadyCheck from "@/components/player/ReadyCheck.vue";
+    import router from "@/router";
 
     @Component({
         components: {KickPlayer, ReadyCheck}
@@ -35,6 +36,29 @@
     export default class PlayerList extends Vue {
         @Prop()
         private isInLobby!: boolean;
+
+        constructor() {
+            super();
+            window.addEventListener('beforeunload', this.hideLeftPlayer);
+        }
+
+        async mounted() {
+            //await this.$store.dispatch("checkSelectedPlayer", {root: true});
+        }
+
+        @Watch("currentPlayerId", {immediate: true})
+        private setPlayer() {
+            if (this.currentPlayerId !== -1) {
+                //localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
+                this.$store.dispatch("subscribeToPlayerChange");
+            } else if (this.currentPlayerId === -1) {
+                router.push("/");
+            }
+        }
+
+        private hideLeftPlayer(): void {
+            this.$store.dispatch("hideLeftPlayer");
+        }
 
         get players(): Array<PlayerModel> {
             return this.$store.getters["playersOrdered"];
