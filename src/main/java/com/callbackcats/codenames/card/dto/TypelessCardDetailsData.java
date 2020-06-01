@@ -13,10 +13,14 @@ public class TypelessCardDetailsData {
     private Long id;
     private WordDetails word;
     private boolean isFound;
+    private String type;
 
     public TypelessCardDetailsData(Card card) {
         this.id = card.getId();
         this.word = new WordDetails(card.getWord());
         this.isFound = card.isFound();
+        if (this.isFound) {
+            this.type = String.valueOf(card.getType());
+        }
     }
 }

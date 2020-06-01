@@ -10,12 +10,14 @@
     import {Component, Vue} from "vue-property-decorator";
     import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
     import Card from "@/components/game/Card.vue";
+    import {TypelessCardDetailsModel} from "@/models/game/card/typelessCardDetailsModel";
+
     @Component({
         components: {Card}
     })
     export default class GameMap extends Vue {
 
-        get board(): Array<TypedCardDetailsModel> {
+        get board(): Array<TypedCardDetailsModel> | Array<TypelessCardDetailsModel> {
             return this.$store.getters["board"];
         }
 

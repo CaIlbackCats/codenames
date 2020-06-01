@@ -42,7 +42,7 @@ public class Team {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Stat statistics;
 
     @LazyCollection(LazyCollectionOption.FALSE)

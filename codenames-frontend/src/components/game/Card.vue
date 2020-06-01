@@ -11,8 +11,9 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from "vue-property-decorator";
-    import {TypedCardDetailsModel} from "../../models/game/card/typedCardDetailsModel";
+    import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+    import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
+    import {TypelessCardDetailsModel} from "@/models/game/card/typelessCardDetailsModel";
 
     @Component
     export default class Card extends Vue {
@@ -23,9 +24,10 @@
         private isGold = false;
 
         @Prop()
-        private card!: TypedCardDetailsModel;
+        private card!: TypedCardDetailsModel | TypelessCardDetailsModel;
 
-        mounted() {
+        @Watch("card.type", {immediate: true})
+        private updateCardType(): void {
             switch (this.card.type) {
                 case 'BLUE_SPY':
                     this.isBlue = true;

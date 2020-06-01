@@ -20,7 +20,7 @@ public class Stat {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(mappedBy = "statistics")
     private Team team;
 
     private Integer numOfCivilians = 0;
