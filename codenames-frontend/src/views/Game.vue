@@ -1,69 +1,44 @@
 <template>
-<<<<<<< HEAD
-    <div class="game row m-0">
-        <div class="col-sm-12 col-lg-8 col-xl-9">
-            <div class="row mx-0">
-                <div class="col-lg-4 p-0">
-                    <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <game-counters></game-counters>
+    <div class="game">
+        <div class="row m-0" v-if="!isEndGame">
+            <div class="col-sm-12 col-lg-8 col-xl-9">
+                <div class="row mx-0">
+                    <div class="col-lg-4 p-0">
+                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
+                            <game-counters></game-counters>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8 pr-0 pl-lg-4">
+                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
+                            <puzzle></puzzle>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-lg-8 pr-0 pl-lg-4">
-                    <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-                        <puzzle></puzzle>
-                    </div>
+                <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
+                    <game-map></game-map>
+                </div>
+
+                <div class="game-options-decor">
+                    <game-options></game-options>
                 </div>
             </div>
 
-            <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
-                <game-map></game-map>
+            <div class="col-sm-12 col-lg-4 col-xl-3">
+                <div class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4">
+                    <player-list :is-in-lobby="false"></player-list>
+                </div>
+                <chat></chat>
             </div>
-
-            <div class="game-options-decor">
-                <game-options></game-options>
-            </div>
-=======
-  <div class="game row m-0">
-    <div class="col-sm-12 col-lg-8 col-xl-9">
-      <div class="row mx-0">
-        <div class="col-lg-4 p-0">
-          <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-            <game-counters></game-counters>
-          </div>
->>>>>>> set hungarian language option with i18n
         </div>
-
-        <div class="col-lg-8 pr-0 pl-lg-4">
-          <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
-            <puzzle></puzzle>
-          </div>
+        <div class="row m-0" v-else>
+            <game-end></game-end>
         </div>
-      </div>
-
-      <div class="game-map white-backgrounded-div col-lg-10 offset-lg-2 px-0">
-        <game-map></game-map>
-      </div>
-
-      <div :class="['game-options-decor', { 'move-right': turn }]">
-        <game-options :spy-master="spyMaster"></game-options>
-        <img :src="spyGameUrl" alt="spy" />
-      </div>
     </div>
-
-    <div class="col-sm-12 col-lg-4 col-xl-3">
-      <div
-        class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4"
-      >
-        <player-list :is-in-lobby="false"></player-list>
-      </div>
-      <chat></chat>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">
-<<<<<<< HEAD
     import {Component, Vue} from "vue-property-decorator";
     import GameCounters from "@/components/game/GameCounters.vue";
     import GameMap from "@/components/game/GameMap.vue";
@@ -71,21 +46,27 @@
     import PlayerList from "@/components/player/PlayerList.vue";
     import Puzzle from "@/components/game/Puzzle.vue";
     import GameOptions from "@/components/game/GameOptions.vue";
+    import GameEnd from "@/components/game/GameEnd.vue";
     import * as websocket from '@/services/websocket'
-
-
     @Component({
-        components: {Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
+        components: {GameEnd, Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
-
         async mounted() {
             await websocket.connect();
             await this.$store.dispatch("subscribeToGame");
             await this.$store.dispatch("subscribeToGameRoles");
             await this.$store.dispatch("fetchActiveGame");
         }
-
+        get gameId(): number {
+            return this.$store.getters["gameId"];
+        }
+        get isEndGame() {
+            return this.$store.getters["isEndGame"];
+        }
+        get currentGameId() {
+            return this.$store.getters["currentGameId"];
+        }
     }
 </script>
 
@@ -98,23 +79,18 @@
         min-height: 100vh;
         min-width: 100vw;
     }
-
     .game-header {
         height: 7vh;
     }
-
     .game-map {
         height: 80vh;
     }
-
     .player-list {
         height: 21vh;
     }
-
     .game-options-decor {
         height: 14vh;
     }
-
     .white-backgrounded-div {
         width: 100%;
         background-color: rgba(255, 255, 255, 0.6);
@@ -122,97 +98,10 @@
         overflow-x: hidden;
         -ms-overflow-style: none;
     }
-
     .white-backgrounded-div::-webkit-scrollbar {
         display: none;
     }
-
     .white-backgrounded-div {
         -ms-overflow-style: none;
     }
 </style>
-=======
-import { Component, Vue } from "vue-property-decorator";
-import GameCounters from "@/components/game/GameCounters.vue";
-import GameMap from "@/components/game/GameMap.vue";
-import Chat from "@/components/chat/Chat.vue";
-import PlayerList from "@/components/player/PlayerList.vue";
-import Puzzle from "@/components/game/Puzzle.vue";
-import GameOptions from "@/components/game/GameOptions.vue";
-import * as websocket from "@/services/websocket";
-
-@Component({
-  components: { Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions }
-})
-export default class Game extends Vue {
-  private spyGameUrl = require("../assets/spy_game.png");
-  private spyMaster = true;
-  private turn = true;
-
-  async mounted() {
-    await websocket.connect();
-    await this.$store.dispatch("subscribeToGame");
-    await this.$store.dispatch("fetchActiveGame");
-  }
-}
-</script>
-
-<style>
-.game {
-  background-image: url("../assets/background.svg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: top;
-  min-height: 100vh;
-  min-width: 100vw;
-}
-
-.game-header {
-  height: 7vh;
-}
-
-.game-map {
-  height: 80vh;
-}
-
-.player-list {
-  height: 21vh;
-}
-
-.game-options {
-  height: 14vh;
-}
-
-.white-backgrounded-div {
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.6);
-  overflow-y: scroll;
-  overflow-x: hidden;
-  -ms-overflow-style: none;
-}
-
-.white-backgrounded-div::-webkit-scrollbar {
-  display: none;
-}
-
-.white-backgrounded-div {
-  -ms-overflow-style: none;
-}
-
-.game-options-decor {
-  position: absolute;
-  bottom: 0;
-  left: -30vw;
-  transition: 1s;
-}
-
-.game-options-decor img {
-  width: 25vw;
-}
-
-.game-options-decor.move-right {
-  transform: translateX(95%);
-  -webkit-transform: translateX(95%);
-}
-</style>
->>>>>>> set hungarian language option with i18n
