@@ -19,6 +19,7 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
+            <span v-if="isNameError">Name already exist</span>
         </div>
     </div>
 
@@ -40,6 +41,10 @@
                 name: this.currentPlayerName,
             }
             this.$store.dispatch("sendPlayerCreation", newPlayer);
+        }
+
+        get isNameError(): boolean {
+            return this.$store.getters["isNameError"];
         }
 
 

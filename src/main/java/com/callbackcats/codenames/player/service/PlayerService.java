@@ -44,17 +44,21 @@ public class PlayerService {
     }
 
     public PlayerData savePlayer(PlayerCreationData playerCreationData) {
-        Player player = new Player(playerCreationData);
-        Lobby lobby = lobbyService.findLobbyById(playerCreationData.getLobbyName());
-        if (lobby.getPlayerList().isEmpty()) {
-            player.setLobbyOwner(true);
-        } else {
-            player.setLobbyOwner(false);
+        List<Player> playersWithSameNAme = playerRepository.findPlayersInLobbyByName(playerCreationData.getName(), playerCreationData.getLobbyName());
+        if (playersWithSameNAme.size() ==0) {
+            Player player = new Player(playerCreationData);
+            Lobby lobby = lobbyService.findLobbyById(playerCreationData.getLobbyName());
+            if (lobby.getPlayerList().isEmpty()) {
+                player.setLobbyOwner(true);
+            } else {
+                player.setLobbyOwner(false);
+            }
+            player.setLobby(lobby);
+            playerRepository.save(player);
+            log.info("New player created by id:\t" + player.getId());
+            return new PlayerData(player);
         }
-        player.setLobby(lobby);
-        playerRepository.save(player);
-        log.info("New player created by id:\t" + player.getId());
-        return new PlayerData(player);
+        return null;
     }
 
     public void setPlayerRole(String lobbyName) {
