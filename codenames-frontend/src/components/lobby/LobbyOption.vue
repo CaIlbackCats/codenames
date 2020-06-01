@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <div class="align-center">
         <b-button :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
                   :disabled="!isEnoughPlayersToPlay" @click="randomizeRoles" block size="sm" squared>Random role
@@ -14,136 +13,45 @@
         <b-button @click="setGameLanguage('ENGLISH')">English</b-button>
         <b-button @click="setGameLanguage('HUNGARIAN')">Hungarian</b-button>
     </div>
-=======
-  <div class="align-center">
-    <b-button
-      :title="
-        partySize < MIN_PARTY_SIZE
-          ? 'There must be at least 4 players to use this function'
-          : ''
-      "
-      :disabled="partySize < MIN_PARTY_SIZE"
-      @click="randomizeRoles"
-      block
-      size="sm"
-      squared
-      >
-      {{$t("lobby-option.role")}}
-<!--      Random role-->
-    </b-button>
-    <b-button
-      :title="
-        partySize < MIN_PARTY_SIZE
-          ? 'There must be at least 4 players to use this function'
-          : ''
-      "
-      :disabled="partySize < MIN_PARTY_SIZE"
-      @click="randomizeSide"
-      block
-      size="sm"
-      squared
-      >
-      {{$t("lobby-option.side")}}
-<!--      Random side-->
-    </b-button>
-    <b-button
-      :title="isEveryoneReady ? '' : ''"
-      :disabled="!isEveryoneReady"
-      @click="createGame"
-      block
-      class="mt-3"
-      size="md"
-      squared
-      >
-      {{$t("lobby-option.start")}}
-
-      <!--      Start The Game!-->
-    </b-button>
-    <b-button @click="setGameLanguage('ENGLISH')">English</b-button>
-    <b-button @click="setGameLanguage('HUNGARIAN')">Hungarian</b-button>
-  </div>
->>>>>>> set hungarian language option with i18n
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import router from "@/router";
-import { LanguageModel } from "@/models/languageModel";
-
-<<<<<<< HEAD
     import {Component, Vue, Watch} from "vue-property-decorator";
     import router from "@/router";
     import {LanguageModel} from "@/models/languageModel";
-
     @Component
     export default class LobbyOption extends Vue {
-
         public setGameLanguage(language: string): void {
             const gameLanguage: LanguageModel = {
                 language: language
             }
             this.$store.dispatch("setGameLanguage", gameLanguage);
         }
-=======
-@Component
-export default class LobbyOption extends Vue {
-  private MIN_PARTY_SIZE = 4;
-
-  public setGameLanguage(language: string): void {
-    const gameLanguage: LanguageModel = {
-      language: language
-    };
-    this.$store.dispatch("setGameLanguage", gameLanguage);
-  }
->>>>>>> set hungarian language option with i18n
-
-  constructor() {
-    super();
-  }
-
-  public createGame(): void {
-    this.$store.dispatch("createGame");
-  }
-
-  public randomizeRoles(): void {
-    this.$store.dispatch("sendRandomizeRole");
-  }
-
-  public randomizeSide(): void {
-    this.$store.dispatch("sendRandomizeSide");
-  }
-
-<<<<<<< HEAD
+        constructor() {
+            super();
+        }
+        public createGame(): void {
+            this.$store.dispatch("createGame");
+        }
+        public randomizeRoles(): void {
+            this.$store.dispatch("sendRandomizeRole");
+        }
+        public randomizeSide(): void {
+            this.$store.dispatch("sendRandomizeSide");
+        }
         get lobbyId(): string {
             return this.$store.getters["lobbyId"];
         }
-
         get partySize(): number {
             return this.$store.getters["partySize"];
         }
-
         get isGameReadyToStart(): boolean {
             return this.$store.getters["isGameReadyToStart"];
         }
-
         get isEnoughPlayersToPlay(): boolean {
             return this.$store.getters["isEnoughPlayersToPlay"];
         }
     }
-=======
-  get isEveryoneReady(): boolean {
-    return this.$store.getters["isEveryoneReady"];
-  }
-
-  get lobbyId(): string {
-    return this.$store.getters["lobbyId"];
-  }
-
-  get partySize(): number {
-    return this.$store.getters["partySize"];
-  }
-}
->>>>>>> set hungarian language option with i18n
 </script>
 
 <style scoped>

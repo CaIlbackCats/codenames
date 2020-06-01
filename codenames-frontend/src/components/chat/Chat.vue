@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <div class="text-left">
         <div class="chat-div col-sm-12">
             <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
@@ -23,41 +22,10 @@
                 </b-input-group-append>
             </b-input-group>
         </div>
-=======
-  <div class="text-left">
-    <div class="chat-div col-sm-12">
-      <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
-        <font-awesome-icon
-          class="ml-2"
-          icon="user-secret"
-          v-if="chatMessage.name === currentPlayerName"
-        />
-        <label class="mx-2"
-          >{{ chatMessage.name }}: {{ chatMessage.message }}</label
-        >
-      </div>
->>>>>>> set hungarian language option with i18n
     </div>
-    <div class="my-3">
-      <b-input-group size="sm">
-        <b-form-input
-          id="chat-message"
-          type="text"
-          v-on:keyup.enter="sendChatMessage"
-          v-model="chatMessageToSend"
-        ></b-form-input>
-        <b-input-group-append>
-          <b-button squared type="submit" @click="sendChatMessage">
-            {{ $t("chat.send") }}
-          </b-button>
-        </b-input-group-append>
-      </b-input-group>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">
-<<<<<<< HEAD
     import {Component, Vue} from "vue-property-decorator";
     import {MessageModel} from "@/models/chat/messageModel";
     import {Subscription} from "webstomp-client";
@@ -94,52 +62,7 @@
         get lobbyId(): string {
             return this.$store.getters["lobbyId"];
         }
-
     }
-=======
-import { Component, Vue } from "vue-property-decorator";
-import { MessageModel } from "@/models/chat/messageModel";
-import { Subscription } from "webstomp-client";
-
-@Component
-export default class Chat extends Vue {
-  private subscription!: Subscription;
-  private chatMessageToSend = "";
-
-  mounted() {
-    // TODO: can we get types for action payloads? use action creators?
-    this.$store
-      .dispatch("chatModule/subscribeToChat", this.lobbyId)
-      .then(subs => (this.subscription = subs));
-  }
-
-  beforeDestroy() {
-    this.$store.dispatch("chatModule/unsubscribeToChat", this.subscription);
-  }
-
-  public sendChatMessage(): void {
-    const msgModel: MessageModel = {
-      name: this.currentPlayerName,
-      message: this.chatMessageToSend,
-      lobbyName: this.lobbyId
-    };
-    this.chatMessageToSend = "";
-    this.$store.dispatch("chatModule/sendChatMessage", msgModel);
-  }
-
-  get chatMessages() {
-    return this.$store.getters["chatModule/messages"];
-  }
-
-  get currentPlayerName(): string {
-    return this.$store.getters["currentPlayerName"];
-  }
-
-  get lobbyId(): string {
-    return this.$store.getters["lobbyId"];
-  }
-}
->>>>>>> set hungarian language option with i18n
 </script>
 
 <style scoped>
