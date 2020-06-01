@@ -1,10 +1,11 @@
 <template>
     <div :class="['game-options', {'move-right':activeTurn}]">
         <div v-if="!currentPlayerSpymaster">
+            <p class="timer" v-if="isVoteOn">{{counter}}</p>
             <b-button @click="sendPassTurn" squared
             >No Vote
             </b-button>
-            {{passVoteCounter}}/{{currentTeamSize}}
+            <p>{{passVoteCounter}}/{{currentTeamSize}}</p>
         </div>
 
         <div class="col-sm-8 col-lg-6 offset-sm-2 offset-lg-3" v-else>
@@ -36,9 +37,13 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import {PuzzleWordModel} from "@/models/game/puzzleWordModel";
+    import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
+    import {TypelessCardDetailsModel} from "@/models/game/card/typelessCardDetailsModel";
 
+    const MAX_VOTE_TIME = 5;
+    const MILISEC = 1000;
 
     @Component
     export default class GameOptions extends Vue {
@@ -48,6 +53,18 @@
         private puzzleWord = "";
 
         private maxGuessCount = 0;
+
+        private counter = MAX_VOTE_TIME;
+        private timer = 0;
+        private voting = false;
+
+        get isVoteOn() {
+            return this.board.find(card => card.voted)
+        }
+
+        get board(): Array<TypedCardDetailsModel> | Array<TypelessCardDetailsModel> {
+            return this.$store.getters['board'];
+        }
 
         public sendPuzzleWord() {
 
@@ -82,16 +99,39 @@
             return currentPlayerActiveTurn && currentTeamActiveTurn;
         }
 
+        @Watch("isVoteOn")
+        private showTimer() {
+            if (this.isVoteOn && this.timer === 0) {
+                this.counter = MAX_VOTE_TIME;
+                this.voting = true;
+                this.timer = setInterval(() => this.decreaseCounter(), MILISEC)
+            }
+        }
+
+        private decreaseCounter(): void {
+            if (this.counter != 0) {
+                this.counter -= 1;
+            } else {
+                clearInterval(this.timer);
+                this.voting = false;
+                this.timer = 0;
+            }
+        }
     }
 </script>
 
 <style scoped>
 
+    p {
+        color: white;
+        font-size: 1rem;
+    }
+
     button {
         background-color: rgb(135, 25, 75);
         border: 0 solid;
         box-shadow: inset 0 0 20px rgba(250, 230, 15, 0);
-        outline: rgba(135, 25, 75, .5) solid 1px;
+        outline: rgba(250, 230, 15, .5) solid 1px;
         outline-offset: 0px;
         text-shadow: none;
         transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
@@ -122,8 +162,12 @@
     }
 
     img {
-        margin-top: 4rem;
+        margin-top: 2rem;
         width: 25vw;
+    }
+
+    .timer {
+        font-size: 2rem;
     }
 
     .game-options {
