@@ -14,14 +14,6 @@
         </div>
 
         <div class="col-sm-12">
-            <b-button :disabled="!isGameReadyToStart"
-                      :title="isGameReadyToStart ? '' : '' " @click="createGame" block class="mt-3" size="md" squared>
-                Start The
-                Game!
-            </b-button>
-        </div>
-
-        <div class="col-sm-12">
             <img @click="setGameLanguage('ENGLISH')"
                  alt="english"
                  src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg">
@@ -29,6 +21,15 @@
                  alt="hungarian"
                  src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg">
         </div>
+
+        <div class="col-sm-12">
+            <b-button :disabled="!isGameReadyToStart"
+                      :title="isGameReadyToStart ? '' : '' " @click="createGame" block size="md" squared>
+                Start The
+                Game!
+            </b-button>
+        </div>
+
     </div>
 </template>
 
