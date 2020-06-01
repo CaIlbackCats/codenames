@@ -21,7 +21,7 @@
                         <player-list :is-in-lobby="true"></player-list>
                     </div>
 
-                    <div class="lobby-options-div col-sm-12">
+                    <div class="lobby-options-div">
                         <LobbyOption v-if="isCurrentPlayerLobbyOwner"></LobbyOption>
                     </div>
 
