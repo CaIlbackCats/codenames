@@ -208,7 +208,7 @@ export default class LobbyModule extends VuexModule {
     }
 
     get isLanguageSet(): boolean {
-        return this.lobby.gameLanguage !== "";
+        return this.lobby.gameLanguage !== "null";
     }
 
     get isAllPlayersHaveRoleAndSide(): boolean {
