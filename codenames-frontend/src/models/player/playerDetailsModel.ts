@@ -1,4 +1,4 @@
 export interface PlayerDetailsModel {
-    lobbyName: string,
-    id: number,
+  lobbyName: string;
+  id: number;
 }

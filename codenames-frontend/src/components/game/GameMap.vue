@@ -1,12 +1,17 @@
 <template>
-    <div class="row game-map offset-lg-1">
-        <div class="col-sm-12 col-lg-2 m-lg-2 px-0" v-for="card in board" :key="card.id">
-            <card :card="card"></card>
-        </div>
+  <div class="row game-map offset-lg-1">
+    <div
+      class="col-sm-12 col-lg-2 m-lg-2 px-0"
+      v-for="card in board"
+      :key="card.id"
+    >
+      <card :card="card"></card>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
+<<<<<<< HEAD
     import {Component, Vue} from "vue-property-decorator";
     import {TypedCardDetailsModel} from "@/models/game/card/typedCardDetailsModel";
     import Card from "@/components/game/Card.vue";
@@ -20,12 +25,23 @@
         }
 
     }
+=======
+import { Component, Vue } from "vue-property-decorator";
+import { CardDetailsModel } from "@/models/game/card/cardDetailsModel";
+import Card from "@/components/game/Card.vue";
+@Component({
+  components: { Card }
+})
+export default class GameMap extends Vue {
+  get board(): Array<CardDetailsModel> {
+    return this.$store.getters["board"];
+  }
+}
+>>>>>>> set hungarian language option with i18n
 </script>
 
 <style scoped>
-
-    .game-map {
-        padding-top: 2vh;
-    }
-
+.game-map {
+  padding-top: 2vh;
+}
 </style>

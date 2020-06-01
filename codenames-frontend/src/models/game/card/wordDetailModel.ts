@@ -1,5 +1,4 @@
 export interface WordDetailModel {
-
-    id:number,
-    word:string,
+  id: number;
+  word: string;
 }

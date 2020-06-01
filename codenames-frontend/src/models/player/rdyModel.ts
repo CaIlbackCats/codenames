@@ -1,4 +1,4 @@
 export interface RdyModel {
-    playerId: number,
-    rdyState: boolean,
+  playerId: number;
+  rdyState: boolean;
 }

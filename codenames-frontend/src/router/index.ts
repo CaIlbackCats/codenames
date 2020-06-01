@@ -1,9 +1,9 @@
 import Vue from "vue";
-import VueRouter, {RouteConfig} from "vue-router";
+import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 import Lobby from "@/components/Lobby.vue";
 import Game from "@/views/Game.vue";
-import Statistics from '@/views/Statistics.vue';
+import Statistics from "@/views/Statistics.vue";
 import NotFound from "@/components/NotFound.vue";
 
 Vue.use(VueRouter);
@@ -17,7 +17,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/lobby/:lobbyId",
     name: "Lobby",
-    component: Lobby,
+    component: Lobby
   },
   {
     path: "/lobby/:lobbyId/:gameId",
@@ -41,11 +41,11 @@ const routes: Array<RouteConfig> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-        import(/* webpackChunkName: "about" */ "../views/About.vue")
+      import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
-    path: '*',
-    name: '404',
+    path: "*",
+    name: "404",
     component: NotFound
   }
 ];

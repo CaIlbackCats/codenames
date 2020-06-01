@@ -1,4 +1,4 @@
 export enum KickType {
-    OWNER,
-    VOTE,
+  OWNER,
+  VOTE
 }
