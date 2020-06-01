@@ -234,12 +234,11 @@ public class PlayerService {
 
     public ScheduledFuture<?> initVotingPhase(PlayerRemovalData playerRemovalData) {
         PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
-        Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
-        ScheduledFuture<?> schedule = null;
-        if (!kickInitPlayer.getLobbyOwner()) {
-            schedule = scheduler.schedule(() -> processVotes(playerToKick.getId()), VOTING_PHASE_TIME, TimeUnit.SECONDS);
-        }
-        return schedule;
+        return scheduler.schedule(() -> processVotes(playerToKick.getId()), VOTING_PHASE_TIME, TimeUnit.SECONDS);
+    }
+
+    public Boolean isInitPlayerLobbyOwner(Long playerId) {
+        return findPlayerById(playerId).getLobbyOwner();
     }
 
     // @Async()
@@ -289,8 +288,8 @@ public class PlayerService {
     }
 
     private void removePlayer(Player player) {
-        player.setLobby(null);
-        playerRepository.delete(player);
+        player.setVisible(false);
+        playerRepository.save(player);
         log.info("Player removed by id:\t" + player.getId());
     }
 

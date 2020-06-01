@@ -66,16 +66,18 @@ public class GameController {
         log.info("Player vote requested");
         playerService.setCardVote(cardVoteData);
         sendMapMessage(gameId);
-        ScheduledFuture<?> future = gameService.startVotingPhase(gameId);
-        try {
-            future.get();
-            gameService.changeGameVotingPhase(false, gameId);
-            if (gameService.isEndTurn(gameId)) {
-                gameService.changeTurn(gameId);
+        if (!gameService.isGameInCardVotingPhase(gameId)){
+            ScheduledFuture<?> future = gameService.startVotingPhase(gameId);
+            try {
+                future.get();
+                gameService.changeGameVotingPhase(false, gameId);
+                if (gameService.isEndTurn(gameId)) {
+                    gameService.changeTurn(gameId);
+                }
+                log.info("Player card vote finished");
+            } catch (InterruptedException | ExecutionException e) {
+                log.info(e.getMessage());
             }
-            log.info("Player card vote finished");
-        } catch (InterruptedException | ExecutionException e) {
-            log.info(e.getMessage());
         }
 
         sendMapMessage(gameId);

@@ -111,20 +111,23 @@ public class PlayerController {
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/kick", playerRemovalData);
         updateLobbyState(lobbyName);
 
-        try {
-            lobbyService.setKickPhase(lobbyName, true);
-            ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
-            votingFinished.get();
+        if (!playerService.isInitPlayerLobbyOwner(playerRemovalData.getOwnerId())) {
+            try {
+                lobbyService.setKickPhase(lobbyName, true);
+                ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
+                votingFinished.get();
 
-            if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
-                PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyName);
-                updatePlayer(lobbyName, newLobbyOwner.getId(), newLobbyOwner);
+                if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
+                    PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyName);
+                    updatePlayer(lobbyName, newLobbyOwner.getId(), newLobbyOwner);
+                }
+                lobbyService.setKickPhase(lobbyName, false);
+                updateLobbyState(lobbyName);
+            } catch (InterruptedException | ExecutionException e) {
+                log.info(e.getMessage());
             }
-            lobbyService.setKickPhase(lobbyName, false);
-            updateLobbyState(lobbyName);
-        } catch (InterruptedException | ExecutionException e) {
-            log.info(e.getMessage());
         }
+
     }
 
     @MessageMapping("/rdy")

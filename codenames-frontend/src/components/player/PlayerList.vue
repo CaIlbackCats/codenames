@@ -57,7 +57,7 @@
         }
 
         private hideLeftPlayer(): void {
-            this.$store.dispatch("hideLeftPlayer");
+                this.$store.dispatch("hideLeftPlayer");
         }
 
         get players(): Array<PlayerModel> {

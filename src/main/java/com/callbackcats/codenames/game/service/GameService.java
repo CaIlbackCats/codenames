@@ -83,13 +83,13 @@ public class GameService {
     }
 
     public ScheduledFuture<?> startVotingPhase(Long gameId) {
-        ScheduledFuture<?> schedule = null;
         Game game = findGameById(gameId);
-        if (!game.getVotingPhase()) {
-            changeGameVotingPhase(true, gameId);
-            schedule = scheduler.schedule(() -> countScore(game), CARD_VOTING_PHASE_DURATION, TimeUnit.SECONDS);
-        }
-        return schedule;
+        changeGameVotingPhase(true, gameId);
+        return scheduler.schedule(() -> countScore(game), CARD_VOTING_PHASE_DURATION, TimeUnit.SECONDS);
+    }
+
+    public Boolean isGameInCardVotingPhase(Long gameId) {
+        return findGameById(gameId).getVotingPhase();
     }
 
     public Boolean isEndTurn(Long gameId) {
@@ -202,11 +202,10 @@ public class GameService {
                     teamService.increaseTeamScore(currentTeam);
                     log.info("Current team scored");
                     boolean isGameEndByScore = allSpies == currentTeam.getScore();
-                    if(isGameEndByScore){
+                    if (isGameEndByScore) {
                         game.setEndGame(isGameEndByScore);
                         log.info("Set end game by score");
-                    }
-                    else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
+                    } else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
                         gameTurnService.advanceToSpyTurn(game.getGameTurn());
                         game.setEndTurn(true);
                         log.info("Reached maximum guesses");
