@@ -4,5 +4,7 @@ export interface TypelessCardDetailsModel {
     id:number,
     word:WordDetailModel,
     isFound:boolean,
-    type: string
+    type: string,
+    voted:boolean,
+    voteCounter:number,
 }

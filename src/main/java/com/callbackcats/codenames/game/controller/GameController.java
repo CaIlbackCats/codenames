@@ -55,6 +55,7 @@ public class GameController {
 
         log.info("Request gamestate by game id:\t" + gameId);
         sendMapMessage(gameId);
+
         return gameService.getGameStateData(gameId);
     }
 
@@ -64,7 +65,7 @@ public class GameController {
 
         log.info("Player vote requested");
         playerService.setCardVote(cardVoteData);
-
+        sendMapMessage(gameId);
         ScheduledFuture<?> future = gameService.startVotingPhase(gameId);
         try {
             future.get();

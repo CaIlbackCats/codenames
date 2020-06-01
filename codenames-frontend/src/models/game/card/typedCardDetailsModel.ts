@@ -4,5 +4,7 @@ export interface TypedCardDetailsModel {
     id:number,
     word: WordDetailModel,
     type: string,
-    isFound: boolean
+    isFound: boolean,
+    voted:boolean,
+    voteCounter:number,
 }

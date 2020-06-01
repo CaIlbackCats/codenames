@@ -38,6 +38,8 @@ public class CardService {
 
     public void setCardFound(Card card) {
         card.setFound(true);
+        card.setVoted(false);
+        card.setVoteCounter(0);
         cardRepository.save(card);
         log.info("Card by id:\t" + card.getId() + "\t is found");
     }
@@ -79,6 +81,22 @@ public class CardService {
     public List<TypedCardDetailsData> getSpymasterMap(Long gameId) {
         log.info("Map requested for spymasters");
         return findCardsByGameId(gameId).stream().map(TypedCardDetailsData::new).collect(Collectors.toList());
+    }
+
+    public void deselectCard(Card card) {
+        card.setVoted(false);
+        int updatedNumberOfVotes = card.getVoteCounter() - 1;
+        card.setVoteCounter(updatedNumberOfVotes);
+        log.info("Card by id:\t" + card.getId() + "\t is deselected");
+        cardRepository.save(card);
+    }
+
+    public void selectCard(Card card) {
+        card.setVoted(true);
+        int updatedNumberOfVotes = card.getVoteCounter() + 1;
+        card.setVoteCounter(updatedNumberOfVotes);
+        log.info("Card by id:\t" + card.getId() + "\t is selected");
+        cardRepository.save(card);
     }
 
     private List<Card> findCardsByGameId(Long gameId) {

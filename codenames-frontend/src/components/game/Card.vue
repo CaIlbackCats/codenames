@@ -4,8 +4,10 @@
         isBlack ? 'black-card' : '',
         isGold ? 'gold-card': '',
         card.isFound ? 'found' : '',
+        card.voted ? 'voted':'',
         'card']">
         <label class="m-0">{{card.word.word}} </label>
+        <small v-if="card.voteCounter>0">{{card.voteCounter}}</small>
         <div :class="[isRed || isBlack || isGold || isBlue ? 'white-line' : 'pink-line']"></div>
     </div>
 </template>
@@ -112,6 +114,12 @@
     .gold-card {
         background-color: rgba(184, 134, 11, 0.8);
         color: white;
+    }
+
+    .voted {
+        -webkit-box-shadow: 10px 10px 40px 0px rgb(0, 255, 0);
+        -moz-box-shadow: 10px 10px 40px 0px rgba(0, 255, 0, 1);
+        box-shadow: 10px 10px 40px 0px rgba(0, 255, 0, 1);
     }
 
 </style>

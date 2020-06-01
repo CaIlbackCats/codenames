@@ -41,6 +41,12 @@ public class Card {
     @OneToMany(mappedBy = "votedCard")
     private List<Player> players;
 
+    @Column(name = "is_voted")
+    private Boolean voted=false;
+
+    @Column(name = "number_of_votes")
+    private Integer voteCounter=0;
+
     public Card(Word word, CardType cardType, Game game) {
         this.word = word;
         this.type = cardType;

@@ -45,7 +45,7 @@ public class PlayerService {
 
     public PlayerData savePlayer(PlayerCreationData playerCreationData) {
         List<Player> playersWithSameNAme = playerRepository.findPlayersInLobbyByName(playerCreationData.getName(), playerCreationData.getLobbyName());
-        if (playersWithSameNAme.size() ==0) {
+        if (playersWithSameNAme.size() == 0) {
             Player player = new Player(playerCreationData);
             Lobby lobby = lobbyService.findLobbyById(playerCreationData.getLobbyName());
             if (lobby.getPlayerList().isEmpty()) {
@@ -265,10 +265,16 @@ public class PlayerService {
 
     public void setCardVote(CardVoteData cardVote) {
         Player player = findPlayerById(cardVote.getVotedPlayerId());
-        Card votedCard = cardService.findCardById(cardVote.getVotedCardId());
-        player.setVotedCard(votedCard);
+        if (player.getVotedCard() != null) {
+            cardService.deselectCard(player.getVotedCard());
+        }
+
+        Card currentVotedCard = cardService.findCardById(cardVote.getVotedCardId());
+        cardService.selectCard(currentVotedCard);
+        player.setVotedCard(currentVotedCard);
+
         playerRepository.save(player);
-        log.info("Card by id:\t" + votedCard.getId() + "\t attached to player by id:\t" + player.getId());
+        log.info("Card by id:\t" + currentVotedCard.getId() + "\t attached to player by id:\t" + player.getId());
     }
 
     public void saveTeamToPlayer(Team team, Player player) {
