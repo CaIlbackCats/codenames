@@ -3,7 +3,9 @@
         <div class="chat-div col-sm-12">
             <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
                 <font-awesome-icon class="ml-2" icon="user-secret" v-if="chatMessage.name === currentPlayerName"/>
-                <label class="mx-2">{{chatMessage.name}}: {{chatMessage.message}}</label>
+                <label class="mx-2"
+                       :style="chatMessage.teamColor === 'BLUE' ? 'color: dodgerblue':chatMessage.teamColor === 'RED' ? 'color: indianred' : 'color: #87194B' ">
+                    {{chatMessage.name}}: {{chatMessage.message}}</label>
             </div>
         </div>
         <div class="my-3">
@@ -36,26 +38,21 @@
 
         mounted() {
             // TODO: can we get types for action payloads? use action creators?
-            this.$store.dispatch("chatModule/subscribeToChat", this.lobbyId)
+            this.$store.dispatch("subscribeToChat")
                 .then(subs => this.subscription = subs);
         }
 
         beforeDestroy() {
-            this.$store.dispatch("chatModule/unsubscribeToChat", this.subscription)
+            this.$store.dispatch("unsubscribeToChat", this.subscription)
         }
 
         public sendChatMessage(): void {
-            const msgModel: MessageModel = {
-                name: this.currentPlayerName,
-                message: this.chatMessageToSend,
-                lobbyName: this.lobbyId,
-            }
+            this.$store.dispatch("sendChatMessage", this.chatMessageToSend)
             this.chatMessageToSend = "";
-            this.$store.dispatch("chatModule/sendChatMessage", msgModel)
         }
 
-        get chatMessages() {
-            return this.$store.getters["chatModule/messages"];
+        get chatMessages(): Array<MessageModel> {
+            return this.$store.getters["messages"];
         }
 
         get currentPlayerName(): string {

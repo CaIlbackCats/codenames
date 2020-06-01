@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 public class MessageData {
     private Integer id;
+    private Long playerId;
     private String name;
+    private String teamColor;
     private String message;
-    private String lobbyName;
 }
