@@ -6,7 +6,7 @@
         card.isFound ? 'found' : '',
         'card']">
         <label class="m-0">{{card.word.word}} </label>
-        <div class="card-line"></div>
+        <div :class="[isRed || isBlack || isGold || isBlue ? 'white-line' : 'pink-line']"></div>
     </div>
 </template>
 
@@ -64,21 +64,28 @@
 
 <style scoped>
 
-    .card-line {
+    .white-line {
         height: 1px;
         background: rgb(255, 255, 255);
         background: linear-gradient(90deg, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 90%);
     }
 
+
+    .pink-line {
+        height: 1px;
+        background: rgb(135, 25, 75);
+        background: linear-gradient(90deg, rgba(135, 25, 75, 0) 10%, rgba(135, 25, 75, 0.4) 50%, rgba(135, 25, 75, 0) 90%);
+    }
+
     .card {
         height: 12vh;
         border-radius: 1rem;
-        color: white;
+        color: rgb(135, 25, 75);
         font-weight: bold;
         text-transform: uppercase;
         font-size: 1.3rem;
         padding-top: 3vh;
-        opacity: 0.4;
+        opacity: 0.6;
     }
 
     .found {
@@ -87,18 +94,22 @@
 
     .blue-card {
         background-color: rgba(30, 144, 255, 0.8);
+        color: white;
     }
 
     .red-card {
         background-color: rgba(205, 92, 92, 0.8);
+        color: white;
     }
 
     .black-card {
         background-color: rgba(0, 0, 0, 0.8);
+        color: white;
     }
 
     .gold-card {
         background-color: rgba(184, 134, 11, 0.8);
+        color: white;
     }
 
 </style>
