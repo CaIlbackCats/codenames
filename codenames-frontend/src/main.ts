@@ -11,6 +11,7 @@ import {faUserSecret, faUserMinus, faCheck, faTimes, faWineBottle, faCocktail, f
 import {faRedhat, faBlackTie} from '@fortawesome/free-brands-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import ToggleButton from "vue-js-toggle-button";
+import i18n from './i18n'
 
 library.add(faUserSecret, faUserMinus, faCheck, faTimes, faBlackTie, faRedhat, faWineBottle, faCocktail, faBriefcase)
 
@@ -28,5 +29,6 @@ Vue.config.productionTip = false;
 new Vue({
     router,
     store,
+    i18n,
     render: h => h(App)
 }).$mount("#app");
