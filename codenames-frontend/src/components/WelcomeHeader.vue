@@ -1,5 +1,8 @@
 <template>
     <div class="main-div col-sm-12">
+        <div class="locale-change">
+            🌐 <LocaleSwitcher/>
+        </div>
         <div id="spies"
              :class="['col-lg-4 offset-lg-4',
                       {'move-right':isOverCreate},
@@ -13,12 +16,14 @@
                       @mouseover="isOverCreate = true"
                       @mouseleave="isOverCreate = false"
                       class="mr-5">
-                Create private room
+                {{ $t("welcome-header.private-room") }}
+<!--                Create private room-->
             </b-button>
             <b-button squared
                       @mouseover="isOverRandom = true"
                       @mouseleave="isOverRandom = false">
-                Random room
+                {{$t("welcome-header.random-room")}}
+<!--                Random room-->
             </b-button>
         </div>
     </div>
@@ -27,8 +32,14 @@
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
     import router from "@/router";
+    import LocaleSwitcher from "@/components/LocaleSwitcher.vue";
 
-    @Component({})
+
+    @Component({
+        components: {
+            LocaleSwitcher
+        }
+    })
     export default class WelcomeHeader extends Vue {
         private logoUrl = require("../assets/semanedoc.png");
         private isOverCreate = false;
@@ -115,5 +126,10 @@
         outline-color: rgba(250, 230, 15, 0);
         outline-offset: 15px;
         text-shadow: 1px 1px 2px #427388;
+    }
+
+    .locale-change {
+        display: flex;
+        align-items: center;
     }
 </style>

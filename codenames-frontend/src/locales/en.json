@@ -1,0 +1,29 @@
+{
+  "welcome-header": {
+    "private-room": "Create private room",
+    "random-room": "Random room"
+  },
+  "lobby": {
+    "copy-link": "Copy link"
+  },
+  "chat": {
+    "send": "Send"
+  },
+  "game-options": {
+    "vote": "No vote"
+  },
+  "lobby-option": {
+    "role": "Random role",
+    "side": "Random side",
+    "start": "Start the game!"
+  },
+  "kick-player": {
+    "kick": "Do you want to kick "
+  },
+  "role-pick": {
+    "clear": "Clear selection"
+  },
+  "create-player": {
+    "placeholder": "Enter your name"
+  }
+}
