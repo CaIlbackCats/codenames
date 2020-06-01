@@ -47,6 +47,7 @@ public class TeamService {
         int increasedScore = team.getScore() + 1;
         team.setScore(increasedScore);
         teamRepository.save(team);
+        log.info("Team :\t" + team.getId() + "\t current score increased to:\t" + team.getScore());
         puzzleWordService.increaseLatestPuzzleWordGuessCounter(team);
     }
 

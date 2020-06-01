@@ -13,6 +13,7 @@ import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.game.team.service.TeamService;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.domain.Player;
+import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameService {
 
-    private static final Integer CARD_VOTING_PHASE_DURATION = 10;
+    private static final Integer CARD_VOTING_PHASE_DURATION = 5;
 
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
@@ -99,6 +100,7 @@ public class GameService {
         Team currentTeam = teamService.findTeamByGameIdBySide(game.getId(), currentTeamSide);
         List<Card> votedCards = currentTeam.getPlayers()
                 .stream()
+                .filter(player -> player.getRole() == RoleType.SPY)
                 .map(Player::getVotedCard)
                 .collect(Collectors.toList());
 
@@ -159,27 +161,33 @@ public class GameService {
     private void processMostVotedCardScore(Game game, Team currentTeam, List<Card> mostVotedCards) {
         SideType oppositeSide = SideType.getOppositeSide(game.getGameTurn().getCurrentTeam());
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
+        Card mostVotedCard = mostVotedCards.get(0);
 
         if (mostVotedCards.size() > 1) {
             game.setEndTurn(true);
-        } else {
-            Card mostVotedCard = mostVotedCards.get(0);
+            log.info("Same card has the max amount of votes");
+        } else if (!mostVotedCard.isFound()) {
             if (mostVotedCard.getType() == CardType.ASSASSIN) {
                 game.setEndGameByAssassin(true);
                 game.setEndGame(true);
+                log.info("Assassin has been found");
             } else if (mostVotedCard.getType().equals(CardType.BYSTANDER)) {
                 game.setEndTurn(true);
+                log.info("Civilian found");
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
+                    log.info("current team scored");
                     if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
                         gameTurnService.advanceToSpyTurn(game.getGameTurn());
                         game.setEndTurn(true);
+                        log.info("reached maximum guesses");
                     }
 
                 } else {
                     teamService.increaseTeamScore(otherTeam);
                     game.setEndTurn(true);
+                    log.info("enemy team scored");
                 }
             }
             cardService.setCardFound(mostVotedCard);

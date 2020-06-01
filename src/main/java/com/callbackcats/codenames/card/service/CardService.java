@@ -39,6 +39,7 @@ public class CardService {
     public void setCardFound(Card card) {
         card.setFound(true);
         cardRepository.save(card);
+        log.info("Card by id:\t" + card.getId() + "\t is found");
     }
 
     public List<Card> generateMap(SideType startingTeamColor, GameLanguage language, Game game) {

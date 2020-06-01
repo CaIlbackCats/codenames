@@ -18,21 +18,25 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "word_id")
     private Word word;
 
+    @Column(name = "card_type")
     @Enumerated(EnumType.STRING)
     private CardType type;
 
+    @Column(name = "is_found")
     private boolean isFound;
 
     @ManyToOne
+    @JoinColumn(name = "game_id")
     private Game game;
 
-   // private Integer vote;
+    // private Integer vote;
 
     @OneToMany(mappedBy = "votedCard")
     private List<Player> players;

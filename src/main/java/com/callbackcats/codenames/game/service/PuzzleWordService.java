@@ -35,6 +35,7 @@ public class PuzzleWordService {
         int guess = puzzleWord.getUsedGuesses() + 1;
         puzzleWord.setUsedGuesses(guess);
         puzzleWordRepository.save(puzzleWord);
+        log.info("Used guesses increased for puzzleword id:\t" + puzzleWord.getId() + "\t to:\t" + puzzleWord.getUsedGuesses() + "\tof\t" + puzzleWord.getMaxGuessCount());
     }
 
     public Boolean isPuzzleWordGuessLimitReached(Team team) {
