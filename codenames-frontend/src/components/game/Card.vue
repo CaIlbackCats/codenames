@@ -8,9 +8,9 @@
         card.found ? 'found' : '',
         card.voted ? 'voted':'',
         'card']">
-        <label class="m-0">{{card.word.word}} </label>
-        <small v-if="card.voteCounter>0">{{card.voteCounter}}</small>
+        <label class="m-0">{{card.word.word}}</label>
         <div :class="[isColored ? 'white-line' : 'pink-line']"></div>
+        <small class="float-right" v-if="card.voteCounter>0">{{card.voteCounter}}</small>
     </div>
 </template>
 
@@ -94,6 +94,9 @@
         font-size: 1.3rem;
         padding-top: 3vh;
         opacity: 0.6;
+        outline: rgba(255, 255, 255, 1) solid 1px;
+        outline-offset: -0.5rem;
+        transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .clickable {
@@ -105,26 +108,33 @@
     }
 
     .found {
-        opacity: 1;
+        opacity: 1 !important;
+        outline-color: rgba(135, 25, 75, 0) !important;
+        outline-offset: 15px;
     }
 
     .blue-card {
-        background-color: rgba(30, 144, 255, 0.8);
+        background-color: rgba(30, 144, 255, 1);
+        outline-color: rgba(30, 144, 255, 1);
     }
 
     .red-card {
-        background-color: rgba(205, 92, 92, 0.8);
+        background-color: rgba(205, 92, 92, 1);
+        outline-color: rgba(205, 92, 92, 1);
     }
 
     .black-card {
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 1);
+        outline-color: rgba(0, 0, 0, 1);
     }
 
     .gold-card {
-        background-color: rgba(184, 134, 11, 0.8);
+        background-color: rgba(184, 134, 11, 1);
+        outline-color: rgba(184, 134, 11, 1);
     }
 
     .colored-card {
+        opacity: 0.4;
         color: white;
         cursor: none;
     }
