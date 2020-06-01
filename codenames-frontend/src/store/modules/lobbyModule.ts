@@ -143,6 +143,8 @@ export default class LobbyModule extends VuexModule {
         return response.data;
     }
 
+
+
     get playersOrdered(): Array<PlayerModel> {
         if (this.lobby.players) {
             const currentPlayer: PlayerModel = this.context.getters["player"]

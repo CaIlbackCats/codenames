@@ -1,7 +1,7 @@
 import {PlayerModel} from "@/models/player/playerModel";
 
 export interface PlayerRemovalModel {
-    ownerId?: number,
+    playerInitId?: number,
     playerToRemoveId?: number,
     vote?: boolean,
     playerToRemove?: PlayerModel,

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class PlayerRemovalData {
 
-    private Long ownerId;
+    private Long playerInitId;
     private Long playerToRemoveId;
     private Boolean vote;
     private PlayerData playerToRemove;

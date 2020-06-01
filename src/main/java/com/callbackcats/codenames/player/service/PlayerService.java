@@ -132,7 +132,7 @@ public class PlayerService {
 
     public void processKickBeforeCountDown(PlayerRemovalData playerRemovalData) {
         if (playerRemovalData.getVote()) {
-            Player kickInitPlayer = findPlayerById(playerRemovalData.getOwnerId());
+            Player kickInitPlayer = findPlayerById(playerRemovalData.getPlayerInitId());
             Player playerToRemove = findPlayerById(playerRemovalData.getPlayerToRemoveId());
             if (kickInitPlayer.getLobbyOwner()) {
                 removePlayer(playerToRemove);

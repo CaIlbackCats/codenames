@@ -54,7 +54,7 @@ export default class KickModule extends VuexModule {
         const ownerId: number = this.context.getters["currentPlayerId"];
 
         const playerRemovalModel: PlayerRemovalModel = {
-            ownerId: ownerId,
+            playerInitId: ownerId,
             playerToRemoveId: playerToRemoveId,
         }
         websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
@@ -63,7 +63,10 @@ export default class KickModule extends VuexModule {
     @Action({rawError: true})
     public updatePlayerRemovalInfo(playerRemovalModel: PlayerRemovalModel): void {
         const currentId: number = this.context.getters["currentPlayerId"];
-        const showWindow: boolean = currentId != playerRemovalModel.playerToRemoveId;
+        const currentPlayerOwner : boolean = this.context.getters["isCurrentPlayerOwner"]
+        const players : Array<PlayerModel> = this.context.getters["playersOrdered"];
+        const isInitPlayerIdOwner : boolean = players.find(player=> player.id===playerRemovalModel.playerInitId)!.lobbyOwner
+        const showWindow: boolean = (currentId != playerRemovalModel.playerToRemoveId && !isInitPlayerIdOwner) || (isInitPlayerIdOwner && currentPlayerOwner ) ;
 
         this.context.commit("SET_PLAYER_REMOVAL_MODEL", playerRemovalModel);
         this.context.commit("SET_KICK_WINDOW", showWindow);

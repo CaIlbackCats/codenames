@@ -86,7 +86,7 @@ public class PlayerController {
     public void countKickVotes(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Player kick count modification requested");
         playerService.processKickBeforeCountDown(playerRemovalData);
-        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
 
         updateLobbyState(lobbyName);
     }
@@ -94,7 +94,7 @@ public class PlayerController {
     @MessageMapping("/getPlayers")
     public void kickPlayer(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Kicking player requested");
-        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
 
         updateLobbyState(lobbyName);
     }
@@ -106,12 +106,12 @@ public class PlayerController {
         playerService.setPlayerRemoval(playerRemovalData);
         //todo set kicking phase and send refreshed lobby back
 
-        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getOwnerId()).getLobbyId();
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
 
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/kick", playerRemovalData);
         updateLobbyState(lobbyName);
 
-        if (!playerService.isInitPlayerLobbyOwner(playerRemovalData.getOwnerId())) {
+        if (!playerService.isInitPlayerLobbyOwner(playerRemovalData.getPlayerInitId())) {
             try {
                 lobbyService.setKickPhase(lobbyName, true);
                 ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
