@@ -16,8 +16,8 @@
             <font-awesome-icon @click="initKickPlayer(player.id)"
                                class="kick-btn"
                                icon="user-minus"
-                               v-if="player.name !== currentPlayerName"/>
-            <KickPlayer></KickPlayer>
+                               v-if="player.name !== currentPlayerName && isInLobby"/>
+            <KickPlayer v-if="isInLobby"></KickPlayer>
         </div>
     </div>
 </template>
