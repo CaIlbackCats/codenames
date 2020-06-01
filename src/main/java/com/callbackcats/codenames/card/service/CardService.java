@@ -99,6 +99,7 @@ public class CardService {
         cardRepository.save(card);
     }
 
+
     private List<Card> findCardsByGameId(Long gameId) {
         return cardRepository.findCardsByGameId(gameId);
     }

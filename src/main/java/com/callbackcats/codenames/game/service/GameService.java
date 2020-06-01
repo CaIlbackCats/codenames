@@ -178,6 +178,7 @@ public class GameService {
 
         if (mostVotedCards.size() > 1) {
             teamService.increaseNumOfInvalidVotes(currentTeam);
+            mostVotedCards.stream().filter(card -> card != null).forEach(cardService::deselectCard);
             game.setEndTurn(true);
             log.info("Same card has the max amount of votes");
         } else if (!mostVotedCard.isFound()) {
