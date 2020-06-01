@@ -9,9 +9,9 @@ export const connect = async () => {
         client = webstomp.over(socket);
         return new Promise((resolve, reject) => {
          //    kikapcsolja a loggolást
-         //      client.debug = () => {
-         //          null
-         //      };
+              client.debug = () => {
+                  null
+              };
             client.connect({}, () => {
                 resolve()
             });
