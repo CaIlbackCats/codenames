@@ -54,14 +54,19 @@ export default class GameModule extends VuexModule {
 
     @Action({rawError: true})
     public async subscribeToGameRoles() {
-        await websocket.subscribe("/game/" + this.gameId + "/spy", body => {
-            if (body) {
-                this.context.commit("UPDATE_SPY_MAP", body);
-            }
-        });
-        await websocket.subscribe("/game/" + this.gameId + "/spymaster", body => {
-            this.context.commit("UPDATE_SPYMASTER_MAP", body);
-        });
+        const isCurrentPlayerSpymaster: boolean = this.context.getters["isCurrentPlayerSpymaster"];
+        if (!isCurrentPlayerSpymaster) {
+
+            await websocket.subscribe("/game/" + this.gameId + "/spy", body => {
+                if (body) {
+                    this.context.commit("UPDATE_SPY_MAP", body);
+                }
+            });
+        } else {
+            await websocket.subscribe("/game/" + this.gameId + "/spymaster", body => {
+                this.context.commit("UPDATE_SPYMASTER_MAP", body);
+            });
+        }
     }
 
     @Action({rawError: true})
@@ -183,7 +188,7 @@ export default class GameModule extends VuexModule {
         if (currentTeam) {
             teamSize = currentTeam.players.length;
         } else {
-            throw new TypeError('The value was promised to always be there!');
+            teamSize = 0;
         }
 
         return teamSize;
@@ -198,5 +203,24 @@ export default class GameModule extends VuexModule {
         const activeTeam: string = this.context.getters["currentPlayerSide"]
         return this.game.gameTurnData.currentTeam === activeTeam;
     }
+
+    get blueTeamScore(): number {
+        const blueScore = this.game.teams.flatMap(team => team).find(team => team.side === "BLUE")?.score;
+        if (blueScore) {
+            return blueScore;
+        } else {
+            return 0;
+        }
+    }
+
+    get redTeamScore(): number {
+        const redScore = this.game.teams.flatMap(team => team).find(team => team.side === "RED")?.score;
+        if (redScore) {
+            return redScore;
+        } else {
+            return 0;
+        }
+    }
+
 
 }

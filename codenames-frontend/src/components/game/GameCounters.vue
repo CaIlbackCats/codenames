@@ -23,11 +23,11 @@
     export default class GameCounters extends Vue {
 
         get blueScore(): number {
-            return this.$store.getters['blueScore'];
+            return this.$store.getters['blueTeamScore'];
         }
 
         get redScore(): number {
-            return this.$store.getters['redScore'];
+            return this.$store.getters['redTeamScore'];
         }
 
         get rounds(): number {
