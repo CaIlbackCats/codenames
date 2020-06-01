@@ -35,7 +35,7 @@
         }
 
         get civilians(): number {
-            return this.$store.getters['civiliansFoundByBlueTeam']! + this.$store.getters['civiliansFoundByRedTeam']!;
+            return this.$store.getters['civilians']!;
         }
 
     }

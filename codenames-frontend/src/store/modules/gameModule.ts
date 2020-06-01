@@ -154,15 +154,15 @@ export default class GameModule extends VuexModule {
     }
 
     get rounds(): number {
-        return this.game.rounds;
+        const sum = this.game.teams.flatMap(team => team.statistics.teamRounds)
+            .reduce((sum, current) => sum + current, 0)
+        return sum;
     }
 
-    get civiliansFoundByBlueTeam(): number {
-        return this.game.civiliansFoundByBlueTeam;
-    }
-
-    get civiliansFoundByRedTeam(): number {
-        return this.game.civiliansFoundByRedTeam;
+    get civilians(): number {
+        const sum = this.game.teams.flatMap(team => team.statistics.numOfCivilians)
+            .reduce((sum, current) => sum + current, 0)
+        return sum;
     }
 
     get gameId(): number {
