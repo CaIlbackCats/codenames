@@ -24,7 +24,9 @@
 
         <div class="col-sm-12">
             <b-button :disabled="!isGameReadyToStart"
-                      :title="isGameReadyToStart ? '' : '' " @click="createGame" block size="md" squared>
+                      :title="isGameReadyToStart ? '' :
+                      !isEnoughPlayersToPlay ? 'Not enough players to play' : 'No language selected' "
+                      @click="createGame" block size="md" squared>
                 Start The
                 Game!
             </b-button>
