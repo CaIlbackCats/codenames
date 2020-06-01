@@ -43,13 +43,13 @@
         }
 
         async mounted() {
-            await this.$store.dispatch("checkSelectedPlayer", {root: true});
+            //await this.$store.dispatch("checkSelectedPlayer", {root: true});
         }
 
         @Watch("currentPlayerId", {immediate: true})
         private setPlayer() {
             if (this.currentPlayerId !== -1) {
-                localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
+                //localStorage.setItem('currentPlayerId', JSON.stringify(this.currentPlayerId));
                 this.$store.dispatch("subscribeToPlayerChange");
             } else if (this.currentPlayerId === -1) {
                 router.push("/");

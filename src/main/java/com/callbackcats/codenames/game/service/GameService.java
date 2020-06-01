@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 public class GameService {
 
     private static final Integer CARD_VOTING_PHASE_DURATION = 10;
+    private static final Integer STARTING_TEAM_SPIES_COUNT = 9;
 
     private final GameRepository gameRepository;
     private final LobbyService lobbyService;
@@ -126,6 +127,13 @@ public class GameService {
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
         teamService.increaseTeamRounds(currentTeam);
 
+        int allSpies;
+        if (game.getStartingTeam().equals(currentTeam.getSide())) {
+            allSpies = STARTING_TEAM_SPIES_COUNT;
+        } else {
+            allSpies = STARTING_TEAM_SPIES_COUNT - 1;
+        }
+
         if (mostVotedCards.size() > 1) {
             teamService.increaseNumOfInvalidVotes(currentTeam);
             game.setEndTurn(true);
@@ -133,15 +141,19 @@ public class GameService {
             Card mostVotedCard = mostVotedCards.get(0);
             if (mostVotedCard.getType() == CardType.ASSASSIN) {
                 game.setEndGameByAssassin(true);
+                game.setEndGame(true);
+                game.setEndTurn(true);
             } else if (mostVotedCard.getType().equals(CardType.BYSTANDER)) {
                 teamService.increaseNumOfCivilians(currentTeam);
                 game.setEndTurn(true);
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
+                    game.setEndGame(allSpies == currentTeam.getScore());
                 } else {
                     teamService.increaseNumOfEnemySpies(currentTeam);
                     teamService.increaseTeamScore(otherTeam);
+                    game.setEndGame(allSpies == otherTeam.getScore());
                     game.setEndTurn(true);
                 }
             }

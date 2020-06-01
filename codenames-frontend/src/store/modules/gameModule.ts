@@ -35,9 +35,6 @@ export default class GameModule extends VuexModule {
 
     private cardVotes: Array<CardVoteModel> = [];
 
-    get isEndGame(): boolean {
-        return this.game.endGame;
-    }
 
     @Action({rawError: true})
     public async createGame(): Promise<void> {
@@ -125,6 +122,10 @@ export default class GameModule extends VuexModule {
 
     get board(): Array<CardDetailsModel> {
         return this.game.board;
+    }
+
+    get isEndGame(): boolean {
+        return this.game.endGame;
     }
 
     get currentTeam(): string {

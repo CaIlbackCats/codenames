@@ -51,13 +51,21 @@
         private moveLabel = false;
         private isInWinnerTeam = false;
 
-        mounted() {
-            this.isInWinnerTeam ? this.logoUrl = this.winUrl : this.logoUrl = this.loseUrl;
-            setTimeout(() => this.moveDown(), 500);
+        get currentPlayerSide(): string {
+            return this.$store.getters['currentPlayerSide'];
         }
 
         moveDown() {
             this.moveLabel = true;
+        }
+
+        get currentTeam(): string {
+            return this.$store.getters['currentTeam'];
+        }
+
+        mounted() {
+            this.currentTeam === this.currentPlayerSide ? this.logoUrl = this.winUrl : this.logoUrl = this.loseUrl;
+            setTimeout(() => this.moveDown(), 500);
         }
 
         get teamStatistics(): StatModel {
