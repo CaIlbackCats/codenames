@@ -20,6 +20,7 @@
     @Component
     export default class Puzzle extends Vue {
 
+
         get puzzleWords(): Array<PuzzleWordModel> {
             return this.$store.getters["puzzleWords"]
         }
@@ -30,6 +31,7 @@
 
 <style scoped>
     p {
+        margin-bottom: 0rem;
         font-size: 2rem;
         color: rgb(135, 25, 75);
         font-weight: bold;

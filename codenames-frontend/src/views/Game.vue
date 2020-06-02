@@ -10,7 +10,7 @@
                     </div>
 
                     <div class="col-lg-8 pr-0 pl-lg-4">
-                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4">
+                        <div class="game-header white-backgrounded-div mb-sm-2 mb-lg-4" id="puzzle-words">
                             <puzzle></puzzle>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import GameCounters from "@/components/game/GameCounters.vue";
     import GameMap from "@/components/game/GameMap.vue";
     import Chat from "@/components/chat/Chat.vue";
@@ -53,6 +53,16 @@
         components: {GameEnd, Puzzle, PlayerList, Chat, GameMap, GameCounters, GameOptions}
     })
     export default class Game extends Vue {
+
+        get puzzleWordsSize(): number {
+            return this.$store.getters["puzzleWordsSize"]
+        }
+
+        @Watch("puzzleWordsSize")
+        private scrollDown() {
+            const container: HTMLElement | null = document.getElementById("puzzle-words");
+            container!.scrollTop = container!.scrollHeight;
+        }
 
         async mounted() {
             await websocket.connect();

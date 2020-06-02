@@ -190,6 +190,10 @@ export default class GameModule extends VuexModule {
         return this.game.teams.flatMap(team => team.puzzleWords).filter(puzzleWord => puzzleWord !== null)
     }
 
+    get puzzleWordsSize(): number {
+        return this.puzzleWords.length;
+    }
+
     get passVoteCounter(): number {
         return this.game.passVoteCounter;
     }
