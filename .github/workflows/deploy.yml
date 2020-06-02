@@ -18,6 +18,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 13
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa # optional
       - name: Build with Maven
         run: ./mvnw package -DskipTests
       - name: Deploy

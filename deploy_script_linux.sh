@@ -28,10 +28,10 @@ echo "$SSH_KEY" > key.pem
 chmod 400 key.pem
 
 #COPY LOCAL FILES TO SERVER
-scp  -o $ssh_options -i key.pem -r $frontend_source_location ubuntu@$remote_address:$frontend_remote_location
-scp  -o $ssh_options -i key.pem $backend_source_location ubuntu@$remote_address:$backend_remote_location/project-0.0.1-SNAPSHOT.jar.new
+scp  -o $ssh_options -r $frontend_source_location ubuntu@$remote_address:$frontend_remote_location
+scp  -o $ssh_options $backend_source_location ubuntu@$remote_address:$backend_remote_location/project-0.0.1-SNAPSHOT.jar.new
 
 #UPDATE .JAR WITH NEW, AND RESTART
-ssh -o $ssh_options -i key.pem ubuntu@$remote_address './shutdown.sh'
-ssh -o $ssh_options -i key.pem ubuntu@$remote_address 'mv project-0.0.1-SNAPSHOT.jar.new project.jar'
-ssh -o $ssh_options -i key.pem ubuntu@$remote_address './start.sh'
+ssh -o $ssh_options ubuntu@$remote_address './shutdown.sh'
+ssh -o $ssh_options ubuntu@$remote_address 'mv project-0.0.1-SNAPSHOT.jar.new project.jar'
+ssh -o $ssh_options ubuntu@$remote_address './start.sh'
