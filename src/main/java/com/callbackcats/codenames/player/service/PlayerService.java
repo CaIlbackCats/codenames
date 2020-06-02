@@ -271,7 +271,7 @@ public class PlayerService {
         Card currentVotedCard = cardService.findCardById(cardVote.getVotedCardId());
         cardService.selectCard(currentVotedCard);
         player.setVotedCard(currentVotedCard);
-
+        player.setPassed(false);
         playerRepository.save(player);
         log.info("Card by id:\t" + currentVotedCard.getId() + "\t attached to player by id:\t" + player.getId());
     }

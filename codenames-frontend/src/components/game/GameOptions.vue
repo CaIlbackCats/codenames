@@ -1,7 +1,7 @@
 <template>
     <div :class="['game-options', {'move-right':activeTurn}]">
         <div v-if="!currentPlayerSpymaster">
-            <p class="timer" v-if="isVoteOn">{{counter}}</p>
+            <p class="timer" v-if="voting">{{counter}}</p>
             <b-button @click="sendPassTurn" squared
             >No Vote
             </b-button>
@@ -58,13 +58,15 @@
         private timer = 0;
         private voting = false;
 
-        get isVoteOn() {
-            return this.board.find(card => card.voted)
+        @Watch("isVoteOn")
+        private showTimer() {
+            if (this.isVoteOn && this.timer === 0) {
+                this.counter = MAX_VOTE_TIME;
+                this.voting = true;
+                this.timer = setInterval(() => this.decreaseCounter(), MILISEC)
+            }
         }
 
-        get board(): Array<TypedCardDetailsModel> | Array<TypelessCardDetailsModel> {
-            return this.$store.getters['board'];
-        }
 
         public sendPuzzleWord() {
 
@@ -76,6 +78,19 @@
                 wordRegisterTime: new Date(),
             }
             this.$store.dispatch("sendPuzzleWord", puzzleWordModel);
+            this.puzzleWord = "";
+            this.maxGuessCount = 0;
+        }
+
+
+        private decreaseCounter(): void {
+            if (this.counter != 0) {
+                this.counter -= 1;
+            } else {
+                clearInterval(this.timer);
+                this.voting = false;
+                this.timer = 0;
+            }
         }
 
         private sendPassTurn(): void {
@@ -100,24 +115,15 @@
             return currentPlayerActiveTurn && currentTeamActiveTurn;
         }
 
-        @Watch("isVoteOn")
-        private showTimer() {
-            if (this.isVoteOn && this.timer === 0) {
-                this.counter = MAX_VOTE_TIME;
-                this.voting = true;
-                this.timer = setInterval(() => this.decreaseCounter(), MILISEC)
-            }
+        get isVoteOn() {
+            return this.board.find(card => card.voted)
         }
 
-        private decreaseCounter(): void {
-            if (this.counter != 0) {
-                this.counter -= 1;
-            } else {
-                clearInterval(this.timer);
-                this.voting = false;
-                this.timer = 0;
-            }
+        get board(): Array<TypedCardDetailsModel> | Array<TypelessCardDetailsModel> {
+            return this.$store.getters['board'];
         }
+
+
     }
 </script>
 

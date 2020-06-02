@@ -66,17 +66,18 @@ public class GameController {
         log.info("Player vote requested");
         playerService.setCardVote(cardVoteData);
         sendMapMessage(gameId);
-        if (!gameService.isGameInCardVotingPhase(gameId)){
+        simpMessagingTemplate.convertAndSend("/game/" + gameId, gameService.getGameStateData(gameId));
+        if (!gameService.isGameInCardVotingPhase(gameId)) {
             ScheduledFuture<?> future = gameService.startVotingPhase(gameId);
             try {
                 future.get();
-                gameService.changeGameVotingPhase(false, gameId);
                 if (gameService.isEndTurn(gameId)) {
                     gameService.changeTurn(gameId);
                 }
-                log.info("Player card vote finished");
             } catch (InterruptedException | ExecutionException e) {
                 log.info(e.getMessage());
+            } finally {
+                gameService.changeGameVotingPhase(false, gameId);
             }
         }
 
@@ -90,7 +91,7 @@ public class GameController {
 
         playerService.setPlayerPassVote(passVoteData);
         Boolean everyonePassed = gameService.isEveryonePassed(gameId);
-        if (everyonePassed){
+        if (everyonePassed) {
             gameService.changeTurn(gameId);
         }
 

@@ -151,7 +151,7 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    private void setPlayerVotedInGame(Game game) {
+    private void setPlayerVotedInGame(Game game){
         List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
         playerService.turnPlayerPassOff(players);
     }
