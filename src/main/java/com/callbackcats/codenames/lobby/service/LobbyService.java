@@ -29,6 +29,7 @@ public class LobbyService {
         Lobby lobby = findLobbyById(lobbyId);
         boolean everyoneReady = lobby.getPlayerList()
                 .stream()
+                .filter(Player::getVisible)
                 .allMatch(Player::getRdyState);
 
         return new LobbyDetails(lobby, everyoneReady);
