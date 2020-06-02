@@ -25,6 +25,7 @@ mvn clean package -DskipTests=true
 #chmod 400 $pem_file_full_path
 
 echo "$SSH_KEY" > key.pem
+chmod 400 key.pem
 
 #COPY LOCAL FILES TO SERVER
 scp  -o $ssh_options -i key.pem -r $frontend_source_location ubuntu@$remote_address:$frontend_remote_location
