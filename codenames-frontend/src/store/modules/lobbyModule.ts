@@ -171,7 +171,7 @@ export default class LobbyModule extends VuexModule {
     get isEnoughPlayersToPlay(): boolean {
         let enoughPlayers = false;
         if (this.lobby.players) {
-            enoughPlayers = this.lobby.players.length >= 4;
+            enoughPlayers = this.lobby.players.length >= MIN_PARTY_SIZE;
         }
         return enoughPlayers;
     }
