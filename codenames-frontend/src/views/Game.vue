@@ -60,8 +60,10 @@
 
         @Watch("puzzleWordsSize")
         private scrollDown() {
-            const container: HTMLElement | null = document.getElementById("puzzle-words");
-            container!.scrollTop = container!.scrollHeight;
+            setTimeout(() => {
+                const container: HTMLElement | null = document.getElementById("puzzle-words");
+                container!.scrollTop = container!.scrollHeight;
+            }, 500)
         }
 
         async mounted() {

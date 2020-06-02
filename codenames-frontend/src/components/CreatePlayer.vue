@@ -6,6 +6,7 @@
         <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4 offset-md-2 offset-lg-3 offset-xl-4 mt-lg-5">
             <b-input-group size="md">
                 <b-form-input id="current-player"
+                              required
                               type="text"
                               maxlength="10"
                               placeholder="Enter your name"
@@ -15,6 +16,7 @@
                 <b-input-group-append>
                     <b-button squared
                               type="submit"
+                              :disabled="!isNameValid"
                               @click="createPlayer">Ok
                     </b-button>
                 </b-input-group-append>
@@ -26,7 +28,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import {Component, Vue, Watch} from "vue-property-decorator";
     import {PlayerCreationModel} from "@/models/player/playerCreationModel";
 
     @Component
@@ -34,6 +36,12 @@
         private logoUrl = require("../assets/semanedoc.png");
 
         private currentPlayerName = "";
+        private isNameValid = false;
+
+        @Watch("currentPlayerName")
+        private validateName() {
+            this.isNameValid = !!this.currentPlayerName.match(RegExp("^[a-zA-Z0-9_]*$")) && this.currentPlayerName !== "";
+        }
 
         public createPlayer(): void {
             const newPlayer: PlayerCreationModel = {
@@ -90,7 +98,7 @@
         transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
-    button:hover {
+    button:enabled:hover {
         background-color: rgb(135, 25, 75);
         border: 0px solid;
         box-shadow: inset 0 0 20px rgba(250, 230, 15, .5), 0 0 20px rgba(250, 230, 15, .2);

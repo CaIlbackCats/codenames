@@ -12,6 +12,7 @@
             <b-input required
                      size="md"
                      style="margin-bottom: 1rem"
+                     maxlength="30"
                      type="text"
                      v-model="puzzleWord"
             ></b-input>
@@ -27,6 +28,7 @@
                     <b-button squared
                               type="submit"
                               @click="sendPuzzleWord"
+                              :disabled="!isPuzzleWordValid"
                     >Ok
                     </b-button>
                 </b-input-group-append>
@@ -51,6 +53,7 @@
         private spyGameUrl = require("../../assets/spy_game.png");
 
         private puzzleWord = "";
+        private isPuzzleWordValid = false;
 
         private maxGuessCount = 0;
 
