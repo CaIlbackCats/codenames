@@ -55,16 +55,6 @@ public class TeamService {
         return puzzleWordService.isPuzzleWordGuessLimitReached(team);
     }
 
-    private Team createTeam(String lobbyId, SideType side, Game game) {
-        List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);
-
-        Team team = new Team(players, side, game);
-        teamRepository.save(team);
-
-        players.forEach(player -> playerService.saveTeamToPlayer(team, player));
-        return team;
-    }
-
     public void increaseNumOfEnemySpies(Team team) {
         int increasedValue = team.getStatistics().getNumOfEnemySpies() + 1;
         team.getStatistics().setNumOfEnemySpies(increasedValue);
@@ -87,5 +77,21 @@ public class TeamService {
         int increasedValue = team.getStatistics().getTeamRounds() + 1;
         team.getStatistics().setTeamRounds(increasedValue);
         teamRepository.save(team);
+    }
+
+    public void increaseTeamPasses(Team team) {
+        int increasedValue = team.getStatistics().getNumOfPasses() + 1;
+        team.getStatistics().setNumOfPasses(increasedValue);
+        teamRepository.save(team);
+    }
+
+    private Team createTeam(String lobbyId, SideType side, Game game) {
+        List<Player> players = playerService.findVisiblePlayersByLobbyIdBySide(lobbyId, side);
+
+        Team team = new Team(players, side, game);
+        teamRepository.save(team);
+
+        players.forEach(player -> playerService.saveTeamToPlayer(team, player));
+        return team;
     }
 }

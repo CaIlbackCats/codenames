@@ -137,10 +137,14 @@ public class GameService {
         Game game = findGameById(gameId);
         SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
         Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
-        return currentTeam.getPlayers()
+        boolean isEveryonePasse = currentTeam.getPlayers()
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPY)
                 .allMatch(Player::getPassed);
+        if (isEveryonePasse) {
+            teamService.increaseTeamPasses(currentTeam);
+        }
+        return isEveryonePasse;
     }
 
     public void changeTurn(Long gameId) {
@@ -151,7 +155,7 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    private void setPlayerVotedInGame(Game game){
+    private void setPlayerVotedInGame(Game game) {
         List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
         playerService.turnPlayerPassOff(players);
     }
