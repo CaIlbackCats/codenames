@@ -16,6 +16,7 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
+import com.callbackcats.codenames.player.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,22 +42,29 @@ public class GameService {
     private final CardService cardService;
     private final PuzzleWordService puzzleWordService;
     private final GameTurnService gameTurnService;
+    private final PlayerService playerService;
     private final ScheduledExecutorService scheduler;
 
 
-    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, PuzzleWordService puzzleWordService, GameTurnService gameTurnService, ScheduledExecutorService scheduler) {
+    public GameService(GameRepository gameRepository, LobbyService lobbyService, TeamService teamService, CardService cardService, PuzzleWordService puzzleWordService, GameTurnService gameTurnService, PlayerService playerService, ScheduledExecutorService scheduler) {
         this.gameRepository = gameRepository;
         this.lobbyService = lobbyService;
         this.teamService = teamService;
         this.cardService = cardService;
         this.puzzleWordService = puzzleWordService;
         this.gameTurnService = gameTurnService;
+        this.playerService = playerService;
         this.scheduler = scheduler;
     }
 
     public GameStateData getGameStateData(Long gameId) {
         Game game = findGameById(gameId);
-        return new GameStateData(game);
+        Integer passes = (int) game.getTeams().stream()
+                .filter(team -> team.getSide() == game.getGameTurn()
+                        .getCurrentTeam()).map(Team::getPlayers)
+                .flatMap(Collection::stream).filter(Player::getPassed)
+                .count();
+        return new GameStateData(game, passes);
     }
 
     public GameDetails createGame(String lobbyId) {
@@ -125,32 +133,27 @@ public class GameService {
         gameTurnService.advanceToSpyTurn(game.getGameTurn());
     }
 
-    public void processPassTurnVote(Long gameId) {
+    public Boolean isEveryonePassed(Long gameId) {
         Game game = findGameById(gameId);
         SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
         Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
-        boolean everyOnePassed = currentTeam.getPlayers()
+        return currentTeam.getPlayers()
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPY)
                 .allMatch(Player::getPassed);
-        if (everyOnePassed) {
-            changeTurn(game);
-        }
     }
 
     public void changeTurn(Long gameId) {
         Game game = findGameById(gameId);
-
+        setPlayerVotedInGame(game);
         gameTurnService.changeTurn(game.getGameTurn());
         game.setEndTurn(false);
         gameRepository.save(game);
     }
 
-    private void changeTurn(Game game) {
-
-        gameTurnService.changeTurn(game.getGameTurn());
-        game.setEndTurn(false);
-        gameRepository.save(game);
+    private void setPlayerVotedInGame(Game game){
+        List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
+        playerService.turnPlayerPassOff(players);
     }
 
     private List<Card> getMostVotedCards(List<Card> votedCards) {
@@ -178,7 +181,7 @@ public class GameService {
 
         if (mostVotedCards.size() > 1) {
             teamService.increaseNumOfInvalidVotes(currentTeam);
-            mostVotedCards.stream().filter(card -> card != null).forEach(cardService::deselectCard);
+            mostVotedCards.stream().filter(Objects::nonNull).forEach(cardService::deselectCard);
             game.setEndTurn(true);
             log.info("Same card has the max amount of votes");
         } else if (!mostVotedCard.isFound()) {

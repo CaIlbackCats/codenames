@@ -18,7 +18,7 @@ public class GameStateData {
 
     private Long id;
 
-  //  private List<CardDetails> board;
+    //  private List<CardDetails> board;
 
     private Boolean endGame;
 
@@ -40,7 +40,7 @@ public class GameStateData {
 
     private GameTurnData gameTurnData;
 
-    public GameStateData(Game game) {
+    public GameStateData(Game game, Integer passes) {
         this.id = game.getId();
 //        if (game.getBoard() != null && !game.getBoard().isEmpty()) {
 //            this.board = game.getBoard()
@@ -62,7 +62,7 @@ public class GameStateData {
         this.gameTurnData = new GameTurnData(game.getGameTurn());
         this.active = game.getActive();
         this.votingPhase = game.getVotingPhase();
-        this.passVoteCounter = game.getPassVoteCounter();
+        this.passVoteCounter = passes;
 
     }
 }

@@ -54,3 +54,4 @@ yarn-error.log*
 /src/main/resources/application-local.yaml
 /my-key.pem
 /src/test/resources/application-local.yaml
+/logs/
