@@ -287,6 +287,11 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
+    public void setPlayersPassVote(List<Player> players) {
+        players.forEach(player -> player.setPassed(false));
+        playerRepository.saveAll(players);
+    }
+
     private void removePlayer(Player player) {
         player.setVisible(false);
         playerRepository.save(player);
