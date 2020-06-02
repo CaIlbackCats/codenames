@@ -57,7 +57,9 @@
         }
 
         private hideLeftPlayer(): void {
+            if (this.currentPlayerId!==-1){
                 this.$store.dispatch("hideLeftPlayer");
+            }
         }
 
         get players(): Array<PlayerModel> {
