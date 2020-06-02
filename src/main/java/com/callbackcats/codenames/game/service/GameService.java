@@ -133,37 +133,27 @@ public class GameService {
         gameTurnService.advanceToSpyTurn(game.getGameTurn());
     }
 
-    public void processPassTurnVote(Long gameId) {
+    public Boolean isEveryonePassed(Long gameId) {
         Game game = findGameById(gameId);
         SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
         Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
-        boolean everyOnePassed = currentTeam.getPlayers()
+        return currentTeam.getPlayers()
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPY)
                 .allMatch(Player::getPassed);
-        if (everyOnePassed) {
-            changeTurn(game);
-        }
     }
 
     public void changeTurn(Long gameId) {
         Game game = findGameById(gameId);
-        clearPassVotes(game);
+        setPlayerVotedInGame(game);
         gameTurnService.changeTurn(game.getGameTurn());
         game.setEndTurn(false);
         gameRepository.save(game);
     }
 
-    private void changeTurn(Game game) {
-        clearPassVotes(game);
-        gameTurnService.changeTurn(game.getGameTurn());
-        game.setEndTurn(false);
-        gameRepository.save(game);
-    }
-
-    private void clearPassVotes(Game game) {
+    private void setPlayerVotedInGame(Game game) {
         List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
-        playerService.setPlayersPassVote(players);
+        playerService.turnPlayerPassOff(players);
     }
 
     private List<Card> getMostVotedCards(List<Card> votedCards) {

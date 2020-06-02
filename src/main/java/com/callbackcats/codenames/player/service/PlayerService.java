@@ -284,10 +284,15 @@ public class PlayerService {
     public void setPlayerPassVote(PassVoteData passVoteData) {
         Player player = findPlayerById(passVoteData.getPlayerId());
         player.setPassed(passVoteData.getPassed());
+        Card votedCard = player.getVotedCard();
+        if (votedCard != null) {
+            cardService.deselectCard(votedCard);
+            player.setVotedCard(null);
+        }
         playerRepository.save(player);
     }
 
-    public void setPlayersPassVote(List<Player> players) {
+    public void turnPlayerPassOff(List<Player> players) {
         players.forEach(player -> player.setPassed(false));
         playerRepository.saveAll(players);
     }

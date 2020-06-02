@@ -89,8 +89,12 @@ public class GameController {
     public GameStateData votePassTurn(@DestinationVariable Long gameId, PassVoteData passVoteData) {
 
         playerService.setPlayerPassVote(passVoteData);
-        gameService.processPassTurnVote(gameId);
+        Boolean everyonePassed = gameService.isEveryonePassed(gameId);
+        if (everyonePassed){
+            gameService.changeTurn(gameId);
+        }
 
+        sendMapMessage(gameId);
         return gameService.getGameStateData(gameId);
     }
 
