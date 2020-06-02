@@ -24,8 +24,11 @@ public class ChatController {
     @SendTo("/chat/{lobbyId}")
     public MessageData handleMessage(@DestinationVariable String lobbyId, @Payload MessageData messageData) {
         log.info("Chat message handling requested");
-        chatService.addPlayerInfoToMessage(messageData);
-        return messageData;
+        if(!messageData.getMessage().isEmpty()) {
+            chatService.addPlayerInfoToMessage(messageData);
+            return messageData;
+        }
+        return null;
     }
 
 }

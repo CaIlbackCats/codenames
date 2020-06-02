@@ -3,13 +3,15 @@
         <div class="col-lg-6">
             <b-button :disabled="!isEnoughPlayersToPlay"
                       :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
-                      @click="randomizeRoles" block size="sm" squared>Random role
+                      @click="randomizeRoles" block size="sm" squared>
+                {{$t("lobby-option.role")}}
             </b-button>
         </div>
         <div class="col-lg-6">
             <b-button :disabled="!isEnoughPlayersToPlay"
                       :title="isEnoughPlayersToPlay ? 'There must be at least 4 players to use this function': '' "
-                      @click="randomizeSide" block size="sm" squared>Random side
+                      @click="randomizeSide" block size="sm" squared>
+                {{$t("lobby-option.side")}}
             </b-button>
         </div>
 
@@ -27,8 +29,7 @@
                       :title="isGameReadyToStart ? '' :
                       !isEnoughPlayersToPlay ? 'Not enough players to play' : 'No language selected' "
                       @click="createGame" block size="md" squared>
-                Start The
-                Game!
+                {{$t("lobby-option.start")}}
             </b-button>
         </div>
 

@@ -1,6 +1,8 @@
 <template>
     <div>
-        <button >Pass turn</button>
+        <button>
+            {{$t("turn-pass.pass")}}
+            </button>
         <label for="passedPlayers"></label>
         <p id="passedPlayers"></p>
     </div>

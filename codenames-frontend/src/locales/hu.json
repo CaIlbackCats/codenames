@@ -24,6 +24,23 @@
     "clear": "Visszavonás"
   },
   "create-player": {
-    "placeholder": "Írd be a játékos neved"
+    "placeholder": "Írd be a játékos neved",
+    "valid-name": "A név már létezik"
+  },
+  "game-end": {
+    "number": "Statisztika",
+    "civilians": "civilek",
+    "e-spies": "ellenséges kémek",
+    "f-spies": "szövetséges kémek",
+    "rounds": "körök",
+    "passes": "passzok",
+    "inv-votes": "érvénytelen szavazatok",
+    "best-round": "Legjobb kör",
+    "worst-round": "Legrosszabb kör",
+    "team-acc": "Csapat pontossága",
+    "spy-row": "kémek egy körben"
+  },
+  "turn-pass": {
+    "pass": "Passz"
   }
 }

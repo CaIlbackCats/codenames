@@ -42,7 +42,8 @@
                         <b-input-group-append>
                             <b-button squared
                                       type="button"
-                                      @click="copyPath">Copy link
+                                      @click="copyPath">
+                                {{$t("lobby.copy-link")}}
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>

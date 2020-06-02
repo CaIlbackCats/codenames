@@ -9,7 +9,7 @@
                               required
                               type="text"
                               maxlength="10"
-                              placeholder="Enter your name"
+                              :placeholder="$t('create-player.placeholder')"
                               v-on:keyup.enter="createPlayer"
                               v-model="currentPlayerName">
                 </b-form-input>
@@ -21,7 +21,9 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
-            <p v-if="isNameError">Name already exist</p>
+            <p v-if="isNameError">
+                {{$t("create-player.valid-name")}}
+            </p>
         </div>
     </div>
 

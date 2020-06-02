@@ -1,7 +1,8 @@
 <template>
     <div class="main-div col-sm-12">
         <div class="locale-change">
-            🌐 <LocaleSwitcher/>
+<!--            🌐 -->
+            <LocaleSwitcher/>
         </div>
         <div id="spies"
              :class="['col-lg-4 offset-lg-4',

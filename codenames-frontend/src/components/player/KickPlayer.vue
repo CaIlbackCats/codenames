@@ -6,7 +6,9 @@
              id="kick-modal"
              centered>
         <div class="text-center">
-            <p>Do you want to kick <span style="font-weight: bold">{{playerToKickName}}</span>?</p>
+            <p>
+                {{$t("kick-player.kick")}}
+                <span style="font-weight: bold">{{playerToKickName}}</span>?</p>
             <button class="yes" @click="kickPlayer(true)">
                 <font-awesome-icon style="font-size: 2rem; margin-right: 2rem" icon="check"/>
             </button>

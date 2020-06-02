@@ -3,7 +3,8 @@
         <div v-if="!currentPlayerSpymaster">
             <p class="timer" v-if="isVoteOn">{{counter}}</p>
             <b-button @click="sendPassTurn" squared
-            >No Vote
+            >
+                {{ $t("game-option.vote") }}
             </b-button>
             <p>{{passVoteCounter}}/{{currentTeamSize}}</p>
         </div>

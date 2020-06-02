@@ -24,6 +24,23 @@
     "clear": "Clear selection"
   },
   "create-player": {
-    "placeholder": "Enter your name"
+    "placeholder": "Enter your name",
+    "valid-name": "Name already exist"
+  },
+  "game-end": {
+    "number": "Number of",
+    "civilians": "civilians",
+    "e-spies": "enemy spies",
+    "f-spies": "friendly spies",
+    "rounds": "rounds",
+    "passes": "passes",
+    "inv-votes": "invalid votes",
+    "best-round": "Best round",
+    "worst-round": "Worst round",
+    "team-acc": "Team accuracy",
+    "spy-row": "spies in a row"
+  },
+  "turn-pass": {
+    "pass": "Pass turn"
   }
 }

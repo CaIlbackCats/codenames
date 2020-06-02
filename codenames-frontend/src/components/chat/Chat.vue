@@ -17,7 +17,8 @@
                 <b-input-group-append>
                     <b-button squared
                               type="submit"
-                              @click="sendChatMessage">Send
+                              @click="sendChatMessage">
+                        {{ $t("chat.send") }}
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
