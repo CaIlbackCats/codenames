@@ -271,7 +271,7 @@ public class PlayerService {
         Card currentVotedCard = cardService.findCardById(cardVote.getVotedCardId());
         cardService.selectCard(currentVotedCard);
         player.setVotedCard(currentVotedCard);
-
+        player.setPassed(false);
         playerRepository.save(player);
         log.info("Card by id:\t" + currentVotedCard.getId() + "\t attached to player by id:\t" + player.getId());
     }
@@ -284,7 +284,17 @@ public class PlayerService {
     public void setPlayerPassVote(PassVoteData passVoteData) {
         Player player = findPlayerById(passVoteData.getPlayerId());
         player.setPassed(passVoteData.getPassed());
+        Card votedCard = player.getVotedCard();
+        if (votedCard != null) {
+            cardService.deselectCard(votedCard);
+            player.setVotedCard(null);
+        }
         playerRepository.save(player);
+    }
+
+    public void turnPlayerPassOff(List<Player> players) {
+        players.forEach(player -> player.setPassed(false));
+        playerRepository.saveAll(players);
     }
 
     private void removePlayer(Player player) {
