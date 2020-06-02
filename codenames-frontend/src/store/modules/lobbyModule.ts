@@ -216,7 +216,7 @@ export default class LobbyModule extends VuexModule {
     get isAllPlayersHaveRoleAndSide(): boolean {
         let isAllPlayersHaveRoleAndSide = false
         if (this.lobby.players) {
-            isAllPlayersHaveRoleAndSide = this.lobby.players.filter(player => player.side === "NOT_SELECTED" && player.role === "NOT_SELECTED").length === 0;
+            isAllPlayersHaveRoleAndSide = this.lobby.players.filter(player => player.side === "NOT_SELECTED" || player.role === "NOT_SELECTED").length === 0;
         }
         return isAllPlayersHaveRoleAndSide;
     }
