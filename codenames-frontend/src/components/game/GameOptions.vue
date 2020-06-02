@@ -70,6 +70,10 @@
                 this.timer = setInterval(() => this.decreaseCounter(), MILISEC)
             }
         }
+        @Watch("puzzleWord")
+        private validatePuzzleWord() {
+            this.isPuzzleWordValid = this.puzzleWord !== "";
+        }
 
 
         public sendPuzzleWord() {
