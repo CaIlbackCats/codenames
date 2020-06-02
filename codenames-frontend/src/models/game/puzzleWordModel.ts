@@ -4,4 +4,5 @@ export interface PuzzleWordModel {
     puzzleWord: string,
     maxGuessCount: number,
     usedGuesses: number,
+    wordRegisterTime: Date,
 }

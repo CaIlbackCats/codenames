@@ -187,7 +187,9 @@ export default class GameModule extends VuexModule {
     }
 
     get puzzleWords(): Array<PuzzleWordModel> {
-        return this.game.teams.flatMap(team => team.puzzleWords).filter(puzzleWord => puzzleWord !== null)
+        return this.game.teams.flatMap(team => team.puzzleWords)
+            .filter(puzzleWord => puzzleWord !== null)
+            .sort((prev, current) => prev.wordRegisterTime > current.wordRegisterTime ? 0 : -1);
     }
 
     get puzzleWordsSize(): number {

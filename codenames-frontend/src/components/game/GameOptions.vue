@@ -73,6 +73,7 @@
                 puzzleWord: this.puzzleWord,
                 maxGuessCount: this.maxGuessCount,
                 usedGuesses: 0,
+                wordRegisterTime: new Date(),
             }
             this.$store.dispatch("sendPuzzleWord", puzzleWordModel);
         }
