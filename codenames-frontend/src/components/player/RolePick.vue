@@ -40,7 +40,7 @@
                           size="sm"
                           squared
                           @click="sendSelection">
-                    Clear Selection
+                    {{ $t("role-pick.clear") }}
                 </b-button>
             </div>
         </div>

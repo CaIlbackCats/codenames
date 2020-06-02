@@ -1,7 +1,7 @@
 {
   "welcome-header": {
     "private-room": "Privát szoba",
-    "random-room": "Random szoba"
+    "random-room": "Véletlen szoba"
   },
   "lobby": {
     "copy-link": "Cím másolása"
@@ -10,11 +10,11 @@
     "send": "Küldés"
   },
   "game-options": {
-    "vote": "Nincs szavazat"
+    "vote": "Passz"
   },
   "lobby-option": {
-    "role": "Random szerep",
-    "side": "Random oldal",
+    "role": "Véletlen szerep",
+    "side": "Véletlen oldal",
     "start": "Kezdjük a játékot!"
   },
   "kick-player": {
@@ -39,8 +39,5 @@
     "worst-round": "Legrosszabb kör",
     "team-acc": "Csapat pontossága",
     "spy-row": "kémek egy körben"
-  },
-  "turn-pass": {
-    "pass": "Passz"
   }
 }

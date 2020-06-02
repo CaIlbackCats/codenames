@@ -10,7 +10,7 @@
     "send": "Send"
   },
   "game-options": {
-    "vote": "No vote"
+    "vote": "Pass"
   },
   "lobby-option": {
     "role": "Random role",
@@ -39,8 +39,5 @@
     "worst-round": "Worst round",
     "team-acc": "Team accuracy",
     "spy-row": "spies in a row"
-  },
-  "turn-pass": {
-    "pass": "Pass turn"
   }
 }

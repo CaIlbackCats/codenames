@@ -4,7 +4,7 @@
             <p class="timer" v-if="voting">{{counter}}</p>
             <b-button @click="sendPassTurn" squared
             >
-                {{ $t("game-option.vote") }}
+                {{ $t("game-options.vote") }}
             </b-button>
             <p>{{passVoteCounter}}/{{currentTeamSize}}</p>
         </div>
