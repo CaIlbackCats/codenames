@@ -55,3 +55,4 @@ yarn-error.log*
 /my-key.pem
 /src/test/resources/application-local.yaml
 /logs/
+/logs_download_script.sh
