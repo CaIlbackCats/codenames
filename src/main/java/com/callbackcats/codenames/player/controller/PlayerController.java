@@ -142,7 +142,7 @@ public class PlayerController {
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/" + playerId, updatedPlayer);
     }
 
-    private void startKickPhase(@DestinationVariable String lobbyId, @Payload PlayerRemovalData playerRemovalData) {
+    private void startKickPhase(String lobbyId, PlayerRemovalData playerRemovalData) {
         try {
             lobbyService.setKickPhase(lobbyId, true);
             ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
