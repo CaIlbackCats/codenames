@@ -37,10 +37,21 @@ public class LobbyController {
 
 
     @PostMapping
-    public ResponseEntity<LobbyDetails> createLobby() {
+    public ResponseEntity<LobbyDetails> createLobby(@RequestBody LanguageDetails gameLanguage) {
+//        GameLanguage language = GameLanguage.valueOf(gameLanguage.getLanguage());
+        GameLanguage language;
+        if(gameLanguage.getLanguage() == null) {
+            language = GameLanguage.ENGLISH;
+        } else if (gameLanguage.getLanguage().equals("hu")) {
+            language = GameLanguage.HUNGARIAN;
+        } else {
+            language = GameLanguage.ENGLISH;
+        }
         Lobby lobby = new Lobby();
+        lobby.setGameLanguage(language);
         this.lobbyService.saveNewLobby(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
+        System.out.println(lobbyDetails.getGameLanguage());
         log.info("New lobby generation requested");
         return new ResponseEntity<>(lobbyDetails, HttpStatus.CREATED);
     }
