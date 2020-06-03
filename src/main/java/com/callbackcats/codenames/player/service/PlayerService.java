@@ -175,7 +175,6 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-
     public void setPlayerRemoval(PlayerRemovalData playerRemovalData) {
         PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
         playerRemovalData.setPlayerToRemove(playerToKick);
