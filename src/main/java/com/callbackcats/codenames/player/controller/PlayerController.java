@@ -60,29 +60,25 @@ public class PlayerController {
         return new ResponseEntity<>(playerData, HttpStatus.OK);
     }
 
-    @MessageMapping("/role")
-    public void setPlayerRole(@Payload RoleSelectionData roleSelectionData) {
+    @MessageMapping("/{lobbyId}/role")
+    @SendTo("/lobby/{lobbyId}")
+    public LobbyDetails setPlayerRole(@DestinationVariable String lobbyId) {
         log.info("Player random role setting requested");
-        String lobbyId = roleSelectionData.getLobbyId();
-        playerService.setPlayerRole(lobbyId);
-        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
-        players.forEach(player -> {
-            updatePlayer(lobbyId, player.getId(), player);
-        });
-        updateLobbyState(lobbyId);
+        List<PlayerData> updatedPlayers = playerService.setPlayerRole(lobbyId);
+        updatedPlayers.forEach(playerData -> updatePlayer(lobbyId, playerData.getId(), playerData));
+
+        return lobbyService.getLobbyDetailsById(lobbyId);
     }
 
-    @MessageMapping("/side")
-    public void setPlayerSide(@Payload SideSelectionData sideSelectionData) {
+    @MessageMapping("/{lobbyId}/side")
+    @SendTo("/lobby/{lobbyId}")
+    public LobbyDetails setPlayerSide(@DestinationVariable String lobbyId) {
         log.info("Player randomize role and side requested");
-        String lobbyId = sideSelectionData.getLobbyId();
-        playerService.randomizeTeamSetup(lobbyId);
-        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
-        players.forEach(player -> {
-            updatePlayer(lobbyId, player.getId(), player);
-        });
-        updateLobbyState(lobbyId);
+        List<PlayerData> updatedPlayers = playerService.randomizeTeamSetup(lobbyId);
+        updatedPlayers.forEach(playerData -> updatePlayer(lobbyId, playerData.getId(), playerData));
+        return lobbyService.getLobbyDetailsById(lobbyId);
     }
+
 
     @MessageMapping("/{lobbyId}/kickCount")
     @SendTo("/lobby/{lobbyId}")
@@ -108,22 +104,6 @@ public class PlayerController {
 
     }
 
-    private void startKickPhase(@DestinationVariable String lobbyId, @Payload PlayerRemovalData playerRemovalData) {
-        try {
-            lobbyService.setKickPhase(lobbyId, true);
-            ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
-            votingFinished.get();
-
-            if (!playerService.isLobbyOwnerInLobby(lobbyId)) {
-                PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyId);
-                updatePlayer(lobbyId, newLobbyOwner.getId(), newLobbyOwner);
-            }
-            lobbyService.setKickPhase(lobbyId, false);
-            updateLobbyState(lobbyId);
-        } catch (InterruptedException | ExecutionException e) {
-            log.warn(e.getMessage());
-        }
-    }
 
     @MessageMapping("/{lobbyId}/ready")
     public void setRdyState(@DestinationVariable String lobbyId, @Payload RdyStateData rdyStateData) {
@@ -159,7 +139,23 @@ public class PlayerController {
     }
 
     private void updatePlayer(String lobbyId, Long playerId, PlayerData updatedPlayer) {
-        simpMessagingTemplate.convertAndSend("/player/" + lobbyId + "/" + playerId, updatedPlayer);
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/" + playerId, updatedPlayer);
     }
 
+    private void startKickPhase(@DestinationVariable String lobbyId, @Payload PlayerRemovalData playerRemovalData) {
+        try {
+            lobbyService.setKickPhase(lobbyId, true);
+            ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
+            votingFinished.get();
+
+            if (!playerService.isLobbyOwnerInLobby(lobbyId)) {
+                PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyId);
+                updatePlayer(lobbyId, newLobbyOwner.getId(), newLobbyOwner);
+            }
+            lobbyService.setKickPhase(lobbyId, false);
+            updateLobbyState(lobbyId);
+        } catch (InterruptedException | ExecutionException e) {
+            log.warn(e.getMessage());
+        }
+    }
 }

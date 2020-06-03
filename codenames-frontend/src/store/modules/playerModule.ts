@@ -59,7 +59,7 @@ export default class PlayerModule extends VuexModule {
     @Action({rawError: true})
     public subscribeToPlayerChange(): void {
         const lobbyId: string = this.context.getters["lobbyId"];
-        websocket.subscribe(config.PLAYER_SUBSCRIPTION_PATH + lobbyId + "/" + this.currentPlayer.id,
+        websocket.subscribe("/lobby/" + lobbyId + "/" + this.currentPlayer.id,
             messageBody => {
                 if (messageBody) {
                     this.context.commit("UPDATE_PLAYER", messageBody);
@@ -96,7 +96,7 @@ export default class PlayerModule extends VuexModule {
             playerId: this.currentPlayer.id,
             rdyState: !this.currentPlayer.rdyState,
         }
-        websocket.send("/player/"+lobbyId+"/ready", readyModel);
+        websocket.send("/player/" + lobbyId + "/ready", readyModel);
     }
 
     @Action({rawError: true})
