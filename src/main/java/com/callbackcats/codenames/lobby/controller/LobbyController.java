@@ -8,13 +8,10 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/lobby")
 @Slf4j
 public class LobbyController {
 
@@ -24,15 +21,13 @@ public class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    @ResponseBody
-    @GetMapping("/api/lobby/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String id) {
         LobbyDetails lobbyDetails = this.lobbyService.getLobbyDetailsById(id);
         return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
     }
 
-    @ResponseBody
-    @PostMapping("/api/lobby/{lobbyId}")
+    @PostMapping("/{lobbyId}")
     public ResponseEntity<LobbyDetails> setGameLanguage(@PathVariable String lobbyId, @RequestBody LanguageDetails gameLanguage) {
         GameLanguage language = GameLanguage.valueOf(gameLanguage.getLanguage());
         LobbyDetails updatedLobby = this.lobbyService.updateLobbyGameLanguage(lobbyId, language);
@@ -41,21 +36,12 @@ public class LobbyController {
     }
 
 
-    @ResponseBody
-    @PostMapping("/api/lobby")
+    @PostMapping
     public ResponseEntity<LobbyDetails> createLobby() {
         Lobby lobby = new Lobby();
         this.lobbyService.saveNewLobby(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
         log.info("New lobby generation requested");
         return new ResponseEntity<>(lobbyDetails, HttpStatus.CREATED);
-    }
-
-    @MessageMapping("/{lobbyId}")
-    @SendTo("/lobby/{lobbyId}")
-    public LobbyDetails fetchLobby(@DestinationVariable String lobbyId) {
-        log.info("Lobby fetch requested");
-
-        return lobbyService.getLobbyDetailsById(lobbyId);
     }
 }
