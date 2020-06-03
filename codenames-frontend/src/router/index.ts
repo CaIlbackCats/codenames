@@ -56,4 +56,13 @@ const router = new VueRouter({
   routes
 });
 
+router.beforeEach((to, from, next) => {
+  if (Object.keys(to.query).length === 0 && Object.keys(from.query).length > 0) {
+    const toWithQuery = Object.assign({}, to, {query: from.query});
+    next(toWithQuery);
+  } else {
+    next()
+  }
+})
+
 export default router;

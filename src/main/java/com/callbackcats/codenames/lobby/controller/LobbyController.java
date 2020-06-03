@@ -28,7 +28,7 @@ public class LobbyController {
     }
 
     @PostMapping("/{lobbyId}")
-    public ResponseEntity<LobbyDetails> setGameLanguage(@PathVariable String lobbyId, @RequestBody LanguageDetails gameLanguage) {
+    public ResponseEntity<LobbyDetails> setGameLanguage(@PathVariable String lobbyId, @RequestParam(value="lang") String lang, @RequestBody LanguageDetails gameLanguage) {
         GameLanguage language = GameLanguage.valueOf(gameLanguage.getLanguage());
         LobbyDetails updatedLobby = this.lobbyService.updateLobbyGameLanguage(lobbyId, language);
         log.info("Game language updated to " + gameLanguage.getLanguage() + " in lobby with id: " + lobbyId);
