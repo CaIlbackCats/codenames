@@ -15,6 +15,9 @@ const BASE_URL = process.env.VUE_APP_BASE_URL;
 interface JoinActionPayload {
     lobbyId: string
 }
+interface CreateActionPayload {
+    language: string
+}
 
 const MIN_PARTY_SIZE = 4;
 
@@ -54,8 +57,11 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public async createLobby(): Promise<boolean> {
-        const response = await axios.post(BASE_URL + "/lobby")
+    public async createLobby(payload: CreateActionPayload): Promise<boolean> {
+        const languageModel: LanguageModel = {
+            language: payload.language
+        }
+        const response = await axios.post(BASE_URL + "/lobby", languageModel)
         if (response.status === 201) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
