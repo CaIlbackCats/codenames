@@ -91,11 +91,12 @@ export default class PlayerModule extends VuexModule {
 
     @Action({rawError: true})
     public sendReadyState(): void {
+        const lobbyId: string = this.context.getters["lobbyId"];
         const readyModel: RdyModel = {
             playerId: this.currentPlayer.id,
             rdyState: !this.currentPlayer.rdyState,
         }
-        websocket.send(config.PLAYER_SET_READY_PATH, readyModel);
+        websocket.send("/player/"+lobbyId+"/ready", readyModel);
     }
 
     @Action({rawError: true})

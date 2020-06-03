@@ -10,6 +10,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,5 +38,8 @@ public class Lobby {
     @Column(name = "game_language")
     @Enumerated(EnumType.STRING)
     private GameLanguage gameLanguage;
+
+    @Column(name = "creation_time")
+    private LocalDateTime localDateTime = LocalDateTime.now();
 
 }

@@ -40,6 +40,7 @@ export default class LobbyModule extends VuexModule {
     private SET_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel
     }
+
     @Mutation
     private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel;
@@ -107,17 +108,13 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public hideLeftPlayer(): void {
-        const playerDetails: PlayerDetailsModel = {
-            id: this.context.getters["currentPlayerId"],
-            lobbyName: this.lobbyId,
-        }
-        const currentPlayerId : number = this.context.getters["currentPlayerId"];
-        websocket.send("/player/"+this.lobbyId+"/"+currentPlayerId+"/hidePlayer", playerDetails);
+        const currentPlayerId: number = this.context.getters["currentPlayerId"];
+        websocket.send("/player/" + this.lobbyId + "/" + currentPlayerId + "/hidePlayer", {});
     }
 
     @Action({rawError: true})
     public sendLobbyUpdate(): void {
-        websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
+        websocket.send("/lobby/"+this.lobbyId, {});
     }
 
     @Action({commit: "UPDATE_LOBBY", rawError: true})

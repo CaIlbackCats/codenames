@@ -145,21 +145,9 @@ public class PlayerService {
         }
     }
 
-    public Boolean isGivenPlayerInLobby(PlayerDetailsData playerDetailsData) {
-        List<Player> playersInLobby = findAllPlayersInLobby(playerDetailsData.getLobbyName());
-        return playersInLobby.stream().map(Player::getId).anyMatch(id -> id.equals(playerDetailsData.getId()));
-    }
-
     public PlayerData findPlayerDataById(Long id) {
         log.info("Find playerdata by id:\t" + id);
         return new PlayerData(findPlayerById(id));
-    }
-
-    public PlayerData showPlayer(Long id) {
-        Player player = findPlayerById(id);
-        player.setVisible(true);
-        playerRepository.save(player);
-        return new PlayerData(player);
     }
 
     public void hidePlayer(Long playerId) {
@@ -307,10 +295,6 @@ public class PlayerService {
 
     private List<Player> getVisiblePlayersByLobbyName(String lobbyName) {
         return playerRepository.getVisiblePlayersByLobbyName(lobbyName);
-    }
-
-    private List<Player> findAllPlayersInLobby(String lobbyName) {
-        return playerRepository.findAllPlayersInLobby(lobbyName);
     }
 
     public List<Player> findVisiblePlayersByLobbyIdBySide(String lobbyId, SideType sideType) {

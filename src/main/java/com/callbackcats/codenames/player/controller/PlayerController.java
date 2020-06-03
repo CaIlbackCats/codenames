@@ -132,14 +132,13 @@ public class PlayerController {
 
     }
 
-    @MessageMapping("/rdy")
-    public void setRdyState(@Payload RdyStateData rdyStateData) {
+    @MessageMapping("/{lobbyId}/ready")
+    public void setRdyState(@DestinationVariable String lobbyId, @Payload RdyStateData rdyStateData) {
         log.info("Ready state change is requested");
         PlayerData playerData = playerService.setRdyState(rdyStateData);
-        String lobbyName = playerData.getLobbyId();
-        updatePlayer(lobbyName, playerData.getId(), playerData);
 
-        updateLobbyState(lobbyName);
+        updatePlayer(lobbyId, playerData.getId(), playerData);
+        updateLobbyState(lobbyId);
     }
 
     @MessageMapping("/selection")
@@ -147,28 +146,9 @@ public class PlayerController {
         log.info("Player selection requested");
         PlayerData modifiedPlayer = playerService.setPlayerSideAndRole(selectionData);
         String lobbyName = modifiedPlayer.getLobbyId();
+
         updatePlayer(lobbyName, modifiedPlayer.getId(), modifiedPlayer);
-
         updateLobbyState(lobbyName);
-    }
-
-    @MessageMapping("/getPlayer")
-    public void getPlayer(@Payload PlayerDetailsData playerDetailsData) {
-        log.info("Get player requested");
-        String lobbyName = playerDetailsData.getLobbyName();
-        if (playerService.isGivenPlayerInLobby(playerDetailsData)) {
-            PlayerData player = playerService.showPlayer(playerDetailsData.getId());
-            updatePlayer(lobbyName, player.getId(), player);
-
-            updateLobbyState(playerDetailsData.getLobbyName());
-        }
-    }
-
-    @MessageMapping("/fetchLobby")
-    public void fetchLobby(@Payload LobbyDetails lobbyDetails) {
-        log.info("Lobby fetch requested");
-
-        updateLobbyState(lobbyDetails.getId());
     }
 
     @MessageMapping("/{lobbyId}/{playerId}/hidePlayer")
