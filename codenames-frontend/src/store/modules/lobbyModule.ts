@@ -123,16 +123,6 @@ export default class LobbyModule extends VuexModule {
         return response.data;
     }
 
-    @Action({rawError: true})
-    public sendRandomizeRole(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/role", {});
-    }
-
-    @Action({rawError: true})
-    public sendRandomizeSide(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/side", {});
-    }
-
 
     get playersOrdered(): Array<PlayerModel> {
         if (this.lobby.players) {

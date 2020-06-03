@@ -61,7 +61,7 @@ public class PlayerService {
         return null;
     }
 
-    public List<PlayerData> setPlayerRole(String lobbyName) {
+    public void setPlayerRole(String lobbyName) {
         List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         if (allPlayers.size() >= MIN_PLAYERS) {
             clearRoles(allPlayers);
@@ -79,13 +79,9 @@ public class PlayerService {
             playerRepository.saveAll(allPlayers);
         }
         log.info("Player roles randomized");
-        return allPlayers
-                .stream()
-                .map(PlayerData::new)
-                .collect(Collectors.toList());
     }
 
-    public List<PlayerData> randomizeTeamSetup(String lobbyName) {
+    public void randomizeTeamSetup(String lobbyName) {
         List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         int originPlayerSize = allPlayers.size();
         List<Player> assignedPlayers = new ArrayList<>();
@@ -109,7 +105,11 @@ public class PlayerService {
             playerRepository.saveAll(assignedPlayers);
         }
         log.info("Player sides and roles randomized");
-        return assignedPlayers
+    }
+
+    public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
+        log.info("Get players in the given lobby:\t" + lobbyName);
+        return getVisiblePlayersByLobbyName(lobbyName)
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
