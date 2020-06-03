@@ -4,7 +4,7 @@
 <!--            <flag iso="gb" />-->
 <!--        </div>-->
         <label>
-            <select v-model="$i18n.locale" class="select-box">
+            <select v-model="$i18n.locale" @change="onChange" class="select-box">
                 <option value="en">English</option>
                 <option value="hu">Hungarian</option>
             </select>
@@ -14,9 +14,14 @@
 
 <script lang="ts">
     import {Component, Vue} from "vue-property-decorator";
+    import router from "@/router";
+
     @Component({})
     export default class LocaleSwitcher extends Vue{
-
+        onChange(event){
+            const selectedLanguage = event.target.value
+            router.replace({name: 'Home', query: {lang: selectedLanguage}})
+        }
     }
 </script>
 
