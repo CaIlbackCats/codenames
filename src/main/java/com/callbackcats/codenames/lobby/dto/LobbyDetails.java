@@ -50,8 +50,9 @@ public class LobbyDetails {
         this.gameLanguage = String.valueOf(lobby.getGameLanguage());
     }
 
-    public LobbyDetails(Lobby lobby, Boolean everyoneRdy) {
+    public LobbyDetails(Lobby lobby, Boolean everyoneRdy, RemainingRoleData remainingRoleData) {
         this(lobby);
         this.everyoneRdy = everyoneRdy;
+        this.remainingRole = remainingRoleData;
     }
 }

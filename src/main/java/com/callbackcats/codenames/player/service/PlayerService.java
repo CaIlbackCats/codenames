@@ -162,8 +162,8 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-    public void hidePlayer(Long id) {
-        Player player = findPlayerById(id);
+    public void hidePlayer(Long playerId) {
+        Player player = findPlayerById(playerId);
         player.setSide(SideType.NOT_SELECTED);
         player.setRole(RoleType.NOT_SELECTED);
         player.setRdyState(false);
@@ -179,12 +179,6 @@ public class PlayerService {
         return new PlayerData(foundPlayer);
     }
 
-    public Boolean isEveryOneRdy(String lobbyName) {
-        log.info("Check if everyone is rdy!");
-        List<Player> players = getVisiblePlayersByLobbyName(lobbyName);
-        return players.stream().allMatch(Player::getRdyState);
-    }
-
     public PlayerData setPlayerSideAndRole(SelectionData selectionData) {
         Player player = findPlayerById(selectionData.getPlayerId());
         player.setRole(RoleType.valueOf(selectionData.getRole()));
@@ -193,39 +187,6 @@ public class PlayerService {
         return new PlayerData(player);
     }
 
-    public RemainingRoleData getRemainingRoleData(String lobbyName) {
-        RemainingRoleData remainingRoleData = new RemainingRoleData();
-        List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
-
-        long blueSpymaster = playersInLobby
-                .stream()
-                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPYMASTER)
-                .count();
-        long blueSpy = playersInLobby
-                .stream()
-                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPY)
-                .count();
-        long redSpymaster = playersInLobby
-                .stream()
-                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPYMASTER)
-                .count();
-        long redSpy = playersInLobby
-                .stream()
-                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPY)
-                .count();
-
-        boolean blueSpymasterFull = blueSpymaster == 1;
-        boolean blueSpyFull = playersInLobby.size() / 2 - blueSpy == 0;
-        boolean redSpymasterFull = redSpymaster == 1;
-        boolean redSpyFull = playersInLobby.size() / 2 - redSpy == 0;
-
-        remainingRoleData.setBlueSpymaster(blueSpymasterFull);
-        remainingRoleData.setBlueSpy(blueSpyFull);
-        remainingRoleData.setRedSpymaster(redSpymasterFull);
-        remainingRoleData.setRedSpy(redSpyFull);
-
-        return remainingRoleData;
-    }
 
     public void setPlayerRemoval(PlayerRemovalData playerRemovalData) {
         PlayerData playerToKick = findPlayerDataById(playerRemovalData.getPlayerToRemoveId());
