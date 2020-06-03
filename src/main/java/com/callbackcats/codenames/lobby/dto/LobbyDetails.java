@@ -4,6 +4,7 @@ import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.dto.PlayerData;
+import com.callbackcats.codenames.player.dto.RemainingRoleData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,8 @@ public class LobbyDetails {
     private Boolean kickingPhase;
 
     private String gameLanguage;
+
+    private RemainingRoleData remainingRole;
 
     public LobbyDetails(Lobby lobby) {
         this.id = lobby.getId();
