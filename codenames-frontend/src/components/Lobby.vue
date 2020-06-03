@@ -88,6 +88,8 @@
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
             if (!joined) {
                 router.push('/notFound')
+            } else {
+                await this.$store.dispatch("subscribeToLobbyRoleData");
             }
         };
 

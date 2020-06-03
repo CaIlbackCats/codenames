@@ -179,11 +179,10 @@ public class PlayerController {
     private void updateLobbyState(String lobbyId) {
 
         LobbyDetails lobbyDetails = lobbyService.getLobbyDetailsById(lobbyId);
-        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyId);
-        lobbyDetails.setRemainingRole(remainingRoleData);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId, lobbyDetails);
 
-     //   simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/roleData", remainingRoleData);
+        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyId);
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/roleData", remainingRoleData);
 
 
     }

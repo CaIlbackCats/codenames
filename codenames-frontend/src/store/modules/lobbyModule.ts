@@ -28,18 +28,26 @@ export default class LobbyModule extends VuexModule {
         currentGameId: -1,
         kickingPhase: false,
         gameLanguage: "",
-        remainingRole: {
-            blueSpy: false,
-            redSpy: false,
-            blueSpymaster: false,
-            redSpymaster: false,
-        }
+
     }
+    private remainingRoleModel: RemainingRoleModel = {
+        blueSpy: false,
+        blueSpymaster: false,
+        redSpy: false,
+        redSpymaster: false,
+    }
+
 
     @Mutation
     private SET_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel
     }
+
+    @Mutation
+    private SET_REMAINING_ROLE_DATA(remainingRoles: RemainingRoleModel) {
+        this.remainingRoleModel = remainingRoles;
+    }
+
     @Mutation
     private UPDATE_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel;
@@ -84,6 +92,16 @@ export default class LobbyModule extends VuexModule {
         return false;
     }
 
+
+    @Action({rawError: true})
+    public subscribeToLobbyRoleData(): void {
+        websocket.subscribe(config.LOBBY_SUBSCRIPTION_PATH + this.lobby.id + config.LOBBY_ROLE_DATA_SUBSCRIPTION_PATH, (body) => {
+            if (body) {
+                this.context.commit("SET_REMAINING_ROLE_DATA", body);
+            }
+        });
+    }
+
     @Action({rawError: true})
     public async subscribeToLobby(): Promise<void> {
         await websocket.subscribe(
@@ -124,6 +142,7 @@ export default class LobbyModule extends VuexModule {
         const response: AxiosResponse = await axios.post(BASE_URL + "/lobby/" + this.lobbyId, payload);
         return response.data;
     }
+
 
 
     get playersOrdered(): Array<PlayerModel> {
@@ -167,19 +186,19 @@ export default class LobbyModule extends VuexModule {
     }
 
     get isBlueSpyFull(): boolean {
-        return this.lobby.remainingRole?.blueSpy;
+        return this.remainingRoleModel.blueSpy;
     }
 
     get isBlueSpymasterFull(): boolean {
-        return this.lobby.remainingRole?.blueSpymaster;
+        return this.remainingRoleModel.blueSpymaster;
     }
 
     get isRedSpyFull(): boolean {
-        return this.lobby.remainingRole?.redSpy;
+        return this.remainingRoleModel.redSpy;
     }
 
     get isRedSpymasterFull(): boolean {
-        return this.lobby.remainingRole?.redSpymaster;
+        return this.remainingRoleModel.redSpymaster;
     }
 
     get isEveryoneReady(): boolean {
