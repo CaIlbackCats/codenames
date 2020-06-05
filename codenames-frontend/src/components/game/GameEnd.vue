@@ -6,33 +6,26 @@
         <div class="white-backgrounded-div stats-div col-sm-12 col-lg-6 offset-3 text-left p-lg-4">
             <span>
                 {{ $t("game-end.number") }}
-<!--                Number of -->
             </span>
             <hr>
             <div class="row mx-0">
                 <div class="col-lg-5 offset-lg-1">
                     <p>{{ $t("game-end.civilians") }}
-<!--                        civilians-->
                     </p>
                     <p>
                         {{ $t("game-end.e-spies") }}
-<!--                        enemy spies-->
                     </p>
                     <p>
                         {{ $t("game-end.f-spies") }}
-<!--                        friendly spies-->
                     </p>
                     <p>
                         {{ $t("game-end.rounds") }}
-<!--                        rounds-->
                     </p>
                     <p>
                         {{ $t("game-end.passes") }}
-<!--                        passes-->
                     </p>
                     <p>
                         {{ $t("game-end.inv-votes") }}
-<!--                        invalid votes-->
                     </p>
                 </div>
                 <div class="col-lg-5 text-right">
@@ -47,20 +40,21 @@
                 <div class="col-lg-5 offset-lg-1 mt-lg-4">
                     <p><span>
                         {{ $t("game-end.best-round") }}
-<!--                        Best round-->
                     </span></p>
                     <p><span>
                         {{ $t("game-end.worst-round") }}
-<!--                        Worst round-->
                     </span></p>
                     <p><span>
                         {{ $t("game-end.team-acc") }}
-<!--                        Team accuracy-->
                     </span></p>
                 </div>
                 <div class="col-lg-5 text-right mt-lg-4">
-                    <p><span>- spies in a row</span></p>
-                    <p><span>- spies in a row</span></p>
+                    <p><span>
+                        {{$t("game-end.spy-row") }}
+                    </span></p>
+                    <p><span>
+                        {{$t("game-end.spy-row")}}
+                    </span></p>
                     <p><span>-%</span></p>
                 </div>
             </div>

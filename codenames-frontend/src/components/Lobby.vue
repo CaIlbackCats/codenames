@@ -83,7 +83,11 @@
         }
 
         async mounted() {
-            this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
+            if(this.$route.query.lang === undefined) {
+                this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
+            } else {
+                this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path + "?lang=" + this.$route.query.lang;
+            }
             await websocket.connect();
             const joined: boolean = await this.$store.dispatch('joinLobby', {lobbyId: this.$route.params.lobbyId});
             if (!joined) {
