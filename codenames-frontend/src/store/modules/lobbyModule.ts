@@ -9,6 +9,7 @@ import {PlayerModel} from "@/models/player/playerModel";
 import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {LanguageModel} from "@/models/languageModel";
 import router from "@/router";
+import i18n from "@/i18n";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
@@ -87,6 +88,14 @@ export default class LobbyModule extends VuexModule {
         try {
             const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
             const lobby: LobbyModel = response.data
+
+            const language = lobby.gameLanguage
+            if(language.startsWith('E')) {
+                i18n.locale = "en"
+            } else {
+                i18n.locale = "hu"
+            }
+
             this.context.commit('SET_LOBBY', lobby)
             await this.context.dispatch("subscribeToLobby");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
