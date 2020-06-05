@@ -44,12 +44,12 @@
     @Component
     export default class LobbyOption extends Vue {
 
-        public setGameLanguage(language: string): void {
-            const gameLanguage: LanguageModel = {
-                language: language
-            }
-            this.$store.dispatch("setGameLanguage", gameLanguage);
-        }
+        // public setGameLanguage(language: string): void {
+        //     const gameLanguage: LanguageModel = {
+        //         language: language
+        //     }
+        //     this.$store.dispatch("setGameLanguage", gameLanguage);
+        // }
 
         constructor() {
             super();

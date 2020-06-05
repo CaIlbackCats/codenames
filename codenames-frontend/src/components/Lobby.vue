@@ -83,6 +83,7 @@
         }
 
         async mounted() {
+            //TODO - find a nicer solution for this
             if(this.$route.query.lang === undefined) {
                 this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
             } else {
