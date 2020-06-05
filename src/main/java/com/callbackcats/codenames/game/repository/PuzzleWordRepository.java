@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface PuzzleWordRepository extends JpaRepository<PuzzleWord, Long> {
 
     @Query("select p from PuzzleWord p where p.team= :team order by p.wordRegisterTime desc")
-    Page<PuzzleWord> findLatestPuzzleWordByTeam(@Param("team")Team team, Pageable limit);
+    PuzzleWord findLatestPuzzleWordByTeam(@Param("team") Team team);
 
 }

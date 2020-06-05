@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PuzzleWordService {
 
     private final PuzzleWordRepository puzzleWordRepository;
-    private static final PageRequest LATEST_PUZZLE_WORD = PageRequest.of(0, 1);
+  //  private static final PageRequest LATEST_PUZZLE_WORD = PageRequest.of(0, 1);
 
     public PuzzleWordService(PuzzleWordRepository puzzleWordRepository) {
         this.puzzleWordRepository = puzzleWordRepository;
@@ -49,6 +49,6 @@ public class PuzzleWordService {
     }
 
     private PuzzleWord findLastWordByTeam(Team team) {
-        return puzzleWordRepository.findLatestPuzzleWordByTeam(team, LATEST_PUZZLE_WORD).stream().findFirst().orElseThrow();
+        return puzzleWordRepository.findLatestPuzzleWordByTeam(team);
     }
 }
