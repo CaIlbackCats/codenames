@@ -28,7 +28,7 @@
     "valid-name": "Name already exist"
   },
   "game-end": {
-    "number": "Number of",
+    "number": "Statistics",
     "civilians": "civilians",
     "e-spies": "enemy spies",
     "f-spies": "friendly spies",
