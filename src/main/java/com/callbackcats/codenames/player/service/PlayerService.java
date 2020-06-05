@@ -6,12 +6,12 @@ import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.player.dto.*;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
-import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +34,7 @@ public class PlayerService {
     private static final int VOTING_PHASE_TIME = 15;
 
     private final PlayerRepository playerRepository;
-    private final LobbyService lobbyService;
+    private LobbyService lobbyService;
     private final CardService cardService;
     private final ScheduledExecutorService scheduler;
 
@@ -399,5 +401,9 @@ public class PlayerService {
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPYMASTER)
                 .count();
+    }
+
+    public void setLobbyService(LobbyService lobbyService) {
+        this.lobbyService = lobbyService;
     }
 }

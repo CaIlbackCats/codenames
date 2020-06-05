@@ -36,7 +36,7 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private SideType side;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
