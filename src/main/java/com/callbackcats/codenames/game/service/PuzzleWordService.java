@@ -49,6 +49,6 @@ public class PuzzleWordService {
     }
 
     private PuzzleWord findLastWordByTeam(Team team) {
-        return puzzleWordRepository.findLatestPuzzleWordByTeam(team);
+        return puzzleWordRepository.findLatestPuzzleWordByTeam(team).stream().findFirst().orElseThrow();
     }
 }
