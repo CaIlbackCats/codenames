@@ -203,8 +203,8 @@ public class GameService {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam, currentSide);
                     log.info("Current team scored");
-                    boolean isGameEndByScore = allSpies == currentTeam.getScore();
-                    if (isGameEndByScore) {
+                   // boolean isGameEndByScore = allSpies == currentTeam.getScore();
+                    if (isGameEndByScore(game,currentTeam)) {
                         game.setEndGame(true);
                         log.info("Set end game by score");
                     } else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
@@ -215,13 +215,27 @@ public class GameService {
                 } else {
                     teamService.increaseNumOfEnemySpies(currentTeam);
                     teamService.increaseTeamScore(otherTeam, currentSide);
-                    game.setEndGame(allSpies == otherTeam.getScore());
+                    if (isGameEndByScore(game,otherTeam)){
+                        game.setEndGame(true);
+                        log.info("Set end game by score");
+                    }
+                 //   game.setEndGame(allSpies == otherTeam.getScore());
                     game.setEndTurn(true);
                     log.info("Enemy team scored");
                 }
             }
             cardService.setCardFound(mostVotedCard);
         }
+    }
+
+    private Boolean isGameEndByScore(Game game, Team team) {
+        int maxScore = 0;
+        if (game.getStartingTeam().equals(team.getSide())) {
+            maxScore = STARTING_TEAM_SPIES_COUNT;
+        } else {
+            maxScore = STARTING_TEAM_SPIES_COUNT - 1;
+        }
+        return team.getScore() == maxScore;
     }
 
     private Map<Card, Integer> fillCardVotesMap(List<Card> votedCards) {
