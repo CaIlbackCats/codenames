@@ -4,9 +4,7 @@ import {Action, Module, Mutation, VuexModule} from "vuex-module-decorators";
 import {LobbyModel} from "@/models/lobby/lobbyModel";
 import * as websocket from '@/services/websocket'
 import {config} from "@/config";
-import {RemainingRoleModel} from "@/models/lobby/remainingRoleModel";
 import {PlayerModel} from "@/models/player/playerModel";
-import {PlayerDetailsModel} from "@/models/player/playerDetailsModel";
 import {LanguageModel} from "@/models/languageModel";
 import router from "@/router";
 

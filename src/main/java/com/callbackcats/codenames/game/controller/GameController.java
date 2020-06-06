@@ -16,9 +16,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +45,15 @@ public class GameController {
         GameDetails game = gameService.createGame(payloadData.getLobbyId());
 
         return new ResponseEntity<>(game, HttpStatus.CREATED);
+    }
+
+    @ResponseBody
+    @GetMapping("/api/game/{gameId}")
+    public ResponseEntity<GameStateData> getStartingGame(@PathVariable Long gameId) {
+        log.info("First game state requested");
+        GameStateData gameStateData = gameService.getGameStateData(gameId);
+
+        return new ResponseEntity<>(gameStateData, HttpStatus.OK);
     }
 
     @MessageMapping("/fetchGame/{gameId}")

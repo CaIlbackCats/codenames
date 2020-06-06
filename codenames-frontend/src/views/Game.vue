@@ -20,10 +20,10 @@
                     <game-map></game-map>
                 </div>
 
-            <div class="game-options-decor">
-                <game-options></game-options>
+                <div class="game-options-decor">
+                    <game-options></game-options>
+                </div>
             </div>
-        </div>
 
             <div class="col-sm-12 col-lg-4 col-xl-3">
                 <div class="player-list white-backgrounded-div col-sm-12 text-left mb-sm-2 mb-lg-4">
@@ -68,9 +68,12 @@
 
         async mounted() {
             await websocket.connect();
-            await this.$store.dispatch("subscribeToGame");
-            await this.$store.dispatch("subscribeToGameRoles");
-            await this.$store.dispatch("fetchActiveGame");
+           const joiend:boolean= await this.$store.dispatch("joinGame");
+           if (joiend){
+               await this.$store.dispatch("subscribeToGame");
+               await this.$store.dispatch("subscribeToGameRoles");
+               await this.$store.dispatch("fetchActiveGame");
+           }
         }
 
         get gameId(): number {

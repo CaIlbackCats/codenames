@@ -56,20 +56,41 @@ export default class GameModule extends VuexModule {
     }
 
     @Action({rawError: true})
+    public async joinGame(): Promise<boolean> {
+        let joined=false;
+       await axios.get(BASE_URL + "/game/" + this.gameId).then((resp) => {
+            const gameStateModel: GameStateModel = resp.data;
+            this.context.commit("UPDATE_GAME", gameStateModel);
+            joined=true;
+        });
+
+        return joined;
+    }
+
+    @Action({rawError: true})
     public async subscribeToGameRoles() {
         const isCurrentPlayerSpymaster: boolean = this.context.getters["isCurrentPlayerSpymaster"];
         if (!isCurrentPlayerSpymaster) {
-
-            await websocket.subscribe("/game/" + this.gameId + "/spy", body => {
-                if (body) {
-                    this.context.commit("UPDATE_SPY_MAP", body);
-                }
-            });
+            await this.context.dispatch("subscribeToSpyRole");
         } else {
-            await websocket.subscribe("/game/" + this.gameId + "/spymaster", body => {
-                this.context.commit("UPDATE_SPYMASTER_MAP", body);
-            });
+            await this.context.dispatch("subscribeToSpymasterRole");
         }
+    }
+
+    @Action({rawError: true})
+    public async subscribeToSpyRole() {
+        await websocket.subscribe("/game/" + this.gameId + "/spy", body => {
+            if (body) {
+                this.context.commit("UPDATE_SPY_MAP", body);
+            }
+        });
+    }
+
+    @Action({rawError: true})
+    public async subscribeToSpymasterRole() {
+        await websocket.subscribe("/game/" + this.gameId + "/spymaster", body => {
+            this.context.commit("UPDATE_SPYMASTER_MAP", body);
+        });
     }
 
     @Action({rawError: true})
