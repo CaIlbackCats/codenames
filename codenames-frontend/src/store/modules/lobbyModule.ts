@@ -7,11 +7,15 @@ import {config} from "@/config";
 import {PlayerModel} from "@/models/player/playerModel";
 import {LanguageModel} from "@/models/languageModel";
 import router from "@/router";
+import i18n from "@/i18n";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
 interface JoinActionPayload {
     lobbyId: string
+}
+interface CreateActionPayload {
+    language: string
 }
 
 const MIN_PARTY_SIZE = 4;
@@ -26,17 +30,24 @@ export default class LobbyModule extends VuexModule {
         currentGameId: -1,
         kickingPhase: false,
         gameLanguage: "",
-        remainingRole: {
-            blueSpy: false,
-            redSpy: false,
-            blueSpymaster: false,
-            redSpymaster: false,
-        }
+
     }
+    private remainingRoleModel: RemainingRoleModel = {
+        blueSpy: false,
+        blueSpymaster: false,
+        redSpy: false,
+        redSpymaster: false,
+    }
+
 
     @Mutation
     private SET_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel
+    }
+
+    @Mutation
+    private SET_REMAINING_ROLE_DATA(remainingRoles: RemainingRoleModel) {
+        this.remainingRoleModel = remainingRoles;
     }
 
     @Mutation
@@ -45,8 +56,11 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public async createLobby(): Promise<boolean> {
-        const response = await axios.post(BASE_URL + "/lobby")
+    public async createLobby(payload: CreateActionPayload): Promise<boolean> {
+        const languageModel: LanguageModel = {
+            language: payload.language
+        }
+        const response = await axios.post(BASE_URL + "/lobby", languageModel)
         if (response.status === 201) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
@@ -72,6 +86,14 @@ export default class LobbyModule extends VuexModule {
         try {
             const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
             const lobby: LobbyModel = response.data
+
+            const language = lobby.gameLanguage
+            if(language.startsWith('E')) {
+                i18n.locale = "en"
+            } else {
+                i18n.locale = "hu"
+            }
+
             this.context.commit('SET_LOBBY', lobby)
             await this.context.dispatch("subscribeToLobby");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
@@ -81,6 +103,16 @@ export default class LobbyModule extends VuexModule {
             router.replace("/notFound")
         }
         return false;
+    }
+
+
+    @Action({rawError: true})
+    public subscribeToLobbyRoleData(): void {
+        websocket.subscribe(config.LOBBY_SUBSCRIPTION_PATH + this.lobby.id + config.LOBBY_ROLE_DATA_SUBSCRIPTION_PATH, (body) => {
+            if (body) {
+                this.context.commit("SET_REMAINING_ROLE_DATA", body);
+            }
+        });
     }
 
     @Action({rawError: true})
@@ -106,13 +138,16 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public hideLeftPlayer(): void {
-        const currentPlayerId: number = this.context.getters["currentPlayerId"];
-        websocket.send("/player/" + this.lobbyId + "/" + currentPlayerId + "/hidePlayer", {});
+        const playerDetails: PlayerDetailsModel = {
+            id: this.context.getters["currentPlayerId"],
+            lobbyName: this.lobbyId,
+        }
+        websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
     }
 
     @Action({rawError: true})
     public sendLobbyUpdate(): void {
-        websocket.send("/lobby/"+this.lobbyId, {});
+        websocket.send(config.LOBBY_FETCH_PATH, this.lobby);
     }
 
     @Action({commit: "UPDATE_LOBBY", rawError: true})
@@ -121,15 +156,6 @@ export default class LobbyModule extends VuexModule {
         return response.data;
     }
 
-    @Action({rawError: true})
-    public sendRandomizeRole(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/role", {});
-    }
-
-    @Action({rawError: true})
-    public sendRandomizeSide(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/side", {});
-    }
 
 
     get playersOrdered(): Array<PlayerModel> {
@@ -173,19 +199,19 @@ export default class LobbyModule extends VuexModule {
     }
 
     get isBlueSpyFull(): boolean {
-        return this.lobby.remainingRole?.blueSpy;
+        return this.remainingRoleModel.blueSpy;
     }
 
     get isBlueSpymasterFull(): boolean {
-        return this.lobby.remainingRole?.blueSpymaster;
+        return this.remainingRoleModel.blueSpymaster;
     }
 
     get isRedSpyFull(): boolean {
-        return this.lobby.remainingRole?.redSpy;
+        return this.remainingRoleModel.redSpy;
     }
 
     get isRedSpymasterFull(): boolean {
-        return this.lobby.remainingRole?.redSpymaster;
+        return this.remainingRoleModel.redSpymaster;
     }
 
     get isEveryoneReady(): boolean {

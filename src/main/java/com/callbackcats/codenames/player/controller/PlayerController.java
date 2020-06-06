@@ -7,10 +7,8 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,58 +58,86 @@ public class PlayerController {
         return new ResponseEntity<>(playerData, HttpStatus.OK);
     }
 
-    @MessageMapping("/{lobbyId}/role")
-    @SendTo("/lobby/{lobbyId}")
-    public LobbyDetails setPlayerRole(@DestinationVariable String lobbyId) {
+    @MessageMapping("/role")
+    public void setPlayerRole(@Payload RoleSelectionData roleSelectionData) {
         log.info("Player random role setting requested");
-        List<PlayerData> updatedPlayers = playerService.setPlayerRole(lobbyId);
-        updatedPlayers.forEach(playerData -> updatePlayer(lobbyId, playerData.getId(), playerData));
-
-        return lobbyService.getLobbyDetailsById(lobbyId);
+        String lobbyId = roleSelectionData.getLobbyId();
+        playerService.setPlayerRole(lobbyId);
+        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
+        players.forEach(player -> {
+            updatePlayer(lobbyId, player.getId(), player);
+        });
+        updateLobbyState(lobbyId);
     }
 
-    @MessageMapping("/{lobbyId}/side")
-    @SendTo("/lobby/{lobbyId}")
-    public LobbyDetails setPlayerSide(@DestinationVariable String lobbyId) {
+    @MessageMapping("/side")
+    public void setPlayerSide(@Payload SideSelectionData sideSelectionData) {
         log.info("Player randomize role and side requested");
-        List<PlayerData> updatedPlayers = playerService.randomizeTeamSetup(lobbyId);
-        updatedPlayers.forEach(playerData -> updatePlayer(lobbyId, playerData.getId(), playerData));
-        return lobbyService.getLobbyDetailsById(lobbyId);
+        String lobbyId = sideSelectionData.getLobbyId();
+        playerService.randomizeTeamSetup(lobbyId);
+        List<PlayerData> players = playerService.getPlayerDataListByLobbyName(lobbyId);
+        players.forEach(player -> {
+            updatePlayer(lobbyId, player.getId(), player);
+        });
+        updateLobbyState(lobbyId);
     }
 
-
-    @MessageMapping("/{lobbyId}/kickCount")
-    @SendTo("/lobby/{lobbyId}")
-    public LobbyDetails countKickVotes(@DestinationVariable String lobbyId, @Payload PlayerRemovalData playerRemovalData) {
+    @MessageMapping("/kickCount")
+    public void countKickVotes(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Player kick count modification requested");
         playerService.processKickBeforeCountDown(playerRemovalData);
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
 
-        return lobbyService.getLobbyDetailsById(lobbyId);
+        updateLobbyState(lobbyName);
     }
 
-    @MessageMapping("/{lobbyId}/kickInit")
-    public void initKick(@DestinationVariable String lobbyId, @Payload PlayerRemovalData playerRemovalData) {
+    @MessageMapping("/getPlayers")
+    public void kickPlayer(@Payload PlayerRemovalData playerRemovalData) {
+        log.info("Kicking player requested");
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
+
+        updateLobbyState(lobbyName);
+    }
+
+    @MessageMapping("/kickInit")
+    public void initKick(@Payload PlayerRemovalData playerRemovalData) {
         log.info("Initiate kicking requested");
 
         playerService.setPlayerRemoval(playerRemovalData);
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/kick", playerRemovalData);
-        updateLobbyState(lobbyId);
+        //todo set kicking phase and send refreshed lobby back
 
-        Boolean initPlayerLobbyOwner = playerService.isInitPlayerLobbyOwner(playerRemovalData.getPlayerInitId());
-        if (!initPlayerLobbyOwner) {
-            startKickPhase(lobbyId, playerRemovalData);
+        String lobbyName = playerService.findPlayerDataById(playerRemovalData.getPlayerInitId()).getLobbyId();
+
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyName + "/kick", playerRemovalData);
+        updateLobbyState(lobbyName);
+
+        if (!playerService.isInitPlayerLobbyOwner(playerRemovalData.getPlayerInitId())) {
+            try {
+                lobbyService.setKickPhase(lobbyName, true);
+                ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
+                votingFinished.get();
+
+                if (!playerService.isLobbyOwnerInLobby(lobbyName)) {
+                    PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyName);
+                    updatePlayer(lobbyName, newLobbyOwner.getId(), newLobbyOwner);
+                }
+                lobbyService.setKickPhase(lobbyName, false);
+                updateLobbyState(lobbyName);
+            } catch (InterruptedException | ExecutionException e) {
+                log.info(e.getMessage());
+            }
         }
 
     }
 
-
-    @MessageMapping("/{lobbyId}/ready")
-    public void setRdyState(@DestinationVariable String lobbyId, @Payload RdyStateData rdyStateData) {
+    @MessageMapping("/rdy")
+    public void setRdyState(@Payload RdyStateData rdyStateData) {
         log.info("Ready state change is requested");
         PlayerData playerData = playerService.setRdyState(rdyStateData);
+        String lobbyName = playerData.getLobbyId();
+        updatePlayer(lobbyName, playerData.getId(), playerData);
 
-        updatePlayer(lobbyId, playerData.getId(), playerData);
-        updateLobbyState(lobbyId);
+        updateLobbyState(lobbyName);
     }
 
     @MessageMapping("/selection")
@@ -119,43 +145,50 @@ public class PlayerController {
         log.info("Player selection requested");
         PlayerData modifiedPlayer = playerService.setPlayerSideAndRole(selectionData);
         String lobbyName = modifiedPlayer.getLobbyId();
-
         updatePlayer(lobbyName, modifiedPlayer.getId(), modifiedPlayer);
+
         updateLobbyState(lobbyName);
     }
 
-    @MessageMapping("/{lobbyId}/{playerId}/hidePlayer")
-    @SendTo("/lobby/{lobbyId}")
-    public LobbyDetails hidePlayer(@DestinationVariable String lobbyId, @DestinationVariable Long playerId) {
-        playerService.hidePlayer(playerId);
+    @MessageMapping("/getPlayer")
+    public void getPlayer(@Payload PlayerDetailsData playerDetailsData) {
+        log.info("Get player requested");
+        String lobbyName = playerDetailsData.getLobbyName();
+        if (playerService.isGivenPlayerInLobby(playerDetailsData)) {
+            PlayerData player = playerService.showPlayer(playerDetailsData.getId());
+            updatePlayer(lobbyName, player.getId(), player);
 
-        return lobbyService.getLobbyDetailsById(lobbyId);
+            updateLobbyState(playerDetailsData.getLobbyName());
+        }
+    }
+
+    @MessageMapping("/fetchLobby")
+    public void fetchLobby(@Payload LobbyDetails lobbyDetails) {
+        log.info("Lobby fetch requested");
+
+        updateLobbyState(lobbyDetails.getId());
+    }
+
+    @MessageMapping("/hidePlayer")
+    public void hidePlayer(@Payload PlayerDetailsData playerDetailsData) {
+        playerService.hidePlayer(playerDetailsData.getId());
+
+        updateLobbyState(playerDetailsData.getLobbyName());
     }
 
     private void updateLobbyState(String lobbyId) {
 
         LobbyDetails lobbyDetails = lobbyService.getLobbyDetailsById(lobbyId);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId, lobbyDetails);
+
+        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyId);
+        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/roleData", remainingRoleData);
+
+
     }
 
     private void updatePlayer(String lobbyId, Long playerId, PlayerData updatedPlayer) {
-        simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/" + playerId, updatedPlayer);
+        simpMessagingTemplate.convertAndSend("/player/" + lobbyId + "/" + playerId, updatedPlayer);
     }
 
-    private void startKickPhase(String lobbyId, PlayerRemovalData playerRemovalData) {
-        try {
-            lobbyService.setKickPhase(lobbyId, true);
-            ScheduledFuture<?> votingFinished = playerService.initVotingPhase(playerRemovalData);
-            votingFinished.get();
-
-            if (!playerService.isLobbyOwnerInLobby(lobbyId)) {
-                PlayerData newLobbyOwner = playerService.reassignLobbyOwner(lobbyId);
-                updatePlayer(lobbyId, newLobbyOwner.getId(), newLobbyOwner);
-            }
-            lobbyService.setKickPhase(lobbyId, false);
-            updateLobbyState(lobbyId);
-        } catch (InterruptedException | ExecutionException e) {
-            log.warn(e.getMessage());
-        }
-    }
 }

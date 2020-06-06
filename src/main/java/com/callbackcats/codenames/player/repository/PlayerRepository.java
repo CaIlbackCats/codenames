@@ -15,6 +15,8 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("select p from Player p where p.visible=true and p.lobby.id= :lobbyName")
     List<Player> getVisiblePlayersByLobbyName(@Param("lobbyName") String lobbyName);
 
+    @Query("select p from Player p where p.lobby.id= :lobbyId")
+    List<Player> findAllPlayersInLobby(@Param("lobbyId") String lobbyId);
 
     @Query("select p from Player p where p.lobby.id= :lobbyId and p.side= :side and p.visible=true")
     List<Player> findAllVisiblePlayersByLobbyIdBySide(@Param("lobbyId") String lobbyId, @Param("side") SideType side);

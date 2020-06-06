@@ -43,8 +43,17 @@ public class LobbyController {
 
     @ResponseBody
     @PostMapping("/api/lobby")
-    public ResponseEntity<LobbyDetails> createLobby() {
+    public ResponseEntity<LobbyDetails> createLobby(@RequestBody LanguageDetails gameLanguage) {
+        GameLanguage language;
+        if(gameLanguage.getLanguage() == null) {
+            language = GameLanguage.ENGLISH;
+        } else if (gameLanguage.getLanguage().equals("hu")) {
+            language = GameLanguage.HUNGARIAN;
+        } else {
+            language = GameLanguage.ENGLISH;
+        }
         Lobby lobby = new Lobby();
+        lobby.setGameLanguage(language);
         this.lobbyService.saveNewLobby(lobby);
         LobbyDetails lobbyDetails = new LobbyDetails(lobby);
         log.info("New lobby generation requested");
@@ -55,6 +64,7 @@ public class LobbyController {
     @SendTo("/lobby/{lobbyId}")
     public LobbyDetails fetchLobby(@DestinationVariable String lobbyId) {
         log.info("Lobby fetch requested");
+
         return lobbyService.getLobbyDetailsById(lobbyId);
     }
 }

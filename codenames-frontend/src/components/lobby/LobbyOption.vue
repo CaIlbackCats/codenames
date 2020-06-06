@@ -15,14 +15,14 @@
             </b-button>
         </div>
 
-        <div class="col-sm-12">
-            <img @click="setGameLanguage('ENGLISH')"
-                 alt="english"
-                 src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg">
-            <img @click="setGameLanguage('HUNGARIAN')"
-                 alt="hungarian"
-                 src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg">
-        </div>
+<!--        <div class="col-sm-12">-->
+<!--            <img @click="setGameLanguage('ENGLISH')"-->
+<!--                 alt="english"-->
+<!--                 src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg">-->
+<!--            <img @click="setGameLanguage('HUNGARIAN')"-->
+<!--                 alt="hungarian"-->
+<!--                 src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Flag_of_Hungary.svg">-->
+<!--        </div>-->
 
         <div class="col-sm-12">
             <b-button :disabled="!isGameReadyToStart"
@@ -44,12 +44,12 @@
     @Component
     export default class LobbyOption extends Vue {
 
-        public setGameLanguage(language: string): void {
-            const gameLanguage: LanguageModel = {
-                language: language
-            }
-            this.$store.dispatch("setGameLanguage", gameLanguage);
-        }
+        // public setGameLanguage(language: string): void {
+        //     const gameLanguage: LanguageModel = {
+        //         language: language
+        //     }
+        //     this.$store.dispatch("setGameLanguage", gameLanguage);
+        // }
 
         constructor() {
             super();

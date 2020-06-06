@@ -6,12 +6,12 @@ import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.dto.PassVoteData;
 import com.callbackcats.codenames.game.team.domain.Team;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.service.LobbyService;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.player.dto.*;
 import com.callbackcats.codenames.player.repository.PlayerRepository;
-import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +34,7 @@ public class PlayerService {
     private static final int VOTING_PHASE_TIME = 15;
 
     private final PlayerRepository playerRepository;
-    private final LobbyService lobbyService;
+    private LobbyService lobbyService;
     private final CardService cardService;
     private final ScheduledExecutorService scheduler;
 
@@ -61,7 +63,7 @@ public class PlayerService {
         return null;
     }
 
-    public List<PlayerData> setPlayerRole(String lobbyName) {
+    public void setPlayerRole(String lobbyName) {
         List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         if (allPlayers.size() >= MIN_PLAYERS) {
             clearRoles(allPlayers);
@@ -79,13 +81,9 @@ public class PlayerService {
             playerRepository.saveAll(allPlayers);
         }
         log.info("Player roles randomized");
-        return allPlayers
-                .stream()
-                .map(PlayerData::new)
-                .collect(Collectors.toList());
     }
 
-    public List<PlayerData> randomizeTeamSetup(String lobbyName) {
+    public void randomizeTeamSetup(String lobbyName) {
         List<Player> allPlayers = getVisiblePlayersByLobbyName(lobbyName);
         int originPlayerSize = allPlayers.size();
         List<Player> assignedPlayers = new ArrayList<>();
@@ -109,7 +107,11 @@ public class PlayerService {
             playerRepository.saveAll(assignedPlayers);
         }
         log.info("Player sides and roles randomized");
-        return assignedPlayers
+    }
+
+    public List<PlayerData> getPlayerDataListByLobbyName(String lobbyName) {
+        log.info("Get players in the given lobby:\t" + lobbyName);
+        return getVisiblePlayersByLobbyName(lobbyName)
                 .stream()
                 .map(PlayerData::new)
                 .collect(Collectors.toList());
@@ -145,13 +147,25 @@ public class PlayerService {
         }
     }
 
+    public Boolean isGivenPlayerInLobby(PlayerDetailsData playerDetailsData) {
+        List<Player> playersInLobby = findAllPlayersInLobby(playerDetailsData.getLobbyName());
+        return playersInLobby.stream().map(Player::getId).anyMatch(id -> id.equals(playerDetailsData.getId()));
+    }
+
     public PlayerData findPlayerDataById(Long id) {
         log.info("Find playerdata by id:\t" + id);
         return new PlayerData(findPlayerById(id));
     }
 
-    public void hidePlayer(Long playerId) {
-        Player player = findPlayerById(playerId);
+    public PlayerData showPlayer(Long id) {
+        Player player = findPlayerById(id);
+        player.setVisible(true);
+        playerRepository.save(player);
+        return new PlayerData(player);
+    }
+
+    public void hidePlayer(Long id) {
+        Player player = findPlayerById(id);
         player.setSide(SideType.NOT_SELECTED);
         player.setRole(RoleType.NOT_SELECTED);
         player.setRdyState(false);
@@ -167,12 +181,52 @@ public class PlayerService {
         return new PlayerData(foundPlayer);
     }
 
+    public Boolean isEveryOneRdy(String lobbyName) {
+        log.info("Check if everyone is rdy!");
+        List<Player> players = getVisiblePlayersByLobbyName(lobbyName);
+        return players.stream().allMatch(Player::getRdyState);
+    }
+
     public PlayerData setPlayerSideAndRole(SelectionData selectionData) {
         Player player = findPlayerById(selectionData.getPlayerId());
         player.setRole(RoleType.valueOf(selectionData.getRole()));
         player.setSide(SideType.valueOf(selectionData.getSide()));
         playerRepository.save(player);
         return new PlayerData(player);
+    }
+
+    public RemainingRoleData getRemainingRoleData(String lobbyName) {
+        RemainingRoleData remainingRoleData = new RemainingRoleData();
+        List<Player> playersInLobby = getVisiblePlayersByLobbyName(lobbyName);
+
+        long blueSpymaster = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPYMASTER)
+                .count();
+        long blueSpy = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.BLUE && player.getRole() == RoleType.SPY)
+                .count();
+        long redSpymaster = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPYMASTER)
+                .count();
+        long redSpy = playersInLobby
+                .stream()
+                .filter(player -> player.getSide() == SideType.RED && player.getRole() == RoleType.SPY)
+                .count();
+
+        boolean blueSpymasterFull = blueSpymaster == 1;
+        boolean blueSpyFull = playersInLobby.size() / 2 - blueSpy == 0;
+        boolean redSpymasterFull = redSpymaster == 1;
+        boolean redSpyFull = playersInLobby.size() / 2 - redSpy == 0;
+
+        remainingRoleData.setBlueSpymaster(blueSpymasterFull);
+        remainingRoleData.setBlueSpy(blueSpyFull);
+        remainingRoleData.setRedSpymaster(redSpymasterFull);
+        remainingRoleData.setRedSpy(redSpyFull);
+
+        return remainingRoleData;
     }
 
     public void setPlayerRemoval(PlayerRemovalData playerRemovalData) {
@@ -296,6 +350,10 @@ public class PlayerService {
         return playerRepository.getVisiblePlayersByLobbyName(lobbyName);
     }
 
+    private List<Player> findAllPlayersInLobby(String lobbyName) {
+        return playerRepository.findAllPlayersInLobby(lobbyName);
+    }
+
     public List<Player> findVisiblePlayersByLobbyIdBySide(String lobbyId, SideType sideType) {
         return playerRepository.findAllVisiblePlayersByLobbyIdBySide(lobbyId, sideType);
     }
@@ -343,5 +401,9 @@ public class PlayerService {
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPYMASTER)
                 .count();
+    }
+
+    public void setLobbyService(LobbyService lobbyService) {
+        this.lobbyService = lobbyService;
     }
 }

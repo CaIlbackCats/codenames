@@ -1,10 +1,9 @@
-package com.callbackcats.codenames.card;
+package com.callbackcats.codenames.card.service;
 
 import com.callbackcats.codenames.card.domain.Card;
 import com.callbackcats.codenames.card.domain.CardType;
 import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.card.domain.Word;
-import com.callbackcats.codenames.card.service.CardService;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.player.domain.SideType;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,5 +82,6 @@ public class CardServiceTest {
         long byStanderCards = cards.stream().map(Card::getType).filter(cardType -> cardType.equals(CardType.BYSTANDER)).count();
         assertEquals(7, byStanderCards);
     }
+
 
 }
