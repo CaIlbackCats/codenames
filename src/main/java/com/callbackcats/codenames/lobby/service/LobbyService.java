@@ -1,7 +1,6 @@
 package com.callbackcats.codenames.lobby.service;
 
 import com.callbackcats.codenames.card.domain.GameLanguage;
-import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.lobby.domain.Lobby;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
