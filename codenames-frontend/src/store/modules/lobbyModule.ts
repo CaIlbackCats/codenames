@@ -98,12 +98,12 @@ export default class LobbyModule extends VuexModule {
             });
     }
 
-    @Action({commit: "UPDATE_LOBBY", rawError: true})
-    public async updateLobby(lobbyModel: LobbyModel) {
+    @Action({rawError: true})
+    public async updateLobby(lobbyModel: LobbyModel) :Promise<void>{
+        this.context.commit("UPDATE_LOBBY",lobbyModel);
         if (lobbyModel.currentGameId != null) {
             await this.context.dispatch("setGameId", lobbyModel.currentGameId);
         }
-        return lobbyModel;
     }
 
     @Action({rawError: true})
@@ -192,10 +192,6 @@ export default class LobbyModule extends VuexModule {
 
     get isEveryoneReady(): boolean {
         return this.lobby.everyoneRdy;
-    }
-
-    get currentGameId(): number {
-        return this.lobby.currentGameId;
     }
 
     get isLanguageSet(): boolean {

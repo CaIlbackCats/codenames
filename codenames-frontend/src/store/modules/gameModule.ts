@@ -78,6 +78,7 @@ export default class GameModule extends VuexModule {
         if (resp.status === 201) {
             const gameModel: GameCreationModel = resp.data;
             this.context.commit("SET_GAME_ID", gameModel.id);
+            this.context.dispatch("sendLobbyUpdate");
         }
     }
 

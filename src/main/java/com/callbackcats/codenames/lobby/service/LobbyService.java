@@ -8,6 +8,7 @@ import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.player.dto.RemainingRoleData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class LobbyService {
 
     private LobbyRepository lobbyRepository;
@@ -37,7 +39,7 @@ public class LobbyService {
                 .allMatch(Player::getRdyState);
 
         RemainingRoleData remainingRoleData = getRemainingRolesByLobbyId(lobbyId);
-
+        log.info("Lobby details fetched by id:\t" + lobbyId);
         return new LobbyDetails(lobby, everyoneReady, remainingRoleData);
     }
 

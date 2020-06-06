@@ -80,10 +80,6 @@
         get isEndGame() {
             return this.$store.getters["isEndGame"];
         }
-
-        get currentGameId() {
-            return this.$store.getters["currentGameId"];
-        }
     }
 </script>
 

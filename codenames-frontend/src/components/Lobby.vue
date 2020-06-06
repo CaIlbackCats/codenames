@@ -78,7 +78,6 @@
         private navigateToGame() {
             if (this.gameId != -1 && this.gameId != null) {
                 router.push({name: "Game", params: {lobbyId: this.lobbyId, gameId: "" + this.gameId}});
-                this.$store.dispatch("sendLobbyUpdate");
             }
         }
 
