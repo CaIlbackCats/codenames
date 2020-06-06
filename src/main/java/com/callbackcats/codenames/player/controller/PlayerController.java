@@ -7,8 +7,10 @@ import com.callbackcats.codenames.lobby.service.LobbyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -169,23 +171,18 @@ public class PlayerController {
         updateLobbyState(lobbyDetails.getId());
     }
 
-    @MessageMapping("/hidePlayer")
-    public void hidePlayer(@Payload PlayerDetailsData playerDetailsData) {
-        playerService.hidePlayer(playerDetailsData.getId());
+    @MessageMapping("/{lobbyId}/{playerId}/hidePlayer")
+    @SendTo("/lobby/{lobbyId}")
+    public LobbyDetails hidePlayer(@DestinationVariable String lobbyId, @DestinationVariable Long playerId) {
+        playerService.hidePlayer(playerId);
 
-        updateLobbyState(playerDetailsData.getLobbyName());
+        return lobbyService.getLobbyDetailsById(lobbyId);
     }
 
     private void updateLobbyState(String lobbyId) {
 
         LobbyDetails lobbyDetails = lobbyService.getLobbyDetailsById(lobbyId);
-        RemainingRoleData remainingRoleData = playerService.getRemainingRoleData(lobbyId);
-        lobbyDetails.setRemainingRole(remainingRoleData);
         simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId, lobbyDetails);
-
-     //   simpMessagingTemplate.convertAndSend("/lobby/" + lobbyId + "/roleData", remainingRoleData);
-
-
     }
 
     private void updatePlayer(String lobbyId, Long playerId, PlayerData updatedPlayer) {

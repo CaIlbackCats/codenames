@@ -124,7 +124,8 @@ export default class LobbyModule extends VuexModule {
             id: this.context.getters["currentPlayerId"],
             lobbyName: this.lobbyId,
         }
-        websocket.send(config.HIDE_PLAYER_PATH, playerDetails);
+        const currentPlayerId : number = this.context.getters["currentPlayerId"];
+        websocket.send("/player/"+this.lobbyId+"/"+currentPlayerId+"/hidePlayer", playerDetails);
     }
 
     @Action({rawError: true})
