@@ -174,6 +174,7 @@ public class GameService {
         SideType oppositeSide = SideType.getOppositeSide(game.getGameTurn().getCurrentTeam());
         Team otherTeam = teamService.findTeamByGameIdBySide(game.getId(), oppositeSide);
         Card mostVotedCard = mostVotedCards.get(0);
+        SideType currentSide = game.getGameTurn().getCurrentTeam();
         teamService.increaseTeamRounds(currentTeam);
 
         int allSpies;
@@ -200,11 +201,11 @@ public class GameService {
                 log.info("Civilian found");
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
-                    teamService.increaseTeamScore(currentTeam);
+                    teamService.increaseTeamScore(currentTeam, currentSide);
                     log.info("Current team scored");
                     boolean isGameEndByScore = allSpies == currentTeam.getScore();
                     if (isGameEndByScore) {
-                        game.setEndGame(isGameEndByScore);
+                        game.setEndGame(true);
                         log.info("Set end game by score");
                     } else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
                         gameTurnService.advanceToSpyTurn(game.getGameTurn());
@@ -213,7 +214,7 @@ public class GameService {
                     }
                 } else {
                     teamService.increaseNumOfEnemySpies(currentTeam);
-                    teamService.increaseTeamScore(otherTeam);
+                    teamService.increaseTeamScore(otherTeam, currentSide);
                     game.setEndGame(allSpies == otherTeam.getScore());
                     game.setEndTurn(true);
                     log.info("Enemy team scored");

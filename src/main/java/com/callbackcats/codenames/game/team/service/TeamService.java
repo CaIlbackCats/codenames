@@ -43,12 +43,14 @@ public class TeamService {
         return teamRepository.findCurrentTeamByGameIdBySide(gameId, sideType).orElseThrow(() -> new EntityNotFoundException("Team not found by given gameId:\t" + gameId));
     }
 
-    public void increaseTeamScore(Team team) {
+    public void increaseTeamScore(Team team, SideType currentSide) {
         int increasedScore = team.getScore() + 1;
         team.setScore(increasedScore);
         teamRepository.save(team);
         log.info("Team :\t" + team.getId() + "\t current score increased to:\t" + team.getScore());
-        puzzleWordService.increaseLatestPuzzleWordGuessCounter(team);
+        if (currentSide==team.getSide()){
+            puzzleWordService.increaseLatestPuzzleWordGuessCounter(team);
+        }
     }
 
     public Boolean isCurrentTeamReachMaxGuesses(Team team) {
