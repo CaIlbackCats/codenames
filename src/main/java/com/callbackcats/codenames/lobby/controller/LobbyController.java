@@ -55,7 +55,6 @@ public class LobbyController {
     @SendTo("/lobby/{lobbyId}")
     public LobbyDetails fetchLobby(@DestinationVariable String lobbyId) {
         log.info("Lobby fetch requested");
-
         return lobbyService.getLobbyDetailsById(lobbyId);
     }
 }
