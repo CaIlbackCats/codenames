@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PuzzleWordRepository extends JpaRepository<PuzzleWord, Long> {
 
     @Query("select p from PuzzleWord p where p.team= :team order by p.wordRegisterTime desc")
-    PuzzleWord findLatestPuzzleWordByTeam(@Param("team") Team team);
+    List<PuzzleWord> findLatestPuzzleWordByTeam(@Param("team") Team team);
 
 }
