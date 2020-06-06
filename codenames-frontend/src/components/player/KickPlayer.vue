@@ -51,7 +51,7 @@
             if (this.counter == 0) {
                 clearInterval(this.timer);
                 this.hidePopPup();
-                this.$store.dispatch("getPlayersInLobby");
+                this.$store.dispatch("sendLobbyUpdate");
             }
         }
 

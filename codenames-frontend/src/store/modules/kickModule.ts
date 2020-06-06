@@ -52,21 +52,22 @@ export default class KickModule extends VuexModule {
     @Action({rawError: true})
     public sendKickWindowInit(playerToRemoveId: number): void {
         const ownerId: number = this.context.getters["currentPlayerId"];
+        const lobbyId:string = this.context.getters["lobbyId"];
 
         const playerRemovalModel: PlayerRemovalModel = {
             playerInitId: ownerId,
             playerToRemoveId: playerToRemoveId,
         }
-        websocket.send(config.PLAYER_INIT_KICK_PATH, playerRemovalModel);
+        websocket.send("/lobby/"+lobbyId+"/kickInit", playerRemovalModel);
     }
 
     @Action({rawError: true})
     public updatePlayerRemovalInfo(playerRemovalModel: PlayerRemovalModel): void {
         const currentId: number = this.context.getters["currentPlayerId"];
-        const currentPlayerOwner : boolean = this.context.getters["isCurrentPlayerOwner"]
-        const players : Array<PlayerModel> = this.context.getters["playersOrdered"];
-        const isInitPlayerIdOwner : boolean = players.find(player=> player.id===playerRemovalModel.playerInitId)!.lobbyOwner
-        const showWindow: boolean = (currentId != playerRemovalModel.playerToRemoveId && !isInitPlayerIdOwner) || (isInitPlayerIdOwner && currentPlayerOwner ) ;
+        const currentPlayerOwner: boolean = this.context.getters["isCurrentPlayerOwner"]
+        const players: Array<PlayerModel> = this.context.getters["playersOrdered"];
+        const isInitPlayerIdOwner: boolean = players.find(player => player.id === playerRemovalModel.playerInitId)!.lobbyOwner
+        const showWindow: boolean = (currentId != playerRemovalModel.playerToRemoveId && !isInitPlayerIdOwner) || (isInitPlayerIdOwner && currentPlayerOwner);
 
         this.context.commit("SET_PLAYER_REMOVAL_MODEL", playerRemovalModel);
         this.context.commit("SET_KICK_WINDOW", showWindow);
@@ -80,15 +81,10 @@ export default class KickModule extends VuexModule {
 
     @Action({rawError: true})
     public sendVote(vote: boolean): void {
+        const lobbyId: string = this.context.getters["lobbyId"];
         this.playerRemovalModel.vote = vote;
-        websocket.send(config.PLAYER_COUNT_KICKS_PATH, this.playerRemovalModel);
+        websocket.send("/lobby/" + lobbyId + "/kickCount", this.playerRemovalModel);
     }
-
-    @Action({rawError: true})
-    public getPlayersInLobby() {
-        websocket.send(config.LOBBY_GET_PLAYERS_PATH, this.playerRemovalModel);
-    }
-
 
     get playerToKickId(): number {
         return this.playerToKick.id;
