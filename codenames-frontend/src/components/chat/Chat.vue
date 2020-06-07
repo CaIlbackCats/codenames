@@ -1,6 +1,6 @@
 <template>
     <div class="text-left">
-        <div class="chat-div col-sm-12">
+        <div class="chat-div col-sm-12" id="display">
             <div v-for="chatMessage in chatMessages" :key="chatMessage.id">
                 <font-awesome-icon class="ml-2" icon="user-secret" v-if="chatMessage.name === currentPlayerName"/>
                 <label class="mx-2"
@@ -37,10 +37,20 @@
         private subscription!: Subscription;
         private chatMessageToSend = "";
 
+        public scrollToEnd() {
+            const container = document.getElementById("display");
+            container!.scrollTop = container!.scrollHeight;
+        }
+
         mounted() {
             // TODO: can we get types for action payloads? use action creators?
             this.$store.dispatch("subscribeToChat")
                 .then(subs => this.subscription = subs);
+            this.scrollToEnd();
+        }
+
+        updated() {
+            this.$nextTick(() => this.scrollToEnd());
         }
 
         beforeDestroy() {

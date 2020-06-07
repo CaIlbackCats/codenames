@@ -68,8 +68,8 @@
 
         async mounted() {
             await websocket.connect();
-           const joiend:boolean= await this.$store.dispatch("joinGame");
-           if (joiend){
+           const joined:boolean= await this.$store.dispatch("joinGame");
+           if (joined){
                await this.$store.dispatch("subscribeToGame");
                await this.$store.dispatch("subscribeToGameRoles");
                await this.$store.dispatch("fetchActiveGame");
