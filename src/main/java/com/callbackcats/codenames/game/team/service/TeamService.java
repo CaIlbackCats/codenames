@@ -3,8 +3,9 @@ package com.callbackcats.codenames.game.team.service;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.service.PuzzleWordService;
 import com.callbackcats.codenames.game.team.domain.Team;
-import com.callbackcats.codenames.game.team.dto.TeamData;
+import com.callbackcats.codenames.game.team.domain.TurnStat;
 import com.callbackcats.codenames.game.team.repository.TeamRepository;
+import com.callbackcats.codenames.game.team.repository.TurnStatRepository;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.player.service.PlayerService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,18 +27,27 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final PlayerService playerService;
     private final PuzzleWordService puzzleWordService;
+    private final TurnStatRepository turnStatRepository;
 
-    public TeamService(TeamRepository teamRepository, PlayerService playerService, PuzzleWordService puzzleWordService) {
+    public TeamService(TeamRepository teamRepository, PlayerService playerService, PuzzleWordService puzzleWordService, TurnStatRepository turnStatRepository) {
         this.teamRepository = teamRepository;
         this.playerService = playerService;
         this.puzzleWordService = puzzleWordService;
+        this.turnStatRepository = turnStatRepository;
     }
 
     public List<Team> createTeamsByLobbyId(String lobbyId, Game game) {
-        return Arrays.stream(SideType.values())
+        List<Team> teams = Arrays.stream(SideType.values())
                 .filter(side -> !side.equals(SideType.NOT_SELECTED))
                 .map(side -> createTeam(lobbyId, side, game))
                 .collect(Collectors.toList());
+
+        Team startingTeam = teams.stream()
+                .filter(team -> team.getSide().equals(game.getStartingTeam()))
+                .findFirst().orElseThrow();
+        saveSpyMasterTurnStartTime(startingTeam);
+
+        return teams;
     }
 
     public Team findTeamByGameIdBySide(Long gameId, SideType sideType) {
@@ -93,5 +104,46 @@ public class TeamService {
 
         players.forEach(player -> playerService.saveTeamToPlayer(team, player));
         return team;
+    }
+
+    public void saveSpyMasterTurnStartTime(Team currentTeam) {
+        TurnStat turnStat = new TurnStat(currentTeam.getStatistics());
+        turnStatRepository.save(turnStat);
+    }
+
+    public void saveSpyMasterTurnEndTime(Team currentTeam) {
+        TurnStat currentTurnStat = getCurrentTurnStat(currentTeam);
+        currentTurnStat.setSpyMasterEndTime(LocalDateTime.now());
+        turnStatRepository.save(currentTurnStat);
+    }
+
+    public void saveSpyTurnStartTime(Team currentTeam) {
+        TurnStat currentTurnStat = getCurrentTurnStat(currentTeam);
+        currentTurnStat.setSpyStartTime(LocalDateTime.now());
+        turnStatRepository.save(currentTurnStat);
+    }
+
+    public void saveSpyTurnEndTime(Team currentTeam) {
+        TurnStat currentTurnStat = getCurrentTurnStat(currentTeam);
+        currentTurnStat.setSpyEndTime(LocalDateTime.now());
+        turnStatRepository.save(currentTurnStat);
+    }
+
+    private TurnStat getCurrentTurnStat(Team currentTeam) {
+        int turnStatsSize = currentTeam.getStatistics().getTurnStats().size();
+        return currentTeam.getStatistics().getTurnStats().get(turnStatsSize - 1);
+    }
+
+    public void increaseSpiesInARow(Team currentTeam) {
+        TurnStat currentTurnStat = getCurrentTurnStat(currentTeam);
+        int currentNumOfSpies = currentTurnStat.getNumOfSpies();
+        currentTurnStat.setNumOfSpies(currentNumOfSpies + 1);
+        turnStatRepository.save(currentTurnStat);
+    }
+
+    public void saveNumOfGuesses(Team currentTeam, Integer maxGuessCount) {
+        TurnStat currentTurnStat = getCurrentTurnStat(currentTeam);
+        currentTurnStat.setNumOfGuesses(maxGuessCount);
+        turnStatRepository.save(currentTurnStat);
     }
 }

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +24,9 @@ public class Stat {
 
     @OneToOne(mappedBy = "statistics")
     private Team team;
+
+    @OneToMany(mappedBy = "statistics", cascade = CascadeType.ALL)
+    private List<TurnStat> turnStats = new ArrayList<>();
 
     private Integer numOfCivilians = 0;
     private Integer numOfEnemySpies = 0;

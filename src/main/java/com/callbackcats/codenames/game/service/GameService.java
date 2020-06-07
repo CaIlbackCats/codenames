@@ -131,12 +131,13 @@ public class GameService {
                 .findFirst().orElseThrow(NoSuchElementException::new);
         puzzleWordService.savePuzzleWorldToGame(currentTeam, puzzleWord);
         gameTurnService.advanceToSpyTurn(game.getGameTurn());
+        teamService.saveSpyMasterTurnEndTime(getCurrentTeamByGameId(gameId));
+        teamService.saveNumOfGuesses(currentTeam, puzzleWord.getMaxGuessCount());
+        teamService.saveSpyTurnStartTime(getCurrentTeamByGameId(gameId));
     }
 
     public Boolean isEveryonePassed(Long gameId) {
-        Game game = findGameById(gameId);
-        SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
-        Team currentTeam = game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
+        Team currentTeam = getCurrentTeamByGameId(gameId);
         boolean isEveryonePasse = currentTeam.getPlayers()
                 .stream()
                 .filter(player -> player.getRole() == RoleType.SPY)
@@ -147,13 +148,22 @@ public class GameService {
         return isEveryonePasse;
     }
 
+    private Team getCurrentTeamByGameId(Long gameId) {
+        Game game = findGameById(gameId);
+        SideType currentTeamSide = game.getGameTurn().getCurrentTeam();
+        return game.getTeams().stream().filter(team -> team.getSide() == currentTeamSide).findFirst().orElseThrow(NoSuchElementException::new);
+    }
+
     public void changeTurn(Long gameId) {
         Game game = findGameById(gameId);
         setPlayerVotedInGame(game);
+        teamService.saveSpyTurnEndTime(getCurrentTeamByGameId(gameId));
         gameTurnService.changeTurn(game.getGameTurn());
+        teamService.saveSpyMasterTurnStartTime(getCurrentTeamByGameId(gameId));
         game.setEndTurn(false);
         gameRepository.save(game);
     }
+
 
     private void setPlayerVotedInGame(Game game) {
         List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
@@ -201,13 +211,14 @@ public class GameService {
             } else {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam);
+                    teamService.increaseSpiesInARow(currentTeam);
                     log.info("Current team scored");
                     boolean isGameEndByScore = allSpies == currentTeam.getScore();
                     if (isGameEndByScore) {
                         game.setEndGame(isGameEndByScore);
                         log.info("Set end game by score");
                     } else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
-                        gameTurnService.advanceToSpyTurn(game.getGameTurn());
+                        //gameTurnService.advanceToSpyTurn(game.getGameTurn());
                         game.setEndTurn(true);
                         log.info("Reached maximum guesses");
                     }
@@ -221,6 +232,7 @@ public class GameService {
             }
             cardService.setCardFound(mostVotedCard);
         }
+
     }
 
     private Map<Card, Integer> fillCardVotesMap(List<Card> votedCards) {
