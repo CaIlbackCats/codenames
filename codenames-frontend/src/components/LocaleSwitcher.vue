@@ -5,7 +5,7 @@
 <!--        </div>-->
         <label>
             <select v-model="$i18n.locale" @change="onChange" class="select-box">
-                <option value="en">English</option>
+                <option selected value="en">English</option>
                 <option value="hu">Hungarian</option>
             </select>
         </label>

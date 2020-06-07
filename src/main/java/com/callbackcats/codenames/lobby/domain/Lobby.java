@@ -42,4 +42,8 @@ public class Lobby {
     @Column(name = "creation_time")
     private LocalDateTime localDateTime = LocalDateTime.now();
 
+    public Lobby(GameLanguage gameLanguage){
+        this.gameLanguage=gameLanguage;
+    }
+
 }

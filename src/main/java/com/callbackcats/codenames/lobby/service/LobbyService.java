@@ -2,6 +2,7 @@ package com.callbackcats.codenames.lobby.service;
 
 import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.dto.LanguageDetails;
 import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.lobby.repository.LobbyRepository;
 import com.callbackcats.codenames.player.domain.Player;
@@ -27,8 +28,11 @@ public class LobbyService {
         this.lobbyRepository = lobbyRepository;
     }
 
-    public void saveNewLobby(Lobby lobby) {
+    public LobbyDetails saveNewLobby(LanguageDetails languageDetails) {
+        GameLanguage gameLanguage = GameLanguage.getLanguageByValue(languageDetails.getLanguage());
+        Lobby lobby = new Lobby(gameLanguage);
         this.lobbyRepository.save(lobby);
+        return new LobbyDetails(lobby);
     }
 
     public LobbyDetails getLobbyDetailsById(String lobbyId) {

@@ -11,13 +11,6 @@ import i18n from "@/i18n";
 
 const BASE_URL = process.env.VUE_APP_BASE_URL;
 
-interface JoinActionPayload {
-    lobbyId: string
-}
-interface CreateActionPayload {
-    language: string
-}
-
 const MIN_PARTY_SIZE = 4;
 
 @Module
@@ -41,6 +34,16 @@ export default class LobbyModule extends VuexModule {
     @Mutation
     private SET_LOBBY(lobbyModel: LobbyModel): void {
         this.lobby = lobbyModel
+
+    }
+
+    @Mutation
+    private SET_LANGUAGE(language: string) {
+        if (language.startsWith('E')) {
+            i18n.locale = "en"
+        } else {
+            i18n.locale = "hu"
+        }
     }
 
     @Mutation
@@ -49,11 +52,8 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public async createLobby(payload: CreateActionPayload): Promise<boolean> {
-        const languageModel: LanguageModel = {
-            language: payload.language
-        }
-        const response = await axios.post(BASE_URL + "/lobby", languageModel)
+    public async createLobby(payload: LanguageModel): Promise<boolean> {
+        const response = await axios.post(BASE_URL + "/lobby", payload)
         if (response.status === 201) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
@@ -75,19 +75,14 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public async joinLobby(payload: JoinActionPayload): Promise<boolean> {
+    public async joinLobby(lobbyId: string): Promise<boolean> {
         try {
-            const response = await axios.get(`${BASE_URL}/lobby/${payload.lobbyId}`)
+            const response = await axios.get(`${BASE_URL}/lobby/${lobbyId}`)
             const lobby: LobbyModel = response.data
 
-            const language = lobby.gameLanguage
-            if(language.startsWith('E')) {
-                i18n.locale = "en"
-            } else {
-                i18n.locale = "hu"
-            }
-
-            this.context.commit('SET_LOBBY', lobby)
+            const language: string = lobby.gameLanguage;
+            this.context.commit("SET_LANGUAGE", language);
+            this.context.commit('SET_LOBBY', lobby);
             await this.context.dispatch("subscribeToLobby");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;
@@ -112,8 +107,8 @@ export default class LobbyModule extends VuexModule {
     }
 
     @Action({rawError: true})
-    public async updateLobby(lobbyModel: LobbyModel) :Promise<void>{
-        this.context.commit("UPDATE_LOBBY",lobbyModel);
+    public async updateLobby(lobbyModel: LobbyModel): Promise<void> {
+        this.context.commit("UPDATE_LOBBY", lobbyModel);
         if (lobbyModel.currentGameId != null) {
             await this.context.dispatch("setGameId", lobbyModel.currentGameId);
         }
@@ -127,7 +122,7 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public sendLobbyUpdate(): void {
-        websocket.send("/lobby/"+this.lobbyId, {});
+        websocket.send("/lobby/" + this.lobbyId, {});
     }
 
     @Action({commit: "UPDATE_LOBBY", rawError: true})
@@ -138,12 +133,12 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public sendRandomizeRole(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/role", {});
+        websocket.send("/lobby/" + this.lobbyId + "/role", {});
     }
 
     @Action({rawError: true})
     public sendRandomizeSide(): void {
-        websocket.send("/lobby/"+this.lobbyId+"/side", {});
+        websocket.send("/lobby/" + this.lobbyId + "/side", {});
     }
 
 

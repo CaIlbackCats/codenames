@@ -1,10 +1,14 @@
 package com.callbackcats.codenames.lobby.service;
 
+import com.callbackcats.codenames.card.domain.GameLanguage;
 import com.callbackcats.codenames.lobby.domain.Lobby;
+import com.callbackcats.codenames.lobby.dto.LanguageDetails;
+import com.callbackcats.codenames.lobby.dto.LobbyDetails;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.RoleType;
 import com.callbackcats.codenames.player.domain.SideType;
 import com.callbackcats.codenames.player.dto.PlayerCreationData;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -26,8 +32,11 @@ public class LobbyServiceTest {
     private Lobby lobby;
     private List<Player> players;
 
+    private LanguageDetails languageDetails;
+
     @BeforeEach
     public void init() {
+        this.languageDetails = new LanguageDetails("hu");
         this.lobby = new Lobby();
         this.players = List.of(
                 new Player(new PlayerCreationData(lobby.getId(), "test1")),
@@ -38,9 +47,16 @@ public class LobbyServiceTest {
     }
 
     @Test
+    public void testSaveNewLobby_shouldReturnWithProperGamelanguage() {
+        LobbyDetails savedLobby = this.lobbyService.saveNewLobby(languageDetails);
+
+        assertEquals(savedLobby.getGameLanguage(), String.valueOf(GameLanguage.HUNGARIAN));
+    }
+
+    @Test
     public void testGetRemainingRolesDataByLobby_whenLobbyIsEmpty() {
         this.lobby.setPlayerList(new ArrayList<>());
-        this.lobbyService.saveNewLobby(lobby);
+
         /*RemainingRoleData remainingRoleData = lobbyService.getRemainingRolesByLobby(this.lobby);
 
         assertTrue(remainingRoleData.getBlueSpy());
@@ -58,7 +74,7 @@ public class LobbyServiceTest {
         lobby.getPlayerList().get(1).setSide(SideType.RED);
         lobby.getPlayerList().get(2).setRole(RoleType.SPY);
         lobby.getPlayerList().get(2).setSide(SideType.RED);
-        this.lobbyService.saveNewLobby(lobby);
+        this.lobbyService.saveNewLobby(languageDetails);
         /*RemainingRoleData remainingRoleData = lobbyService.getRemainingRolesByLobby(this.lobby);
 
         assertFalse(remainingRoleData.getBlueSpy());

@@ -25,9 +25,9 @@ public class LobbyController {
     }
 
     @ResponseBody
-    @GetMapping("/api/lobby/{id}")
-    public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String id) {
-        LobbyDetails lobbyDetails = this.lobbyService.getLobbyDetailsById(id);
+    @GetMapping("/api/lobby/{lobbyId}")
+    public ResponseEntity<LobbyDetails> getLobbyById(@PathVariable String lobbyId) {
+        LobbyDetails lobbyDetails = this.lobbyService.getLobbyDetailsById(lobbyId);
         return new ResponseEntity<>(lobbyDetails, HttpStatus.OK);
     }
 
@@ -44,20 +44,10 @@ public class LobbyController {
     @ResponseBody
     @PostMapping("/api/lobby")
     public ResponseEntity<LobbyDetails> createLobby(@RequestBody LanguageDetails gameLanguage) {
-        GameLanguage language;
-        if(gameLanguage.getLanguage() == null) {
-            language = GameLanguage.ENGLISH;
-        } else if (gameLanguage.getLanguage().equals("hu")) {
-            language = GameLanguage.HUNGARIAN;
-        } else {
-            language = GameLanguage.ENGLISH;
-        }
-        Lobby lobby = new Lobby();
-        lobby.setGameLanguage(language);
-        this.lobbyService.saveNewLobby(lobby);
-        LobbyDetails lobbyDetails = new LobbyDetails(lobby);
+
+        LobbyDetails createdLobby = this.lobbyService.saveNewLobby(gameLanguage);
         log.info("New lobby generation requested");
-        return new ResponseEntity<>(lobbyDetails, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdLobby, HttpStatus.CREATED);
     }
 
     @MessageMapping("/{lobbyId}")
