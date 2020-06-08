@@ -119,6 +119,7 @@ public class GameService {
         processMostVotedCardScore(game, currentTeam, mostVotedCards);
 
         votedCards.forEach(cardService::deselectCard);
+        setPlayerVotedInGame(game);
 
         gameRepository.save(game);
     }
@@ -158,7 +159,11 @@ public class GameService {
     }
 
     private void setPlayerVotedInGame(Game game) {
-        List<Player> players = game.getTeams().stream().map(Team::getPlayers).flatMap(Collection::stream).collect(Collectors.toList());
+        List<Player> players = game.getTeams()
+                .stream()
+                .map(Team::getPlayers)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         playerService.turnPlayerPassOff(players);
     }
 
