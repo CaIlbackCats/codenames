@@ -82,7 +82,7 @@ public class GameController {
                     gameService.changeTurn(gameId);
                 }
             } catch (InterruptedException | ExecutionException e) {
-                log.info(e.getMessage());
+                log.warn(e.getMessage());
             } finally {
                 gameService.changeGameVotingPhase(false, gameId);
             }

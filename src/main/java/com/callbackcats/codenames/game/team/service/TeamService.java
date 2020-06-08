@@ -3,7 +3,6 @@ package com.callbackcats.codenames.game.team.service;
 import com.callbackcats.codenames.game.domain.Game;
 import com.callbackcats.codenames.game.service.PuzzleWordService;
 import com.callbackcats.codenames.game.team.domain.Team;
-import com.callbackcats.codenames.game.team.dto.TeamData;
 import com.callbackcats.codenames.game.team.repository.TeamRepository;
 import com.callbackcats.codenames.player.domain.Player;
 import com.callbackcats.codenames.player.domain.SideType;
@@ -44,6 +43,7 @@ public class TeamService {
     }
 
     public void increaseTeamScore(Team team, SideType currentSide) {
+
         int increasedScore = team.getScore() + 1;
         team.setScore(increasedScore);
         teamRepository.save(team);

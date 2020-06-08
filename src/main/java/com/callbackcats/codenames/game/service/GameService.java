@@ -118,6 +118,8 @@ public class GameService {
 
         processMostVotedCardScore(game, currentTeam, mostVotedCards);
 
+        votedCards.forEach(cardService::deselectCard);
+
         gameRepository.save(game);
     }
 
@@ -177,13 +179,6 @@ public class GameService {
         SideType currentSide = game.getGameTurn().getCurrentTeam();
         teamService.increaseTeamRounds(currentTeam);
 
-        int allSpies;
-        if (game.getStartingTeam().equals(currentTeam.getSide())) {
-            allSpies = STARTING_TEAM_SPIES_COUNT;
-        } else {
-            allSpies = STARTING_TEAM_SPIES_COUNT - 1;
-        }
-
         if (mostVotedCards.size() > 1) {
             teamService.increaseNumOfInvalidVotes(currentTeam);
             mostVotedCards.stream().filter(Objects::nonNull).forEach(cardService::deselectCard);
@@ -203,8 +198,7 @@ public class GameService {
                 if (mostVotedCard.getType().getTeamColorValue() == currentTeam.getSide()) {
                     teamService.increaseTeamScore(currentTeam, currentSide);
                     log.info("Current team scored");
-                   // boolean isGameEndByScore = allSpies == currentTeam.getScore();
-                    if (isGameEndByScore(game,currentTeam)) {
+                    if (isGameEndByScore(game, currentTeam)) {
                         game.setEndGame(true);
                         log.info("Set end game by score");
                     } else if (teamService.isCurrentTeamReachMaxGuesses(currentTeam)) {
@@ -215,16 +209,16 @@ public class GameService {
                 } else {
                     teamService.increaseNumOfEnemySpies(currentTeam);
                     teamService.increaseTeamScore(otherTeam, currentSide);
-                    if (isGameEndByScore(game,otherTeam)){
+                    if (isGameEndByScore(game, otherTeam)) {
                         game.setEndGame(true);
                         log.info("Set end game by score");
                     }
-                 //   game.setEndGame(allSpies == otherTeam.getScore());
                     game.setEndTurn(true);
                     log.info("Enemy team scored");
                 }
             }
             cardService.setCardFound(mostVotedCard);
+
         }
     }
 
