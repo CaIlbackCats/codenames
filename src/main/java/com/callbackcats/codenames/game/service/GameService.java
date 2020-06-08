@@ -118,7 +118,7 @@ public class GameService {
 
         processMostVotedCardScore(game, currentTeam, mostVotedCards);
 
-        votedCards.forEach(cardService::deselectCard);
+        votedCards.stream().filter(Objects::nonNull).forEach(cardService::deselectCard);
         setPlayerVotedInGame(game);
 
         gameRepository.save(game);

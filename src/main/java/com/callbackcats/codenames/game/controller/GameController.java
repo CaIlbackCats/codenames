@@ -83,6 +83,7 @@ public class GameController {
                 }
             } catch (InterruptedException | ExecutionException e) {
                 log.warn(e.getMessage());
+              //  e.printStackTrace();
             } finally {
                 gameService.changeGameVotingPhase(false, gameId);
             }
