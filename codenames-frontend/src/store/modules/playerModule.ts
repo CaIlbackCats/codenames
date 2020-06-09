@@ -114,10 +114,7 @@ export default class PlayerModule extends VuexModule {
                 this.context.dispatch("sendLobbyUpdate");
             }
         }).catch(() => this.context.commit("SET_NAME_ERROR", true));
-
-
     }
-
     get isRoleSelected(): boolean {
         return this.currentPlayer.role === "NOT_SELECTED";
     }

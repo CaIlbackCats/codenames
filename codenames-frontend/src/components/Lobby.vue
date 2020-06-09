@@ -83,7 +83,7 @@
 
         async mounted() {
             //TODO - find a nicer solution for this
-            if(this.$route.query.lang === undefined) {
+            if (this.$route.query.lang === undefined) {
                 this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path;
             } else {
                 this.path = process.env.VUE_APP_BASE_FRONTEND_URL + this.$route.path + "?lang=" + this.$route.query.lang;
@@ -94,6 +94,10 @@
                 router.push('/notFound')
             }
         };
+
+        public resetSelection(): void {
+            this.$store.dispatch("resetSelection");
+        }
 
         public copyPath(): void {
             this.$copyText(this.path);
