@@ -53,7 +53,7 @@ export default class LobbyModule extends VuexModule {
 
     @Action({rawError: true})
     public async createLobby(payload: LanguageModel): Promise<boolean> {
-        const response = await axios.post(BASE_URL + "/lobby", payload)
+        const response = await axios.post(BASE_URL + "/lobby", payload);
         if (response.status === 201) {
             const lobby: LobbyModel = response.data
             this.context.commit('SET_LOBBY', lobby)
@@ -77,12 +77,12 @@ export default class LobbyModule extends VuexModule {
     @Action({rawError: true})
     public async joinLobby(lobbyId: string): Promise<boolean> {
         try {
-            const response = await axios.get(`${BASE_URL}/lobby/${lobbyId}`)
+            const response: AxiosResponse = await axios.get(`${BASE_URL}/lobby/${lobbyId}`)
             const lobby: LobbyModel = response.data
 
             const language: string = lobby.gameLanguage;
-            this.context.commit("SET_LANGUAGE", language);
             this.context.commit('SET_LOBBY', lobby);
+            this.context.commit("SET_LANGUAGE", language);
             await this.context.dispatch("subscribeToLobby");
             // await this.context.dispatch("checkSelectedPlayer", {root: true});
             return true;

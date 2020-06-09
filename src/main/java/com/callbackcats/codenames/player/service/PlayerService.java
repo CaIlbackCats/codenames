@@ -50,7 +50,7 @@ public class PlayerService {
         if (playersWithSameNAme.size() == 0) {
             Player player = new Player(playerCreationData);
             Lobby lobby = lobbyService.findLobbyById(playerCreationData.getLobbyName());
-            if (lobby.getPlayerList().isEmpty()) {
+            if (!isLobbyOwnerInLobby(lobby.getId())) {
                 player.setLobbyOwner(true);
             } else {
                 player.setLobbyOwner(false);
